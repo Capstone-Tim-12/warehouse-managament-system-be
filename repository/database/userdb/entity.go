@@ -12,6 +12,7 @@ type User struct {
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 	DeletedAt        time.Time
+	UserDetail       UserDetail
 }
 
 type UserDetail struct {
@@ -24,9 +25,9 @@ type UserDetail struct {
 	Works        string
 	Citizenship  string
 	UserID       int
-	ProvinceID   int
-	RegencyID    int
-	DistrictID   int
+	ProvinceID   string
+	RegencyID    string
+	DistrictID   string
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 	DeletedAt    time.Time

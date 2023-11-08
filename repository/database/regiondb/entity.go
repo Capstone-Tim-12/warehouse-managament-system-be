@@ -1,30 +1,32 @@
 package regiondb
 
+import "github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/userdb"
+
 type Province struct {
-	ID      string
-	Name    string
-	Regency []Regency
+	ID         string `gorm:"size:12;primarykey"`
+	Name       string
+	Regency    []Regency
+	UserDetail []userdb.UserDetail
 }
 
 type Regency struct {
-	ID         string
+	ID         string `gorm:"size:12;primarykey"`
 	ProvinceID string
 	Name       string
-	Province   Province `gorm:"foreignKey:ProvinceID"`
 	District   []District
+	UserDetail []userdb.UserDetail
 }
 
 type District struct {
-	ID        string
-	RegencyID string
-	Name      string
-	Regency   Regency `gorm:"foreignKey:RegencyID"`
-	Village   []Village
+	ID         string `gorm:"size:12;primarykey"`
+	RegencyID  string
+	Name       string
+	Village    []Village
+	UserDetail []userdb.UserDetail
 }
 
 type Village struct {
-	ID         string
+	ID         string `gorm:"size:12;primarykey"`
 	DistrictID string
 	Name       string
-	District   District `gorm:"foreignKey:DistrictID"`
 }
