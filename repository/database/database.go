@@ -4,25 +4,13 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/capacity"
-	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/district"
-	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/province"
-	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/regency"
-	userdetail "github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/userDetail"
-	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/users"
-	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/village"
-	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/warehouse"
-	warehousepicture "github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/warehousePicture"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/regiondb"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/userdb"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-var (
-	DB  *gorm.DB
-	err error
-)
-
-func InitDB() {
+func InitDB() *gorm.DB {
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
 		os.Getenv("MYSQL_USERNAME"),
@@ -32,23 +20,23 @@ func InitDB() {
 		os.Getenv("MYSQL_DATABASE"),
 	)
 
-	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	DB, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
 
-}
+	if os.Getenv("DB_DEBUG") == "true" {
+		DB = DB.Debug()
+	}
 
-func InitMigrate() {
-	DB.AutoMigrate(
-		users.User{},
-		userdetail.UserDetail{},
-		district.District{},
-		regency.Regency{},
-		village.Village{},
-		capacity.Capacity{},
-		province.Province{},
-		warehouse.Warehouse{},
-		warehousepicture.WarehousePicture{},
-	)
+	if os.Getenv("DB_MIGRATION") == "true" {
+		DB.AutoMigrate(&regiondb.Province{})
+		DB.AutoMigrate(&regiondb.Regency{})
+		DB.AutoMigrate(&regiondb.District{})
+		DB.AutoMigrate(&regiondb.Village{})
+		DB.AutoMigrate(&userdb.User{})
+		DB.AutoMigrate(&userdb.UserDetail{})
+	}
+
+	return DB
 }
