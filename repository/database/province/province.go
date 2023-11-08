@@ -1,15 +1,9 @@
 package province
 
-import (
-	"time"
-
-	"gorm.io/gorm"
-)
+import "github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/regency"
 
 type Province struct {
-	ID        uint           `gorm:"primary_key"`
-	Name      string         `gorm:"type:varchar(255)"`
-	CreatedAt time.Time      `gorm:"type:datetime(3)"`
-	UpdatedAt time.Time      `gorm:"type:datetime(3)"`
-	DeletedAt gorm.DeletedAt `gorm:"type:datetime(3)"`
+	ID        uint   `gorm:"primaryKey"`
+	Name      string `gorm:"type:varchar(255)"`
+	Regencies []regency.Regency
 }

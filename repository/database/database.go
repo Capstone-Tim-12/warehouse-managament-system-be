@@ -5,9 +5,12 @@ import (
 	"os"
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/capacity"
-	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/city"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/district"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/province"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/regency"
+	userdetail "github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/userDetail"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/users"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/village"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/warehouse"
 	warehousepicture "github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/warehousePicture"
 	"gorm.io/driver/mysql"
@@ -39,7 +42,10 @@ func InitDB() {
 func InitMigrate() {
 	DB.AutoMigrate(
 		users.User{},
-		city.City{},
+		userdetail.UserDetail{},
+		district.District{},
+		regency.Regency{},
+		village.Village{},
 		capacity.Capacity{},
 		province.Province{},
 		warehouse.Warehouse{},
