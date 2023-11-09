@@ -25,7 +25,6 @@ func (h *UserHandler) GetAllProvince(c echo.Context) (err error) {
 		err = response.NewErrorResponse(c, err)
 		return
 	}
-
 	return response.NewSuccessResponse(c, data)
 }
 
@@ -37,7 +36,6 @@ func (h *UserHandler) GetRegencyByProvinceId(c echo.Context) (err error) {
 		err = response.NewErrorResponse(c, err)
 		return
 	}
-
 	return response.NewSuccessResponse(c, data)
 }
 
