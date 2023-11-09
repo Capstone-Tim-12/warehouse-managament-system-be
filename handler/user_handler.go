@@ -1,7 +1,11 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/user"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/user/model"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/errors"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/response"
 	"github.com/labstack/echo/v4"
 )
@@ -21,7 +25,6 @@ func (h *UserHandler) GetAllProvince(c echo.Context) (err error) {
 		err = response.NewErrorResponse(c, err)
 		return
 	}
-	
 	return response.NewSuccessResponse(c, data)
 }
 
@@ -33,7 +36,6 @@ func (h *UserHandler) GetRegencyByProvinceId(c echo.Context) (err error) {
 		err = response.NewErrorResponse(c, err)
 		return
 	}
-	
 	return response.NewSuccessResponse(c, data)
 }
 
@@ -45,6 +47,37 @@ func (h *UserHandler) GetDistricByRegencyId(c echo.Context) (err error) {
 		err = response.NewErrorResponse(c, err)
 		return
 	}
-	
+
 	return response.NewSuccessResponse(c, data)
+}
+
+func (h *UserHandler) RegisterUserData(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	var req model.RegisterDataRequest
+	err = c.Bind(&req)
+	if err != nil {
+		err = response.NewErrorResponse(c, err)
+		fmt.Println("error bind register user data: ", err)
+		return
+	}
+
+	if req.NIK == "" {
+		err = response.NewErrorResponse(c, errors.ErrBadRequest)
+		fmt.Println("nik is empty ", err)
+		return
+	}
+
+	if req.Email == "" {
+		err = response.NewErrorResponse(c, errors.ErrBadRequest)
+		fmt.Println("email is empty ", err)
+		return
+	}
+
+	err = h.userUsecase.RegisterData(ctx, req)
+	if err != nil {
+		err = response.NewErrorResponse(c, err)
+		return
+	}
+
+	return response.NewSuccessResponse(c, nil)
 }
