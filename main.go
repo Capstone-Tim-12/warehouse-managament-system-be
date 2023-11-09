@@ -8,6 +8,7 @@ import (
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/handler/router"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/regiondb"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/userdb"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/user"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/env"
 	"github.com/labstack/echo/v4"
@@ -18,9 +19,9 @@ func main() {
 	db := database.InitDB()
 
 	regionRepo := regiondb.NewRegionRepository(db)
+	userRepo := userdb.NewUserRepository(db)
 
-
-	userUsecase := user.NewUserUsecase(regionRepo)
+	userUsecase := user.NewUserUsecase(regionRepo, userRepo)
 
 	pingHandler := handler.NewPingHandler()
 	userHandler := handler.NewUserHandler(userUsecase)

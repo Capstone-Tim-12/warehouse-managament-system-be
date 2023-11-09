@@ -17,12 +17,15 @@ type User struct {
 
 type UserDetail struct {
 	ID           int `gorm:"primarykey"`
+	Address      string
+	Country      string
 	Photo        string
 	NIK          string
 	FullName     string
 	Gender       string
-	PlaceOfBirth time.Time
-	Works        string
+	PlaceOfBirth string
+	DateBirth    time.Time
+	Work         string
 	Citizenship  string
 	UserID       int
 	ProvinceID   string

@@ -10,4 +10,6 @@ var (
 	ErrUserPasswordEmpty    = errors.New("user password is empty")
 	ErrBcryptPassword       = errors.New("failed bcrypt password")
 	ErrRegisterUserDatabase = errors.New("error register user database")
+	ErrNotFound             = errors.New("data dot found")
+	ErrBadRequest           = errors.New("bad request")
 )

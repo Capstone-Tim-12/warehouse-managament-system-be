@@ -20,12 +20,13 @@ func (r *Router) Validate() {
 	}
 }
 
-func (r *Router)SetupRouter(e *echo.Echo) *Router {
+func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	e.GET("/ping", r.PingHandler.PingTestConnection)
 
 	e.GET("/user/province", r.UserHandler.GetAllProvince)
 	e.GET("/user/regency/:provinceId", r.UserHandler.GetRegencyByProvinceId)
 	e.GET("/user/district/:regencyId", r.UserHandler.GetDistricByRegencyId)
+	e.GET("/user/register-data", r.UserHandler.RegisterUserData)
 
 	return r
 }
