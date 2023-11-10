@@ -2,6 +2,13 @@ package userdb
 
 import "time"
 
+type Role string
+
+const (
+	RoleAdmin Role = "admin"
+	RoleUser  Role = "user"
+)
+
 type User struct {
 	ID               int `gorm:"primarykey"`
 	Username         string
@@ -9,6 +16,7 @@ type User struct {
 	IsVerifyAccount  bool
 	IsVerifyIdentity bool
 	Password         string
+	Role             Role
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 	DeletedAt        time.Time
