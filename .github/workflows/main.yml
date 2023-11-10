@@ -37,14 +37,14 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             # pull the docker image from the registry
-            docker pull fadilahonespot/warehouse:1.0.0
+            sudo docker pull fadilahonespot/warehouse:1.0.0
             
             # stop and remove any existing container
-            docker stop warehouse-apps || true
-            docker rm warehouse-apps || true
+            sudo docker stop warehouse-apps || true
+            sudo docker rm warehouse-apps || true
 
             # run the Docker container with mysql environment variables
-            docker run -d -p 8086:8086 \
+            sudo docker run -d -p 8086:8086 \
               -e APP_PORT=${{ secrets.APP_PORT}} \
               -e MYSQL_HOST=${{ secrets.MYSQL_HOST }} \
               -e MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }} \
