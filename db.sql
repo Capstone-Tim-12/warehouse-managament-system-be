@@ -1,30 +1,30 @@
-create table province(
+create table provinces(
 	id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
     name varchar(255)
 );
 
-create table regency(
+create table regencies(
 	id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
     province_id int(11),
     name varchar(255),
-    FOREIGN KEY (province_id) REFERENCES province(id) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (province_id) REFERENCES provinces(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-create table district(
+create table districts(
 	id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
     regency_id int(11),
     name varchar(255),
-    FOREIGN KEY (regency_id) REFERENCES regency(id) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (regency_id) REFERENCES regencies(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-create table village(
+create table villages(
 	id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
     district_id int(11),
     name varchar(255),
-    FOREIGN KEY (district_id) REFERENCES district(id) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (district_id) REFERENCES districts(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-create table `user`(
+create table users(
 	id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
     username varchar(35),
     email varchar(100),
@@ -36,26 +36,29 @@ create table `user`(
 	deleted_at datetime(3) DEFAULT NULL
 );
 
-create table user_detail(
-	id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
-	photo varchar(255),
-    nik varchar(16),
-    full_name varchar(100),
-    gender varchar(200),
-    place_of_bird date,
-    works varchar(100),
-    citizenship varchar(100),
-    user_id int(11),
-    province_id int(11),
-    regency_id int(11),
-    district_id int(11),
+create table user_details(
+	id int PRIMARY KEY NOT NULL AUTO_INCREMENT
+    address longtext,
+    country longtext,
+    photo longtext,
+    nik longtext,
+    full_name longtext,
+    gender longtext,
+    place_of_birth longtext,
+    date_birth datetime(3) DEFAULT NULL,
+    work longtext,
+    citizenship longtext,
+    user_id bigint DEFAULT NULL,
+    province_id varchar(12) DEFAULT NULL,
+    regency_id varchar(12) DEFAULT NULL,
+    district_id varchar(12) DEFAULT NULL,
     created_at datetime(3) DEFAULT NULL,
-	updated_at datetime(3) DEFAULT NULL,
-	deleted_at datetime(3) DEFAULT NULL,
-    FOREIGN KEY (user_id) REFERENCES `user`(id) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (province_id) REFERENCES province(id) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (regency_id) REFERENCES regency(id) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (district_id) REFERENCES district(id) ON DELETE CASCADE ON UPDATE CASCADE
+    updated_at datetime(3) DEFAULT NULL,
+    deleted_at datetime(3) DEFAULT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (province_id) REFERENCES provinces(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (regency_id) REFERENCES regencies(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (district_id) REFERENCES districts(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 create table warehouse(
