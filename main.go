@@ -10,12 +10,12 @@ import (
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/regiondb"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/userdb"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/user"
-	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/env"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 )
 
 func main() {
-	env.InitEnvironment()
+	godotenv.Load()
 	db := database.InitDB()
 
 	regionRepo := regiondb.NewRegionRepository(db)
