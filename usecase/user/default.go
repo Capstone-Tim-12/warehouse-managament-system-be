@@ -8,6 +8,7 @@ import (
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/regiondb"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/userdb"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/user/model"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/auth"
 	customError "github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/errors"
 )
 
@@ -125,11 +126,37 @@ func (s *defaultUser) RegisterData(ctx context.Context, req model.RegisterDataRe
 		DistrictID:   req.DistrictID,
 	}
 
-	err = s.userRepo.Create(ctx, &createUserData)
+	err = s.userRepo.CreateUserDetail(ctx, &createUserData)
 	if err != nil {
 		err = errors.New("internal error create user data")
 		fmt.Println("Internal error create user data")
 		return
+	}
+	return
+}
+
+func (s *defaultUser) ResendOtp(ctx context.Context, req model.OtpRequest) (err error) {
+	userData, err := s.userRepo.GetUserByEmail(ctx, req.Email)
+	if err != nil {
+		err = customError.ErrNotFound
+		fmt.Println("Error getting Email", err)
+		return
+	}
+
+	if !userData.IsVerifyAccount {
+		otpMessage, err := auth.GenerateOTP(userData.Email)
+		if err != nil {
+			err = errors.New("failed to generate otp")
+			fmt.Println("failed to generate otp")
+			return err
+		}
+
+		err = auth.SendEmail(userData.Email, otpMessage)
+		if err != nil {
+			err = errors.New("failed to send email")
+			fmt.Println("failed to send email")
+			return err
+		}
 	}
 	return
 }
