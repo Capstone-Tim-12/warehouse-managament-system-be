@@ -23,3 +23,8 @@ func (r *defaultRepo) Create(ctx context.Context, req *UserDetail) (err error) {
 	err = r.db.WithContext(ctx).Create(req).Error
 	return
 }
+
+func (r *defaultRepo) CreateUser(ctx context.Context, req *User) (err error) {
+	err = r.db.WithContext(ctx).Create(req).Error
+	return
+}

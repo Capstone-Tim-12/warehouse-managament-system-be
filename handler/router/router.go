@@ -27,6 +27,6 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	e.GET("/user/regency/:provinceId", r.UserHandler.GetRegencyByProvinceId)
 	e.GET("/user/district/:regencyId", r.UserHandler.GetDistricByRegencyId)
 	e.GET("/user/register-data", r.UserHandler.RegisterUserData)
-
+	e.POST("/user/register", r.UserHandler.RegisterUser)
 	return r
 }

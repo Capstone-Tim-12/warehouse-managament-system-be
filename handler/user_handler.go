@@ -81,3 +81,28 @@ func (h *UserHandler) RegisterUserData(c echo.Context) (err error) {
 
 	return response.NewSuccessResponse(c, nil)
 }
+
+func (h *UserHandler) RegisterUser(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	var req model.RegisterUserRequest
+	err = c.Bind(&req)
+	if err != nil {
+		err = response.NewErrorResponse(c, err)
+		fmt.Println("error bind register user data: ", err)
+		return
+	}
+
+	if req.Email == "" {
+		err = response.NewErrorResponse(c, errors.ErrBadRequest)
+		fmt.Println("email is empty ", err)
+		return
+	}
+
+	registerResponse, err := h.userUsecase.UserRegister(ctx, req)
+	if err != nil {
+		err = response.NewErrorResponse(c, err)
+		return
+	}
+
+	return response.NewSuccessResponse(c, registerResponse)
+}

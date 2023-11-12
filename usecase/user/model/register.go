@@ -16,3 +16,13 @@ type RegisterDataRequest struct {
 	RegencyID   string    `json:"regionId"`
 	DistrictID  string    `json:"districtId"`
 }
+
+type RegisterUserRequest struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type RegisterUserResponse struct {
+	Email string `json:"email"`
+}
