@@ -16,7 +16,7 @@ type User struct {
 	IsVerifyAccount  bool
 	IsVerifyIdentity bool
 	Password         string
-	Role             Role
+	Role             Role `gorm:"default:user"`
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 	DeletedAt        time.Time
