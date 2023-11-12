@@ -19,7 +19,7 @@ func (r *defaultRepo) GetUserByEmail(ctx context.Context, email string) (resp *U
 	return
 }
 
-func (r *defaultRepo) CreateUserDetail(ctx context.Context, req *UserDetail) (err error) {
+func (r *defaultRepo) Create(ctx context.Context, req *UserDetail) (err error) {
 	err = r.db.WithContext(ctx).Create(req).Error
 	return
 }
