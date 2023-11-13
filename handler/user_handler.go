@@ -81,3 +81,23 @@ func (h *UserHandler) RegisterUserData(c echo.Context) (err error) {
 
 	return response.NewSuccessResponse(c, nil)
 }
+
+func (h *UserHandler) ResendUserOTP(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	var req model.OtpRequest
+
+	err = c.Bind(&req)
+
+	if req.Email == "" {
+		err = response.NewErrorResponse(c, errors.ErrBadRequest)
+		fmt.Println("email is empty ", err)
+		return
+	}
+
+	err = h.userUsecase.ResendOtp(ctx, req)
+	if err != nil {
+		err = response.NewErrorResponse(c, err)
+		return
+	}
+	return response.NewSuccessResponse(c, nil)
+}
