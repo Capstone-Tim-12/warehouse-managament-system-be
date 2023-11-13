@@ -184,6 +184,10 @@ func (s *defaultUser) ResendOtp(ctx context.Context, req model.OtpRequest) (err 
 			return err
 		}
 
+	} else {
+		err = errors.New("your account has been verified")
+		fmt.Println("your account has been verified")
+		return err
 	}
 	return
 }
