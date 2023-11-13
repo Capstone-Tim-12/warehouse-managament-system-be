@@ -1,0 +1,55 @@
+name: build, deploy mvc in master server
+on: 
+  push: 
+    branches:
+      - development
+jobs:
+  build_docker:
+    name: build and push to docker hub
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: docker build
+        run: docker build -t fadilahonespot/warehouse:1.0.0 . 
+
+      - name: login to docker hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: push to docker hub
+        run: docker push fadilahonespot/warehouse:1.0.0
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build_docker
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: SSH into EC2 and deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # pull the docker image from the registry
+            sudo docker pull fadilahonespot/warehouse:1.0.0
+            
+            # stop and remove any existing container
+            sudo docker stop warehouse-apps || true
+            sudo docker rm warehouse-apps || true
+
+            # run the Docker container with mysql environment variables
+            sudo docker run -d -p 8086:8086 \
+              -e APP_PORT=${{ secrets.APP_PORT}} \
+              -e MYSQL_HOST=${{ secrets.MYSQL_HOST }} \
+              -e MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }} \
+              -e MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
+              -e MYSQL_PORT=${{ secrets.MYSQL_PORT }} \
+              -e MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }} \
+              --name warehouse-apps \
+              fadilahonespot/warehouse:1.0.0
