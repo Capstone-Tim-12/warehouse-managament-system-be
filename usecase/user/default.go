@@ -10,6 +10,8 @@ import (
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/http/core"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/user/model"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/auth"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/bycrpt"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/constrans"
 	customError "github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/errors"
 )
 
@@ -133,6 +135,28 @@ func (s *defaultUser) RegisterData(ctx context.Context, req model.RegisterDataRe
 	if err != nil {
 		err = errors.New("internal error create user data")
 		fmt.Println("Internal error create user data")
+		return
+	}
+	return
+}
+
+func (s *defaultUser) UserRegister(ctx context.Context, req model.RegisterUserRequest) (resp model.RegionResponse, err error) {
+	userdata, _ := s.userRepo.GetUserByEmail(ctx, req.Email)
+	if userdata.Email != "" {
+		err = errors.New("email already exists")
+		fmt.Println("email already exists")
+		return
+	}
+	passwordByrpt := bycrpt.HashSHA256(constrans.KeyPassword, req.Password)
+	createUser := userdb.User{
+		Username: req.Username,
+		Password: passwordByrpt,
+		Email:    req.Email,
+	}
+	err = s.userRepo.CreateUser(ctx, &createUser)
+	if err != nil {
+		err = errors.New("failed create data user")
+		fmt.Println("failed create data user")
 		return
 	}
 	return
