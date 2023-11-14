@@ -276,7 +276,7 @@ func (s *defaultUser) VerificationUser(ctx context.Context, req model.Verificati
 	respData, err := s.coreRepo.GetUtilityData(ctx, req.Email)
 	if err != nil {
 		err = errors.New("failed verification otp")
-		fmt.Println("timeout request", err.Error())
+		fmt.Println("timeout request to utility", err.Error())
 		return
 	}
 
