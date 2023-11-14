@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/regiondb"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/userdb"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/http/core"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/user/model"
-	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/auth"
 	customError "github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/errors"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/generate"
 )
 
 type defaultUser struct {
@@ -89,27 +90,27 @@ func (s *defaultUser) GetDistricByRegencyId(ctx context.Context, id string) (res
 func (s *defaultUser) RegisterData(ctx context.Context, req model.RegisterDataRequest) (err error) {
 	userData, err := s.userRepo.GetUserByEmail(ctx, req.Email)
 	if err != nil {
+		fmt.Println("Error getting Email", err.Error())
 		err = customError.ErrNotFound
-		fmt.Println("Error getting Email", err)
 		return
 	}
 
 	_, err = s.regionRepo.GetProvinceById(ctx, req.ProvinceID)
 	if err != nil {
+		fmt.Println("Error getting province id", err.Error())
 		err = customError.ErrNotFound
-		fmt.Println("Error getting province id", err)
 		return
 	}
 	_, err = s.regionRepo.GetRegencyById(ctx, req.RegencyID)
 	if err != nil {
+		fmt.Println("Error getting regency id", err.Error())
 		err = customError.ErrNotFound
-		fmt.Println("Error getting regency id", err)
 		return
 	}
 	_, err = s.regionRepo.GetDistrictById(ctx, req.DistrictID)
 	if err != nil {
+		fmt.Println("Error getting regency id", err.Error())
 		err = customError.ErrNotFound
-		fmt.Println("Error getting regency id", err)
 		return
 	}
 
@@ -129,79 +130,127 @@ func (s *defaultUser) RegisterData(ctx context.Context, req model.RegisterDataRe
 		DistrictID:   req.DistrictID,
 	}
 
-	err = s.userRepo.Create(ctx, &createUserData)
+	tx := s.userRepo.BeginTrans(ctx)
+	err = s.userRepo.CreateDetail(ctx, tx, &createUserData)
 	if err != nil {
+		tx.Rollback()
 		err = errors.New("internal error create user data")
 		fmt.Println("Internal error create user data")
 		return
 	}
+
+	userData.IsVerifyIdentity = true
+	err = s.userRepo.UpdateUser(ctx, tx, userData)
+	if err != nil {
+		tx.Rollback()
+		fmt.Println("error update user data")
+		err = errors.New("failed to update data")
+		return
+	}
+
+	tx.Commit()
+	return
+}
+
+func (s *defaultUser) UserRegister(ctx context.Context, req model.RegisterUserRequest) (resp model.RegisterUserResponse, err error) {
+	userdata, _ := s.userRepo.GetUserByEmail(ctx, req.Email)
+	if userdata.Email != "" {
+		err = errors.New("email already exists")
+		fmt.Println("email already exists")
+		return
+	}
+	passwordByrpt := HashPassword(req.Password)
+	createUser := userdb.User{
+		Username: req.Username,
+		Password: passwordByrpt,
+		Email:    req.Email,
+	}
+	tx := s.userRepo.BeginTrans(ctx)
+	err = s.userRepo.CreateUser(ctx, tx, &createUser)
+	if err != nil {
+		tx.Rollback()
+		err = errors.New("failed create data user")
+		fmt.Println("failed create data user")
+		return
+	}
+	tx.Commit()
+
+	otpReq := model.OtpRequest{
+		Email: req.Email,
+	}
+
+	err = s.ResendOtp(ctx, otpReq)
+	if err != nil {
+		s.userRepo.DeleteUser(ctx, &createUser)
+		return
+	}
+
+	resp.Email = req.Email
 	return
 }
 
 func (s *defaultUser) ResendOtp(ctx context.Context, req model.OtpRequest) (err error) {
 	userData, err := s.userRepo.GetUserByEmail(ctx, req.Email)
 	if err != nil {
+		fmt.Println("Error getting Email", err.Error())
 		err = customError.ErrNotFound
-		fmt.Println("Error getting Email", err)
 		return
 	}
 
-	if !userData.IsVerifyAccount {
-		otpMessage, err := auth.GenerateOTP(userData.Email)
-		if err != nil {
-			err = errors.New("failed to generate otp")
-			fmt.Println("failed to generate otp")
-			return err
-		}
-
-		utilityData := core.SetUtilityRequest{
-			Key:      userData.Email,
-			Value:    otpMessage,
-			Duration: 180,
-		}
-
-		_, err = s.coreRepo.SetUtility(ctx, utilityData)
-		if err != nil {
-			err = errors.New("failed to set utility")
-			fmt.Println("failed to set utility")
-			return err
-		}
-
-		emailResponse := core.SendEmailRequest{
-			To:       userData.Email,
-			FromName: "Admin Warehouse Management",
-			Title:    "Kode OTP",
-			Message: fmt.Sprintf(`<p>Hi,</p>
-			<p>Terima kasih telah memilih Aplikasi Kami. Gunakan OTP berikut untuk menyelesaikan prosedur Pendaftaran Anda. OTP berlaku selama 3 menit</p><br/>
-			<h2>Kode OTP: %s</h2><br/>
-			<p>Warehouse Management System</p>`, otpMessage),
-		}
-
-		_, err = s.coreRepo.SendEmail(ctx, emailResponse)
-		if err != nil {
-			err = errors.New("failed to send email")
-			fmt.Println("failed to send email")
-			return err
-		}
-
-	} else {
-		err = errors.New("your account has been verified")
+	if userData.IsVerifyAccount {
 		fmt.Println("your account has been verified")
+		err = errors.New("your account has been verified")
 		return err
 	}
+
+	otpMessage := generate.GenerateOTP()
+	if err != nil {
+		fmt.Println("failed to generate otp: ", err.Error())
+		err = errors.New("failed to generate otp")
+		return err
+	}
+
+	utilityData := core.SetUtilityRequest{
+		Key:      userData.Email,
+		Value:    otpMessage,
+		Duration: 180,
+	}
+
+	_, err = s.coreRepo.SetUtility(ctx, utilityData)
+	if err != nil {
+		fmt.Println("failed to set utility: ", err.Error())
+		err = errors.New("failed to set utility")
+		return err
+	}
+
+	emailBody, _ := generate.GenerateEmailOTP(userData.Username, otpMessage)
+	emailResponse := core.SendEmailRequest{
+		To:       userData.Email,
+		FromName: "DigiHouse Indonesia",
+		Title:    "Verifikasi OTP untuk Akun Anda",
+		Message:  emailBody,
+	}
+
+	_, err = s.coreRepo.SendEmail(ctx, emailResponse)
+	if err != nil {
+		fmt.Println("failed to send email: ", err.Error())
+		err = errors.New("failed to send email")
+		return err
+	}
+
 	return
 }
 
 func (s *defaultUser) Login(ctx context.Context, req model.LoginRequest) (resp model.LoginResponse, err error) {
 	user, err := s.userRepo.GetUserByEmail(ctx, req.Email)
 	if err != nil {
-		err = errors.New("Email Not Found")
+		err = errors.New("email not found")
 		return
 	}
 
 	err = ComparePassword(user.Password, req.Password)
 	if err != nil {
-		err = errors.New("Invalid Password")
+		err = errors.New("invalid password")
 		return
 	}
 
@@ -212,5 +261,45 @@ func (s *defaultUser) Login(ctx context.Context, req model.LoginRequest) (resp m
 		Name:   user.Username,
 		Token:  token,
 	}
+	return
+}
+
+func (s *defaultUser) VerificationUser(ctx context.Context, req model.VerificationUserRequest) (err error) {
+	respData, err := s.coreRepo.GetUtilityData(ctx, req.Email)
+	if err != nil {
+		err = errors.New("failed verification otp")
+		fmt.Println("timeout request", err.Error())
+		return
+	}
+
+	if respData.Code != http.StatusOK {
+		err = customError.ErrOTPWrong
+		fmt.Println("otp is invalid")
+		return
+	}
+	if req.Otp != respData.Data.Value {
+		err = customError.ErrOTPWrong
+		fmt.Println("otp is wrong")
+		return
+	}
+
+	userData, err := s.userRepo.GetUserByEmail(ctx, req.Email)
+	if err != nil {
+		fmt.Println("error getting user", err.Error())
+		err = customError.ErrNotFound
+		return
+	}
+
+	tx := s.userRepo.BeginTrans(ctx)
+	userData.IsVerifyAccount = true
+	err = s.userRepo.UpdateUser(ctx, tx, userData)
+	if err != nil {
+		tx.Rollback()
+		fmt.Println("error updating user", err.Error())
+		err = errors.New("failed to verification otp")
+		return
+	}
+
+	tx.Commit()
 	return
 }

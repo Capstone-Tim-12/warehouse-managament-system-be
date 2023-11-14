@@ -1,13 +1,17 @@
 package warehousedb
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type WareHouseImg struct {
 	ID        int `gorm:"primarykey"`
 	Image     string
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt time.Time
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	DeletedAt      gorm.DeletedAt `gorm:"index"`
 }
 
 type Warehouse struct {
@@ -27,6 +31,6 @@ type Warehouse struct {
 	PaymentAnnual  bool
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
-	DeletedAt      time.Time
+	DeletedAt      gorm.DeletedAt `gorm:"index"`
 	WareHouseImg   []WareHouseImg
 }

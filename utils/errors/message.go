@@ -12,4 +12,5 @@ var (
 	ErrRegisterUserDatabase = errors.New("error register user database")
 	ErrNotFound             = errors.New("data dot found")
 	ErrBadRequest           = errors.New("bad request")
+	ErrOTPWrong             = errors.New("otp is wrong")
 )

@@ -82,12 +82,39 @@ func (h *UserHandler) RegisterUserData(c echo.Context) (err error) {
 	return response.NewSuccessResponse(c, nil)
 }
 
+func (h *UserHandler) RegisterUser(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	var req model.RegisterUserRequest
+	err = c.Bind(&req)
+	if err != nil {
+		err = response.NewErrorResponse(c, err)
+		fmt.Println("error bind register user data: ", err)
+		return
+	}
+	if req.Email == "" {
+		err = response.NewErrorResponse(c, errors.ErrBadRequest)
+		fmt.Println("email is empty ", err)
+		return
+	}
+	registerResponse, err := h.userUsecase.UserRegister(ctx, req)
+	if err != nil {
+		err = response.NewErrorResponse(c, err)
+		return
+	}
+	return response.NewSuccessResponse(c, registerResponse)
+}
+
 func (h *UserHandler) ResendUserOTP(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	var req model.OtpRequest
 
 	err = c.Bind(&req)
-
+	if err != nil {
+		err = response.NewErrorResponse(c, err)
+		fmt.Println("error bind  data: ", err)
+		return
+	}
+	
 	if req.Email == "" {
 		err = response.NewErrorResponse(c, errors.ErrBadRequest)
 		fmt.Println("email is empty ", err)
@@ -107,7 +134,11 @@ func (h *UserHandler) LoginUser(c echo.Context) (err error) {
 	var req model.LoginRequest
 
 	err = c.Bind(&req)
-
+	if err != nil {
+		err = response.NewErrorResponse(c, err)
+		fmt.Println("error bind  data: ", err)
+		return
+	}
 	if req.Email == "" {
 		err = response.NewErrorResponse(c, errors.ErrBadRequest)
 		fmt.Println("Email is empty ", err)
@@ -126,4 +157,26 @@ func (h *UserHandler) LoginUser(c echo.Context) (err error) {
 		return
 	}
 	return response.NewSuccessResponse(c, userResponse)
+}
+
+func (h *UserHandler) VerificationOtpUser(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	var req model.VerificationUserRequest
+	err = c.Bind(&req)
+	if err != nil {
+		err = response.NewErrorResponse(c, err)
+		fmt.Println("error bind register user data: ", err)
+		return
+	}
+	if req.Email == "" {
+		err = response.NewErrorResponse(c, errors.ErrBadRequest)
+		fmt.Println("email is empty ", err)
+		return
+	}
+	err = h.userUsecase.VerificationUser(ctx, req)
+	if err != nil {
+		err = response.NewErrorResponse(c, err)
+		return
+	}
+	return response.NewSuccessResponse(c, nil)
 }
