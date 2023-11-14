@@ -13,7 +13,7 @@ type RegisterDataRequest struct {
 	Work        string    `json:"work"`
 	Citizenship string    `json:"citizenship"`
 	ProvinceID  string    `json:"provinceId"`
-	RegencyID   string    `json:"regionId"`
+	RegencyID   string    `json:"regencyId"`
 	DistrictID  string    `json:"districtId"`
 }
 

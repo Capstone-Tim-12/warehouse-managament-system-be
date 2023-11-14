@@ -109,7 +109,12 @@ func (h *UserHandler) ResendUserOTP(c echo.Context) (err error) {
 	var req model.OtpRequest
 
 	err = c.Bind(&req)
-
+	if err != nil {
+		err = response.NewErrorResponse(c, err)
+		fmt.Println("error bind  data: ", err)
+		return
+	}
+	
 	if req.Email == "" {
 		err = response.NewErrorResponse(c, errors.ErrBadRequest)
 		fmt.Println("email is empty ", err)
@@ -122,6 +127,36 @@ func (h *UserHandler) ResendUserOTP(c echo.Context) (err error) {
 		return
 	}
 	return response.NewSuccessResponse(c, nil)
+}
+
+func (h *UserHandler) LoginUser(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	var req model.LoginRequest
+
+	err = c.Bind(&req)
+	if err != nil {
+		err = response.NewErrorResponse(c, err)
+		fmt.Println("error bind  data: ", err)
+		return
+	}
+	if req.Email == "" {
+		err = response.NewErrorResponse(c, errors.ErrBadRequest)
+		fmt.Println("Email is empty ", err)
+		return
+	}
+
+	if req.Password == "" {
+		err = response.NewErrorResponse(c, errors.ErrBadRequest)
+		fmt.Println("Password is empty ", err)
+		return
+	}
+
+	userResponse, err := h.userUsecase.Login(ctx, req)
+	if err != nil {
+		err = response.NewErrorResponse(c, err)
+		return
+	}
+	return response.NewSuccessResponse(c, userResponse)
 }
 
 func (h *UserHandler) VerificationOtpUser(c echo.Context) (err error) {

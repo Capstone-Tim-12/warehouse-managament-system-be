@@ -1,6 +1,10 @@
 package userdb
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Role string
 
@@ -19,7 +23,7 @@ type User struct {
 	Role             Role
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
-	DeletedAt        time.Time
+	DeletedAt        gorm.DeletedAt `gorm:"index"`
 	UserDetail       UserDetail
 }
 
@@ -41,5 +45,5 @@ type UserDetail struct {
 	DistrictID   string
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
-	DeletedAt    time.Time
+	DeletedAt    gorm.DeletedAt `gorm:"index"`
 }

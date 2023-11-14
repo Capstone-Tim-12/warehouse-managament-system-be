@@ -35,10 +35,8 @@ func NewWrapper() CoreWrapper {
 }
 
 func getRequestHeaders(ctx context.Context) (headers http.Header) {
-
 	headers = http.Header{
 		"Content-Type": []string{"application/json"},
-		"key":          []string{os.Getenv("RAJA_ONGKIR_TOKEN")},
 	}
 
 	return
