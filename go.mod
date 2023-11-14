@@ -14,6 +14,7 @@ require (
 require (
 	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
+	github.com/golang-jwt/jwt/v5 v5.1.0
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect

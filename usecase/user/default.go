@@ -191,3 +191,26 @@ func (s *defaultUser) ResendOtp(ctx context.Context, req model.OtpRequest) (err 
 	}
 	return
 }
+
+func (s *defaultUser) Login(ctx context.Context, req model.LoginRequest) (resp model.LoginResponse, err error) {
+	user, err := s.userRepo.GetUserByEmail(ctx, req.Email)
+	if err != nil {
+		err = errors.New("Email Not Found")
+		return
+	}
+
+	err = ComparePassword(user.Password, req.Password)
+	if err != nil {
+		err = errors.New("Invalid Password")
+		return
+	}
+
+	token := CreateToken(int(user.ID), string(user.Role))
+
+	resp = model.LoginResponse{
+		UserId: user.ID,
+		Name:   user.Username,
+		Token:  token,
+	}
+	return
+}

@@ -28,6 +28,7 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	e.GET("/user/district/:regencyId", r.UserHandler.GetDistricByRegencyId)
 	e.POST("/user/register-data", r.UserHandler.RegisterUserData)
 	e.POST("/user/resend-otp", r.UserHandler.ResendUserOTP)
+	e.POST("/user/login", r.UserHandler.LoginUser)
 
 	return r
 }

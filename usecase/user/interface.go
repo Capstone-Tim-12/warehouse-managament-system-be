@@ -12,4 +12,5 @@ type UserUsecase interface {
 	GetDistricByRegencyId(ctx context.Context, id string) (resp []model.RegionResponse, err error)
 	RegisterData(ctx context.Context, req model.RegisterDataRequest) (err error)
 	ResendOtp(ctx context.Context, req model.OtpRequest) (err error)
+	Login(ctx context.Context, req model.LoginRequest) (resp model.LoginResponse, err error)
 }
