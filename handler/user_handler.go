@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/user"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/user/model"
@@ -67,9 +68,9 @@ func (h *UserHandler) RegisterUserData(c echo.Context) (err error) {
 		return
 	}
 
-	if req.Email == "" {
+	if strings.Contains(req.Email, "@" ) {
 		err = response.NewErrorResponse(c, errors.ErrBadRequest)
-		fmt.Println("email is empty ", err)
+		fmt.Println("email not valid")
 		return
 	}
 
@@ -88,12 +89,12 @@ func (h *UserHandler) RegisterUser(c echo.Context) (err error) {
 	err = c.Bind(&req)
 	if err != nil {
 		err = response.NewErrorResponse(c, err)
-		fmt.Println("error bind register user data: ", err)
+		fmt.Println("error bind register user data: ", err.Error())
 		return
 	}
-	if req.Email == "" {
+	if strings.Contains(req.Email, "@" ) {
 		err = response.NewErrorResponse(c, errors.ErrBadRequest)
-		fmt.Println("email is empty ", err)
+		fmt.Println("email not valid")
 		return
 	}
 	registerResponse, err := h.userUsecase.UserRegister(ctx, req)
@@ -173,7 +174,32 @@ func (h *UserHandler) VerificationOtpUser(c echo.Context) (err error) {
 		fmt.Println("email is empty ", err)
 		return
 	}
-	err = h.userUsecase.VerificationUser(ctx, req)
+	data, err := h.userUsecase.VerificationUser(ctx, req)
+	if err != nil {
+		err = response.NewErrorResponse(c, err)
+		return
+	}
+	return response.NewSuccessResponse(c, data)
+}
+
+func (h *UserHandler) ResetPassword(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	var req model.ResetPasswordRequest
+
+	err = c.Bind(&req)
+	if err != nil {
+		err = response.NewErrorResponse(c, err)
+		fmt.Println("error bind  data: ", err)
+		return
+	}
+	
+	if req.Email == "" {
+		err = response.NewErrorResponse(c, errors.ErrBadRequest)
+		fmt.Println("email is empty ", err)
+		return
+	}
+
+	err = h.userUsecase.ResetPassword(ctx, req)
 	if err != nil {
 		err = response.NewErrorResponse(c, err)
 		return
