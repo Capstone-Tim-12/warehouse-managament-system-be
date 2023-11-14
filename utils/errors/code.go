@@ -18,6 +18,8 @@ func GetCodeError(err error) int {
 		return http.StatusNotFound
 	case ErrBadRequest:
 		return http.StatusBadRequest
+	case ErrOTPWrong:
+		return http.StatusBadRequest
 	default:
 		return http.StatusInternalServerError
 	}
