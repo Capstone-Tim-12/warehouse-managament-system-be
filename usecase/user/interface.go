@@ -13,4 +13,5 @@ type UserUsecase interface {
 	RegisterData(ctx context.Context, req model.RegisterDataRequest) (err error)
 	UserRegister(ctx context.Context, req model.RegisterUserRequest) (resp model.RegisterUserResponse, err error)
 	ResendOtp(ctx context.Context, req model.OtpRequest) (err error)
+	VerificationUser(ctx context.Context, req model.VerificationUserRequest) (err error)
 }

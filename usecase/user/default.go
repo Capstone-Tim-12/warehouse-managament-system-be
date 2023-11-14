@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/regiondb"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/userdb"
@@ -163,7 +164,7 @@ func (s *defaultUser) UserRegister(ctx context.Context, req model.RegisterUserRe
 	otpReq := model.OtpRequest{
 		Email: req.Email,
 	}
-	
+
 	err = s.ResendOtp(ctx, otpReq)
 	return
 }
@@ -218,6 +219,25 @@ func (s *defaultUser) ResendOtp(ctx context.Context, req model.OtpRequest) (err 
 		err = errors.New("your account has been verified")
 		fmt.Println("your account has been verified")
 		return err
+	}
+	return
+}
+
+func (s *defaultUser) VerificationUser(ctx context.Context, req model.VerificationUserRequest) (err error) {
+	respData, err := s.coreRepo.GetUtilityData(ctx, req.Email)
+	if err != nil {
+		err = errors.New("failed verification otp")
+		fmt.Println("timeout request", err.Error())
+		return
+	}
+
+	if respData.Code != http.StatusOK {
+		err = customError.ErrOTPWrong
+		fmt.Println("otp is invalid")
+	}
+	if req.Otp != respData.Data.Value {
+		err= customError.ErrOTPWrong
+		fmt.Println("otp is wrong")
 	}
 	return
 }
