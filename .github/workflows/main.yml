@@ -51,5 +51,6 @@ jobs:
               -e MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
               -e MYSQL_PORT=${{ secrets.MYSQL_PORT }} \
               -e MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }} \
+              -e CORE_HOST=${{ secrets.CORE_HOST }} \
               --name warehouse-apps \
               fadilahonespot/warehouse:1.0.0
