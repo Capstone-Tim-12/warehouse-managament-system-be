@@ -140,7 +140,7 @@ func (s *defaultUser) RegisterData(ctx context.Context, req model.RegisterDataRe
 	return
 }
 
-func (s *defaultUser) UserRegister(ctx context.Context, req model.RegisterUserRequest) (resp model.RegionResponse, err error) {
+func (s *defaultUser) UserRegister(ctx context.Context, req model.RegisterUserRequest) (resp model.RegisterUserResponse, err error) {
 	userdata, _ := s.userRepo.GetUserByEmail(ctx, req.Email)
 	if userdata.Email != "" {
 		err = errors.New("email already exists")
@@ -159,6 +159,12 @@ func (s *defaultUser) UserRegister(ctx context.Context, req model.RegisterUserRe
 		fmt.Println("failed create data user")
 		return
 	}
+
+	otpReq := model.OtpRequest{
+		Email: req.Email,
+	}
+	
+	err = s.ResendOtp(ctx, otpReq)
 	return
 }
 
