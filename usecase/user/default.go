@@ -10,6 +10,7 @@ import (
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/userdb"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/http/core"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/user/model"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/constrans"
 	customError "github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/errors"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/generate"
 )
@@ -20,7 +21,7 @@ type defaultUser struct {
 	coreRepo   core.CoreWrapper
 }
 
-func NewUserUsecase(regionRepo regiondb.RegionRepository, userRepo userdb.UserRepository, coreRepo core.CoreWrapper) *defaultUser {
+func NewUserUsecase(regionRepo regiondb.RegionRepository, userRepo userdb.UserRepository, coreRepo core.CoreWrapper) UserUsecase {
 	return &defaultUser{
 		regionRepo: regionRepo,
 		userRepo:   userRepo,
@@ -95,6 +96,12 @@ func (s *defaultUser) RegisterData(ctx context.Context, req model.RegisterDataRe
 		return
 	}
 
+	if userData.IsVerifyIdentity {
+		fmt.Println("user has verify identity")
+		err = customError.ErrUserHasVerfication
+		return
+	}
+
 	_, err = s.regionRepo.GetProvinceById(ctx, req.ProvinceID)
 	if err != nil {
 		fmt.Println("Error getting province id", err.Error())
@@ -164,6 +171,7 @@ func (s *defaultUser) UserRegister(ctx context.Context, req model.RegisterUserRe
 		Username: req.Username,
 		Password: passwordByrpt,
 		Email:    req.Email,
+		Role:     userdb.RoleUser,
 	}
 	tx := s.userRepo.BeginTrans(ctx)
 	err = s.userRepo.CreateUser(ctx, tx, &createUser)
@@ -264,7 +272,7 @@ func (s *defaultUser) Login(ctx context.Context, req model.LoginRequest) (resp m
 	return
 }
 
-func (s *defaultUser) VerificationUser(ctx context.Context, req model.VerificationUserRequest) (err error) {
+func (s *defaultUser) VerificationUser(ctx context.Context, req model.VerificationUserRequest) (resp model.VerificationUserResponse, err error) {
 	respData, err := s.coreRepo.GetUtilityData(ctx, req.Email)
 	if err != nil {
 		err = errors.New("failed verification otp")
@@ -292,11 +300,68 @@ func (s *defaultUser) VerificationUser(ctx context.Context, req model.Verificati
 
 	tx := s.userRepo.BeginTrans(ctx)
 	userData.IsVerifyAccount = true
+
 	err = s.userRepo.UpdateUser(ctx, tx, userData)
 	if err != nil {
 		tx.Rollback()
 		fmt.Println("error updating user", err.Error())
 		err = errors.New("failed to verification otp")
+		return
+	}
+
+	verifyId := generate.GenerateRandomString(25)
+	reqSet := core.SetUtilityRequest{
+		Key:      constrans.KeyVerify + req.Email,
+		Value:    verifyId,
+		Duration: 180,
+	}
+
+	_, err = s.coreRepo.SetUtility(ctx, reqSet)
+	if err != nil {
+		fmt.Println("failed set utility", err.Error())
+		err = errors.New("failed to verification otp")
+		return
+	}
+
+	resp.VerfyId = verifyId
+	resp.Email = userData.Email
+	tx.Commit()
+	return
+}
+
+func (s *defaultUser) ResetPassword(ctx context.Context, req model.ResetPasswordRequest) (err error) {
+	key := constrans.KeyVerify + req.Email
+	respData, err := s.coreRepo.GetUtilityData(ctx, key)
+	if err != nil {
+		err = errors.New("failed verification otp")
+		fmt.Println("timeout request", err.Error())
+		return
+	}
+
+	if respData.Code != http.StatusOK {
+		err = customError.ErrVerifyIdIsInvalid
+		fmt.Println("verifyId is invalid")
+		return
+	}
+	if req.VerifyId != respData.Data.Value {
+		err = customError.ErrVerifyIdIsInvalid
+		fmt.Println("verifyId is wrong")
+		return
+	}
+	userData, err := s.userRepo.GetUserByEmail(ctx, req.Email)
+	if err != nil {
+		err = errors.New("email not found")
+		return
+	}
+
+	passHas := HashPassword(req.NewPassword)
+	userData.Password = passHas
+	tx := s.userRepo.BeginTrans(ctx)
+	err = s.userRepo.UpdateUser(ctx, tx, userData)
+	if err != nil {
+		tx.Rollback()
+		fmt.Println("error update user")
+		err = errors.New("error reset password")
 		return
 	}
 

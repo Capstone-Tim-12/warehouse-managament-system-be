@@ -13,4 +13,6 @@ var (
 	ErrNotFound             = errors.New("data dot found")
 	ErrBadRequest           = errors.New("bad request")
 	ErrOTPWrong             = errors.New("otp is wrong")
+	ErrVerifyIdIsInvalid    = errors.New("verify id is invalid")
+	ErrUserHasVerfication   = errors.New("user has verify identity")
 )

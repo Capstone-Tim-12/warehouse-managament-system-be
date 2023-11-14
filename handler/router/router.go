@@ -31,5 +31,6 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	e.POST("/user/resend-otp", r.UserHandler.ResendUserOTP)
 	e.POST("/user/login", r.UserHandler.LoginUser)
 	e.POST("/user/otp-verify", r.UserHandler.VerificationOtpUser)
+	e.POST("/user/reset-password", r.UserHandler.ResetPassword)
 	return r
 }

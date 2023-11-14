@@ -20,6 +20,8 @@ func GetCodeError(err error) int {
 		return http.StatusBadRequest
 	case ErrOTPWrong:
 		return http.StatusBadRequest
+	case ErrUserHasVerfication:
+		return http.StatusBadRequest
 	default:
 		return http.StatusInternalServerError
 	}
