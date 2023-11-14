@@ -1,4 +1,4 @@
-package costrans
+package constrans
 
 const (
 	KeyPassword = "alterra-accademy-123"

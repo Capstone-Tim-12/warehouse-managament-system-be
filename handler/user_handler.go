@@ -91,6 +91,24 @@ func (h *UserHandler) RegisterUser(c echo.Context) (err error) {
 		fmt.Println("error bind register user data: ", err)
 		return
 	}
+	if req.Email == "" {
+		err = response.NewErrorResponse(c, errors.ErrBadRequest)
+		fmt.Println("email is empty ", err)
+		return
+	}
+	registerResponse, err := h.userUsecase.UserRegister(ctx, req)
+	if err != nil {
+		err = response.NewErrorResponse(c, err)
+		return
+	}
+	return response.NewSuccessResponse(c, registerResponse)
+}
+
+func (h *UserHandler) ResendUserOTP(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	var req model.OtpRequest
+
+	err = c.Bind(&req)
 
 	if req.Email == "" {
 		err = response.NewErrorResponse(c, errors.ErrBadRequest)
@@ -98,11 +116,10 @@ func (h *UserHandler) RegisterUser(c echo.Context) (err error) {
 		return
 	}
 
-	registerResponse, err := h.userUsecase.UserRegister(ctx, req)
+	err = h.userUsecase.ResendOtp(ctx, req)
 	if err != nil {
 		err = response.NewErrorResponse(c, err)
 		return
 	}
-
-	return response.NewSuccessResponse(c, registerResponse)
+	return response.NewSuccessResponse(c, nil)
 }

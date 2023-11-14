@@ -7,21 +7,25 @@ import (
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/regiondb"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/userdb"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/http/core"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/user/model"
-	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/byrpt"
-	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/costrans"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/auth"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/bycrpt"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/constrans"
 	customError "github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/errors"
 )
 
 type defaultUser struct {
 	regionRepo regiondb.RegionRepository
 	userRepo   userdb.UserRepository
+	coreRepo   core.CoreWrapper
 }
 
-func NewUserUsecase(regionRepo regiondb.RegionRepository, userRepo userdb.UserRepository) *defaultUser {
+func NewUserUsecase(regionRepo regiondb.RegionRepository, userRepo userdb.UserRepository, coreRepo core.CoreWrapper) *defaultUser {
 	return &defaultUser{
 		regionRepo: regionRepo,
 		userRepo:   userRepo,
+		coreRepo:   coreRepo,
 	}
 }
 
@@ -143,7 +147,7 @@ func (s *defaultUser) UserRegister(ctx context.Context, req model.RegisterUserRe
 		fmt.Println("email already exists")
 		return
 	}
-	passwordByrpt := byrpt.HashSHA256(costrans.KeyPassword, req.Password)
+	passwordByrpt := bycrpt.HashSHA256(constrans.KeyPassword, req.Password)
 	createUser := userdb.User{
 		Username: req.Username,
 		Password: passwordByrpt,
@@ -154,6 +158,60 @@ func (s *defaultUser) UserRegister(ctx context.Context, req model.RegisterUserRe
 		err = errors.New("failed create data user")
 		fmt.Println("failed create data user")
 		return
+	}
+	return
+}
+
+func (s *defaultUser) ResendOtp(ctx context.Context, req model.OtpRequest) (err error) {
+	userData, err := s.userRepo.GetUserByEmail(ctx, req.Email)
+	if err != nil {
+		err = customError.ErrNotFound
+		fmt.Println("Error getting Email", err)
+		return
+	}
+
+	if !userData.IsVerifyAccount {
+		otpMessage, err := auth.GenerateOTP(userData.Email)
+		if err != nil {
+			err = errors.New("failed to generate otp")
+			fmt.Println("failed to generate otp")
+			return err
+		}
+
+		utilityData := core.SetUtilityRequest{
+			Key:      userData.Email,
+			Value:    otpMessage,
+			Duration: 180,
+		}
+
+		_, err = s.coreRepo.SetUtility(ctx, utilityData)
+		if err != nil {
+			err = errors.New("failed to set utility")
+			fmt.Println("failed to set utility")
+			return err
+		}
+
+		emailResponse := core.SendEmailRequest{
+			To:       userData.Email,
+			FromName: "Admin Warehouse Management",
+			Title:    "Kode OTP",
+			Message: fmt.Sprintf(`<p>Hi,</p>
+			<p>Terima kasih telah memilih Aplikasi Kami. Gunakan OTP berikut untuk menyelesaikan prosedur Pendaftaran Anda. OTP berlaku selama 3 menit</p><br/>
+			<h2>Kode OTP: %s</h2><br/>
+			<p>Warehouse Management System</p>`, otpMessage),
+		}
+
+		_, err = s.coreRepo.SendEmail(ctx, emailResponse)
+		if err != nil {
+			err = errors.New("failed to send email")
+			fmt.Println("failed to send email")
+			return err
+		}
+
+	} else {
+		err = errors.New("your account has been verified")
+		fmt.Println("your account has been verified")
+		return err
 	}
 	return
 }
