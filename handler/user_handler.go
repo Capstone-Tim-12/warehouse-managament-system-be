@@ -92,7 +92,7 @@ func (h *UserHandler) RegisterUser(c echo.Context) (err error) {
 		fmt.Println("error bind register user data: ", err.Error())
 		return
 	}
-	if strings.Contains(req.Email, "@" ) {
+	if !strings.Contains(req.Email, "@" ) {
 		err = response.NewErrorResponse(c, errors.ErrBadRequest)
 		fmt.Println("email not valid")
 		return
