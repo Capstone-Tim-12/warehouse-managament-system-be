@@ -13,4 +13,6 @@ type UserRepository interface {
 	UpdateUser(ctx context.Context, tx *gorm.DB, req *User) (err error)
 	BeginTrans(ctx context.Context) *gorm.DB 
 	DeleteUser(ctx context.Context, req *User) (err error)
+	GetUserByUsername(ctx context.Context, username string) (resp *User, err error)
+	GetUserByEmailUsername(ctx context.Context, email, username string) (resp *User, err error)
 }

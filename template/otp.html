@@ -2,61 +2,54 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifikasi OTP</title>
+    <title>Kode OTP Anda</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #ffffff; /* Latar belakang putih */
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            text-align: center;
         }
-
         .container {
-            max-width: 400px;
-            background-color: #ffffff; /* Latar belakang putih */
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            color: #333; /* Teks hitam */
         }
-
-        h2 {
-            color: #333; /* Teks hitam */
-            margin-bottom: 20px;
+        .header {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px;
+            border-radius: 8px 8px 0 0;
         }
-
-        p {
-            margin-bottom: 10px;
+        .content {
+            padding: 20px;
         }
-
-        strong {
-            color: #e44d26;
-        }
-
         .footer {
-            margin-top: 20px;
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px;
+            border-radius: 0 0 8px 8px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Verifikasi OTP untuk Akun Anda</h2>
-        <p>Hi [Nama Pengguna],</p>
-        <p>Terima kasih telah memilih layanan kami. Untuk melanjutkan proses verifikasi dan melindungi akun Anda, harap masukkan OTP berikut:</p>
-        <p><strong>Kode Verifikasi:</strong> [Kode OTP]</p>
-        <p>Pastikan untuk tidak membagikan kode ini kepada siapa pun. Jika Anda tidak mencoba melakukan verifikasi, harap segera hubungi dukungan pelanggan kami.</p>
+        <div class="header">
+            <h2>DigiHouse Indonesia</h2>
+        </div>
+        <div class="content">
+            <p>Haloo, [Nama Pengguna]</p>
+            <p>Silakan gunakan kode berikut untuk verifikasi:</p>
+            <h3 style="color: #4CAF50;">[Kode OTP]</h3>
+            <p>Jangan berikan kode ini kepada siapapun, termasuk pihak yang mengatasnamakan kami.</p>
+        </div>
         <div class="footer">
-            <p>Terima kasih,<br>
-            <strong>DigiHouse</strong><br>
-            Dukungan Pelanggan</p>
-            <p>Jika Anda memiliki pertanyaan atau membutuhkan bantuan, hubungi kami di customer@digihouse.com atau 021-8887000.</p>
+            <p>Email ini dikirimkan secara otomatis. Mohon tidak membalas email ini.</p>
         </div>
     </div>
 </body>

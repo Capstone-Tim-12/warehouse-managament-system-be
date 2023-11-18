@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/handler"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/handler/middleware"
 	"github.com/labstack/echo/v4"
 )
 
@@ -21,6 +22,7 @@ func (r *Router) Validate() {
 }
 
 func (r *Router) SetupRouter(e *echo.Echo) *Router {
+	middleware.SetupMiddleware(e)
 	e.GET("/ping", r.PingHandler.PingTestConnection)
 
 	e.GET("/user/province", r.UserHandler.GetAllProvince)

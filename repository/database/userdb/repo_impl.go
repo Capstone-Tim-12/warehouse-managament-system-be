@@ -19,6 +19,16 @@ func (r *defaultRepo) GetUserByEmail(ctx context.Context, email string) (resp *U
 	return
 }
 
+func (r *defaultRepo) GetUserByUsername(ctx context.Context, username string) (resp *User, err error) {
+	err = r.db.WithContext(ctx).Take(&resp, "username = ?", username).Error
+	return
+}
+
+func (r *defaultRepo) GetUserByEmailUsername(ctx context.Context, email, username string) (resp *User, err error) {
+	err = r.db.WithContext(ctx).Take(&resp, "email = ? AND username = ?", email, username).Error
+	return
+}
+
 func (r *defaultRepo) CreateDetail(ctx context.Context, tx *gorm.DB, req *UserDetail) (err error) {
 	err = tx.WithContext(ctx).Create(req).Error
 	return

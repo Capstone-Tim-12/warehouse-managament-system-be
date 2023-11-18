@@ -3,7 +3,6 @@ package response
 import (
 	"net/http"
 
-	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/errors"
 	"github.com/labstack/echo/v4"
 )
 
@@ -21,10 +20,10 @@ func NewSuccessResponse(c echo.Context, data interface{}) error {
 	})
 }
 
-func NewErrorResponse(c echo.Context, err error) error {
-	return c.JSON(errors.GetCodeError(err), BaseResponse{
+func ResponseError(code int, message string) BaseResponse {
+	return BaseResponse{
 		Status:  false,
-		Message: err.Error(),
-		Data:    nil,
-	})
+		Message: message,
+		Data:    struct{}{},
+	}
 }
