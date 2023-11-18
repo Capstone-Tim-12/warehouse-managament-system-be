@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -11,7 +10,7 @@ import (
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/http/core"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/user/model"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/constrans"
-	customError "github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/errors"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/errors"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/generate"
 )
 
@@ -32,7 +31,7 @@ func NewUserUsecase(regionRepo regiondb.RegionRepository, userRepo userdb.UserRe
 func (s *defaultUser) GetAllProvince(ctx context.Context) (resp []model.RegionResponse, err error) {
 	data, err := s.regionRepo.FindAllProvince(ctx)
 	if err != nil {
-		err = errors.New("failed to get all province")
+		err = errors.New(http.StatusInternalServerError, "failed to get all province")
 		return
 	}
 	for i := 0; i < len(data); i++ {
@@ -47,13 +46,13 @@ func (s *defaultUser) GetAllProvince(ctx context.Context) (resp []model.RegionRe
 func (s *defaultUser) GetRegencyByProvinceId(ctx context.Context, id string) (resp []model.RegionResponse, err error) {
 	_, err = s.regionRepo.GetProvinceById(ctx, id)
 	if err != nil {
-		err = errors.New("province not found")
+		err = errors.New(http.StatusNotFound, "province not found")
 		return
 	}
 
 	data, err := s.regionRepo.FindRegencyByProvinceId(ctx, id)
 	if err != nil {
-		err = errors.New("failed to get data regency")
+		err = errors.New(http.StatusNotFound, "failed to get data regency")
 		return
 	}
 
@@ -69,13 +68,13 @@ func (s *defaultUser) GetRegencyByProvinceId(ctx context.Context, id string) (re
 func (s *defaultUser) GetDistricByRegencyId(ctx context.Context, id string) (resp []model.RegionResponse, err error) {
 	_, err = s.regionRepo.GetRegencyById(ctx, id)
 	if err != nil {
-		err = errors.New("regency not found")
+		err = errors.New(http.StatusNotFound, "regency not found")
 		return
 	}
 
 	data, err := s.regionRepo.FindDistrictByRegencyId(ctx, id)
 	if err != nil {
-		err = errors.New("failed to get data distric")
+		err = errors.New(http.StatusNotFound, "failed to get data distric")
 		return
 	}
 
@@ -92,32 +91,32 @@ func (s *defaultUser) RegisterData(ctx context.Context, req model.RegisterDataRe
 	userData, err := s.userRepo.GetUserByEmail(ctx, req.Email)
 	if err != nil {
 		fmt.Println("Error getting Email", err.Error())
-		err = customError.ErrNotFound
+		err = errors.New(http.StatusNotFound, "email not found")
 		return
 	}
 
 	if userData.IsVerifyIdentity {
 		fmt.Println("user has verify identity")
-		err = customError.ErrUserHasVerfication
+		err = errors.New(http.StatusBadRequest, "user has verify identity")
 		return
 	}
 
 	_, err = s.regionRepo.GetProvinceById(ctx, req.ProvinceID)
 	if err != nil {
 		fmt.Println("Error getting province id", err.Error())
-		err = customError.ErrNotFound
+		err = errors.New(http.StatusNotFound, "province not found")
 		return
 	}
 	_, err = s.regionRepo.GetRegencyById(ctx, req.RegencyID)
 	if err != nil {
 		fmt.Println("Error getting regency id", err.Error())
-		err = customError.ErrNotFound
+		err = errors.New(http.StatusNotFound, "regency not found")
 		return
 	}
 	_, err = s.regionRepo.GetDistrictById(ctx, req.DistrictID)
 	if err != nil {
 		fmt.Println("Error getting regency id", err.Error())
-		err = customError.ErrNotFound
+		err = errors.New(http.StatusNotFound, "district not found")
 		return
 	}
 
@@ -141,7 +140,7 @@ func (s *defaultUser) RegisterData(ctx context.Context, req model.RegisterDataRe
 	err = s.userRepo.CreateDetail(ctx, tx, &createUserData)
 	if err != nil {
 		tx.Rollback()
-		err = errors.New("internal error create user data")
+		err = errors.New(http.StatusInternalServerError, "error create user data")
 		fmt.Println("Internal error create user data")
 		return
 	}
@@ -151,7 +150,7 @@ func (s *defaultUser) RegisterData(ctx context.Context, req model.RegisterDataRe
 	if err != nil {
 		tx.Rollback()
 		fmt.Println("error update user data")
-		err = errors.New("failed to update data")
+		err = errors.New(http.StatusInternalServerError, "failed to update data")
 		return
 	}
 
@@ -160,12 +159,13 @@ func (s *defaultUser) RegisterData(ctx context.Context, req model.RegisterDataRe
 }
 
 func (s *defaultUser) UserRegister(ctx context.Context, req model.RegisterUserRequest) (resp model.RegisterUserResponse, err error) {
-	userdata, _ := s.userRepo.GetUserByEmail(ctx, req.Email)
+	userdata, _ := s.userRepo.GetUserByEmailUsername(ctx, req.Email, req.Username)
 	if userdata.Email != "" {
-		err = errors.New("email already exists")
-		fmt.Println("email already exists")
+		err = errors.New(http.StatusConflict, "email or username already exists")
+		fmt.Println("email or username already exists")
 		return
 	}
+	
 	passwordByrpt := HashPassword(req.Password)
 	createUser := userdb.User{
 		Username: req.Username,
@@ -177,7 +177,7 @@ func (s *defaultUser) UserRegister(ctx context.Context, req model.RegisterUserRe
 	err = s.userRepo.CreateUser(ctx, tx, &createUser)
 	if err != nil {
 		tx.Rollback()
-		err = errors.New("failed create data user")
+		err = errors.New(http.StatusInternalServerError, "failed create data user")
 		fmt.Println("failed create data user")
 		return
 	}
@@ -201,20 +201,20 @@ func (s *defaultUser) ResendOtp(ctx context.Context, req model.OtpRequest) (err 
 	userData, err := s.userRepo.GetUserByEmail(ctx, req.Email)
 	if err != nil {
 		fmt.Println("Error getting Email", err.Error())
-		err = customError.ErrNotFound
+		err = errors.New(http.StatusNotFound, "email not found")
 		return
 	}
 
 	if userData.IsVerifyAccount {
 		fmt.Println("your account has been verified")
-		err = errors.New("your account has been verified")
+		err = errors.New(http.StatusBadRequest, "your account has been verified")
 		return err
 	}
 
 	otpMessage := generate.GenerateOTP()
 	if err != nil {
 		fmt.Println("failed to generate otp: ", err.Error())
-		err = errors.New("failed to generate otp")
+		err = errors.New(http.StatusInternalServerError, "failed to generate otp")
 		return err
 	}
 
@@ -227,7 +227,7 @@ func (s *defaultUser) ResendOtp(ctx context.Context, req model.OtpRequest) (err 
 	_, err = s.coreRepo.SetUtility(ctx, utilityData)
 	if err != nil {
 		fmt.Println("failed to set utility: ", err.Error())
-		err = errors.New("failed to set utility")
+		err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return err
 	}
 
@@ -242,7 +242,7 @@ func (s *defaultUser) ResendOtp(ctx context.Context, req model.OtpRequest) (err 
 	_, err = s.coreRepo.SendEmail(ctx, emailResponse)
 	if err != nil {
 		fmt.Println("failed to send email: ", err.Error())
-		err = errors.New("failed to send email")
+		err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return err
 	}
 
@@ -252,13 +252,13 @@ func (s *defaultUser) ResendOtp(ctx context.Context, req model.OtpRequest) (err 
 func (s *defaultUser) Login(ctx context.Context, req model.LoginRequest) (resp model.LoginResponse, err error) {
 	user, err := s.userRepo.GetUserByEmail(ctx, req.Email)
 	if err != nil {
-		err = errors.New("email not found")
+		err = errors.New(http.StatusNotFound, "email not found")
 		return
 	}
 
 	err = ComparePassword(user.Password, req.Password)
 	if err != nil {
-		err = errors.New("invalid password")
+		err = errors.New(http.StatusBadRequest, "invalid password")
 		return
 	}
 
@@ -275,18 +275,18 @@ func (s *defaultUser) Login(ctx context.Context, req model.LoginRequest) (resp m
 func (s *defaultUser) VerificationUser(ctx context.Context, req model.VerificationUserRequest) (resp model.VerificationUserResponse, err error) {
 	respData, err := s.coreRepo.GetUtilityData(ctx, req.Email)
 	if err != nil {
-		err = errors.New("failed verification otp")
+		err = errors.New(http.StatusInternalServerError, "failed verification otp")
 		fmt.Println("timeout request to utility", err.Error())
 		return
 	}
 
 	if respData.Code != http.StatusOK {
-		err = customError.ErrOTPWrong
+		err = errors.New(http.StatusBadRequest, "wrong verification code")
 		fmt.Println("otp is invalid")
 		return
 	}
 	if req.Otp != respData.Data.Value {
-		err = customError.ErrOTPWrong
+		err = errors.New(http.StatusBadRequest, "wrong verification code")
 		fmt.Println("otp is wrong")
 		return
 	}
@@ -294,7 +294,7 @@ func (s *defaultUser) VerificationUser(ctx context.Context, req model.Verificati
 	userData, err := s.userRepo.GetUserByEmail(ctx, req.Email)
 	if err != nil {
 		fmt.Println("error getting user", err.Error())
-		err = customError.ErrNotFound
+		err = errors.New(http.StatusNotFound, "email not found")
 		return
 	}
 
@@ -305,7 +305,7 @@ func (s *defaultUser) VerificationUser(ctx context.Context, req model.Verificati
 	if err != nil {
 		tx.Rollback()
 		fmt.Println("error updating user", err.Error())
-		err = errors.New("failed to verification otp")
+		err = errors.New(http.StatusInternalServerError, "failed to verification otp")
 		return
 	}
 
@@ -319,7 +319,7 @@ func (s *defaultUser) VerificationUser(ctx context.Context, req model.Verificati
 	_, err = s.coreRepo.SetUtility(ctx, reqSet)
 	if err != nil {
 		fmt.Println("failed set utility", err.Error())
-		err = errors.New("failed to verification otp")
+		err = errors.New(http.StatusInternalServerError, "failed to verification otp")
 		return
 	}
 
@@ -333,24 +333,24 @@ func (s *defaultUser) ResetPassword(ctx context.Context, req model.ResetPassword
 	key := constrans.KeyVerify + req.Email
 	respData, err := s.coreRepo.GetUtilityData(ctx, key)
 	if err != nil {
-		err = errors.New("failed verification otp")
+		err = errors.New(http.StatusInternalServerError, "failed verification otp")
 		fmt.Println("timeout request", err.Error())
 		return
 	}
 
 	if respData.Code != http.StatusOK {
-		err = customError.ErrVerifyIdIsInvalid
+		err = errors.New(http.StatusBadRequest, "invalid verify id")
 		fmt.Println("verifyId is invalid")
 		return
 	}
 	if req.VerifyId != respData.Data.Value {
-		err = customError.ErrVerifyIdIsInvalid
+		err = errors.New(http.StatusBadRequest, "verify id is wrong")
 		fmt.Println("verifyId is wrong")
 		return
 	}
 	userData, err := s.userRepo.GetUserByEmail(ctx, req.Email)
 	if err != nil {
-		err = errors.New("email not found")
+		err = errors.New(http.StatusNotFound, "email not found")
 		return
 	}
 
@@ -361,7 +361,7 @@ func (s *defaultUser) ResetPassword(ctx context.Context, req model.ResetPassword
 	if err != nil {
 		tx.Rollback()
 		fmt.Println("error update user")
-		err = errors.New("error reset password")
+		err = errors.New(http.StatusInternalServerError, "error reset password")
 		return
 	}
 
