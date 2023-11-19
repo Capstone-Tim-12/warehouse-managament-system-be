@@ -205,12 +205,6 @@ func (s *defaultUser) ResendOtp(ctx context.Context, req model.OtpRequest) (err 
 		return
 	}
 
-	if userData.IsVerifyAccount {
-		fmt.Println("your account has been verified")
-		err = errors.New(http.StatusBadRequest, "your account has been verified")
-		return err
-	}
-
 	otpMessage := generate.GenerateOTP()
 	if err != nil {
 		fmt.Println("failed to generate otp: ", err.Error())

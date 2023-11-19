@@ -89,6 +89,11 @@ func (h *UserHandler) RegisterUser(c echo.Context) (err error) {
 		fmt.Println("error bind register user data: ", err.Error())
 		return
 	}
+	if req.Username == "" {
+		err = errors.New(http.StatusBadRequest, "username must be filled in")
+		fmt.Println("username is empty")
+		return
+	}
 	if !strings.Contains(req.Email, "@" ) {
 		err = errors.New(http.StatusBadRequest, "format email is invalid")
 		fmt.Println("email not valid")
