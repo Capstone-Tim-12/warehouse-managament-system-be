@@ -1,12 +1,11 @@
-package regiondb
-
-import "github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/userdb"
+package entity
 
 type Province struct {
 	ID         string `gorm:"size:12;primarykey"`
 	Name       string
 	Regency    []Regency
-	UserDetail []userdb.UserDetail
+	UserDetail []UserDetail
+	Warehouse  []Warehouse
 }
 
 type Regency struct {
@@ -14,7 +13,8 @@ type Regency struct {
 	ProvinceID string
 	Name       string
 	District   []District
-	UserDetail []userdb.UserDetail
+	UserDetail []UserDetail
+	Warehouse  []Warehouse
 }
 
 type District struct {
@@ -22,7 +22,8 @@ type District struct {
 	RegencyID  string
 	Name       string
 	Village    []Village
-	UserDetail []userdb.UserDetail
+	UserDetail []UserDetail
+	Warehouse  []Warehouse
 }
 
 type Village struct {

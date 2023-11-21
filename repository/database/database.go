@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/regiondb"
-	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/userdb"
-	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/warehousedb"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/entity"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -31,15 +29,14 @@ func InitDB() *gorm.DB {
 	}
 
 	if os.Getenv("DB_MIGRATION") == "true" {
-		DB.AutoMigrate(&regiondb.Province{})
-		DB.AutoMigrate(&regiondb.Regency{})
-		DB.AutoMigrate(&regiondb.District{})
-		DB.AutoMigrate(&regiondb.Village{})
-		DB.AutoMigrate(&userdb.User{})
-		DB.AutoMigrate(&userdb.UserDetail{})
-		DB.AutoMigrate(&warehousedb.PaymentScheme{})
-		DB.AutoMigrate(&warehousedb.Warehouse{})
-		DB.AutoMigrate(&warehousedb.WarehouseImg{})
+		DB.AutoMigrate(&entity.Province{})
+		DB.AutoMigrate(&entity.Regency{})
+		DB.AutoMigrate(&entity.District{})
+		DB.AutoMigrate(&entity.Village{})
+		DB.AutoMigrate(&entity.User{})
+		DB.AutoMigrate(&entity.UserDetail{})
+		DB.AutoMigrate(&entity.Warehouse{})
+		DB.AutoMigrate(&entity.WarehouseImg{})
 	}
 
 	return DB
