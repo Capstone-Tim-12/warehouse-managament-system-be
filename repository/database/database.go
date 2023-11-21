@@ -39,7 +39,7 @@ func InitDB() *gorm.DB {
 		DB.AutoMigrate(&userdb.UserDetail{})
 		DB.AutoMigrate(&warehousedb.PaymentScheme{})
 		DB.AutoMigrate(&warehousedb.Warehouse{})
-		DB.AutoMigrate(&warehousedb.WareHouseImg{})
+		DB.AutoMigrate(&warehousedb.WarehouseImg{})
 	}
 
 	return DB

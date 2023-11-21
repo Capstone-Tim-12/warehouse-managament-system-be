@@ -40,10 +40,10 @@ type Warehouse struct {
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
 	DeletedAt       gorm.DeletedAt `gorm:"index"`
-	WareHouseImg    []WareHouseImg
+	WareHouseImg    []WarehouseImg
 }
 
-type WareHouseImg struct {
+type WarehouseImg struct {
 	ID          int `gorm:"primarykey"`
 	Image       string
 	WarehouseID int
