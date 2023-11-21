@@ -6,6 +6,7 @@ import (
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/regiondb"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/userdb"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/warehousedb"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -36,6 +37,9 @@ func InitDB() *gorm.DB {
 		DB.AutoMigrate(&regiondb.Village{})
 		DB.AutoMigrate(&userdb.User{})
 		DB.AutoMigrate(&userdb.UserDetail{})
+		DB.AutoMigrate(&warehousedb.PaymentScheme{})
+		DB.AutoMigrate(&warehousedb.Warehouse{})
+		DB.AutoMigrate(&warehousedb.WarehouseImg{})
 	}
 
 	return DB

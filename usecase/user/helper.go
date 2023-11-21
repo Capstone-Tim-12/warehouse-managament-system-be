@@ -3,6 +3,7 @@ package user
 import (
 	"time"
 
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/constrans"
 	utilsModel "github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/model"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
@@ -16,7 +17,7 @@ func CreateToken(userId int, userRole string) string {
 	payloadParser.ExpiresAt = jwt.NewNumericDate(time.Now().Add(time.Minute * 60))
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payloadParser)
-	t, _ := token.SignedString([]byte("1234"))
+	t, _ := token.SignedString([]byte(constrans.JwtSecret))
 	return t
 }
 
