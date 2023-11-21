@@ -7,9 +7,11 @@ import (
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/user"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/user/model"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/errors"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/response"
 	"github.com/labstack/echo/v4"
+	"github.com/spf13/cast"
 )
 
 type UserHandler struct {
@@ -203,3 +205,14 @@ func (h *UserHandler) ResetPassword(c echo.Context) (err error) {
 	}
 	return response.NewSuccessResponse(c, nil)
 }
+
+func (h *UserHandler) GetProfile(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	clamsData := utils.GetClamsJwt(c)
+	data, err := h.userUsecase.GetProfile(ctx, cast.ToString(clamsData.UserId))
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, data)
+}
+

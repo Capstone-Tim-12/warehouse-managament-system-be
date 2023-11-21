@@ -34,5 +34,9 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	e.POST("/user/login", r.UserHandler.LoginUser)
 	e.POST("/user/otp-verify", r.UserHandler.VerificationOtpUser)
 	e.POST("/user/reset-password", r.UserHandler.ResetPassword)
+
+	sc := e.Group("/in")
+	sc.Use(middleware.JwtMiddleware())
+	sc.GET("/user/profile", r.UserHandler.GetProfile)
 	return r
 }

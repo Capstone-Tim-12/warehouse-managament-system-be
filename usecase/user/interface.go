@@ -16,4 +16,6 @@ type UserUsecase interface {
 	Login(ctx context.Context, req model.LoginRequest) (resp model.LoginResponse, err error)
 	VerificationUser(ctx context.Context, req model.VerificationUserRequest) (resp model.VerificationUserResponse, err error)
 	ResetPassword(ctx context.Context, req model.ResetPasswordRequest) (err error)
+	UpdateUsernameProfile(ctx context.Context, userId string, req model.UpdateUsernameProfileRequest) (err error)
+	GetProfile(ctx context.Context, userId string) (resp model.GetProfileResponse, err error)
 }
