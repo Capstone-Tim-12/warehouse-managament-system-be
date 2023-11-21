@@ -2,9 +2,12 @@ package middleware
 
 import (
 	"net/http"
+	"strings"
 
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/constrans"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/errors"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/response"
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -42,4 +45,29 @@ func errorHandler(err error, c echo.Context) {
 	c.SetRequest(request.WithContext(ctx))
 
 	c.JSON(responseCode, resp)
+}
+
+func JwtMiddleware() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			authHeader := c.Request().Header.Get("Authorization")
+			tokenString := strings.Replace(authHeader, "Bearer ", "", 1)
+
+			token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+					return nil, errors.New(http.StatusUnauthorized, "signature not valid")
+				}
+				return []byte(constrans.JwtSecret), nil
+			})
+
+			if err != nil || !token.Valid {
+				return errors.New(http.StatusUnauthorized, "invalid token")
+			}
+
+			claims := token.Claims.(jwt.MapClaims)
+			c.Set("user", claims)
+
+			return next(c)
+		}
+	}
 }
