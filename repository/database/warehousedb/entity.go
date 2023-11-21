@@ -9,9 +9,9 @@ import (
 type WareHouseImg struct {
 	ID        int `gorm:"primarykey"`
 	Image     string
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
-	DeletedAt      gorm.DeletedAt `gorm:"index"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 type Warehouse struct {
