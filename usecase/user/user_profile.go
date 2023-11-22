@@ -40,7 +40,7 @@ func (s *defaultUser) UpdateUsernameProfile(ctx context.Context, userId string, 
 	return
 }
 
-func (s *defaultUser) UpdatePhotoProfile(ctx context.Context, userId int, image *multipart.FileHeader) (err error) {
+func (s *defaultUser) UpdatePhotoProfile(ctx context.Context, userId int, req model.UpdatePhotoProfileRequest) (err error) {
 	userData, err := s.userRepo.GetUserById(ctx, cast.ToInt(userId))
 	if err != nil {
 		fmt.Println("user not found")
@@ -48,20 +48,8 @@ func (s *defaultUser) UpdatePhotoProfile(ctx context.Context, userId int, image 
 		return
 	}
 
-	urlImage, err := s.coreRepo.UploadImage(ctx, image)
-	if err != nil {
-		fmt.Println("error uploading image: ", err.Error())
-		err = errors.New(http.StatusInternalServerError, "error uploading image")
-		return
-	}
-
-	if len(urlImage.Data.Images) == 0 {
-		fmt.Println("failed upload images")
-		err = errors.New(http.StatusInternalServerError, "error uploading image")
-		return
-	}
 	tx := s.userRepo.BeginTrans(ctx)
-	userData.Photo =  urlImage.Data.Images[0]
+	userData.Photo = req.UrlImage
 	err = s.userRepo.UpdateUser(ctx, tx, userData)
 	if err != nil {
 		tx.Rollback()
@@ -110,5 +98,39 @@ func (s *defaultUser) GetProfile(ctx context.Context, userId string) (resp model
 		resp.DistrictName = userDetail.District.Name
 	}
 
+	return
+}
+
+func (s *defaultUser) UploadPhoto(ctx context.Context, image *multipart.FileHeader) (resp model.UploadPhotoResponse, err error) {
+	urlImage, err := s.coreRepo.UploadImage(ctx, image)
+	if err != nil {
+		fmt.Println("error uploading image: ", err.Error())
+		err = errors.New(http.StatusInternalServerError, "error uploading image")
+		return
+	}
+
+	if len(urlImage.Data.Images) == 0 {
+		fmt.Println("failed upload images")
+		err = errors.New(http.StatusInternalServerError, "error uploading image")
+		return
+	}
+
+	resp.UrlImage = urlImage.Data.Images[0]
+	return
+}
+
+func (s *defaultUser) GetAvatarList(ctx context.Context) (resp []model.GetAvatarResponse, err error) {
+	data, err := s.userRepo.GetAllAvatar(ctx)
+	if err != nil {
+		fmt.Println("error getting avatar list: ", err.Error())
+		err = errors.New(http.StatusInternalServerError, "error getting avatar list")
+		return
+	}
+	for i := 0; i < len(data); i++ {
+		resp = append(resp, model.GetAvatarResponse{
+			Id:    data[i].ID,
+			Image: data[i].Image,
+		})
+	}
 	return
 }

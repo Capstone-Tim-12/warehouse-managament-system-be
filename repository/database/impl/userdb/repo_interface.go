@@ -18,4 +18,5 @@ type UserRepository interface {
 	GetUserByEmailUsername(ctx context.Context, email, username string) (resp *entity.User, err error)
 	GetUserById(ctx context.Context, id int) (resp *entity.User, err error)
 	GetUserDetailByUserId(ctx context.Context, userId int) (resp *entity.UserDetail, err error)
+	GetAllAvatar(ctx context.Context) (resp []entity.Avatar, err error)
 }

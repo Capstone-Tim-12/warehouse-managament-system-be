@@ -253,6 +253,30 @@ func (h *UserHandler) UpdatePhotoProfile(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	clamsData := utils.GetClamsJwt(c)
 
+	var req model.UpdatePhotoProfileRequest
+	err = c.Bind(&req)
+	if err != nil {
+		err = errors.New(http.StatusBadRequest, "invaid request")
+		fmt.Println("error bind  data: ", err)
+		return
+	}
+
+	if req.UrlImage == "" {
+		err = errors.New(http.StatusBadRequest, "image is empty")
+		fmt.Println("image is empty ", err)
+		return
+	}
+
+	err = h.userUsecase.UpdatePhotoProfile(ctx, clamsData.UserId, req)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, nil)
+}
+
+func (h *UserHandler) UploadPhoto(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+
 	file, err := c.FormFile("photo")
 	if err != nil {
 		err = errors.New(http.StatusBadRequest, err.Error())
@@ -265,9 +289,19 @@ func (h *UserHandler) UpdatePhotoProfile(c echo.Context) (err error) {
 		return
 	}
 
-	err = h.userUsecase.UpdatePhotoProfile(ctx, clamsData.UserId, file)
+	data, err := h.userUsecase.UploadPhoto(ctx, file)
 	if err != nil {
 		return
 	}
-	return response.NewSuccessResponse(c, nil)
+	return response.NewSuccessResponse(c, data)
+}
+
+func (h *UserHandler) GetAvatarList(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	data, err := h.userUsecase.GetAvatarList(ctx)
+	if err != nil {
+		fmt.Println("failed to get profile", err)
+		return
+	}
+	return response.NewSuccessResponse(c, data)
 }

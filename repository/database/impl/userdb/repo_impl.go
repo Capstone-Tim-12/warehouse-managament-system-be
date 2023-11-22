@@ -68,4 +68,9 @@ func (r *defaultRepo) GetUserDetailByUserId(ctx context.Context, userId int) (re
 	return
 }
 
+func (r *defaultRepo) GetAllAvatar(ctx context.Context) (resp []entity.Avatar, err error) {
+	err = r.db.WithContext(ctx).Find(&resp).Error
+	return
+}
+
 

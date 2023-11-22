@@ -19,5 +19,7 @@ type UserUsecase interface {
 	ResetPassword(ctx context.Context, req model.ResetPasswordRequest) (err error)
 	UpdateUsernameProfile(ctx context.Context, userId string, req model.UpdateUsernameProfileRequest) (err error)
 	GetProfile(ctx context.Context, userId string) (resp model.GetProfileResponse, err error)
-	UpdatePhotoProfile(ctx context.Context, userId int, image *multipart.FileHeader) (err error)
+	UpdatePhotoProfile(ctx context.Context, userId int, req model.UpdatePhotoProfileRequest) (err error)
+	UploadPhoto(ctx context.Context, image *multipart.FileHeader) (resp model.UploadPhotoResponse, err error)
+	GetAvatarList(ctx context.Context) (resp []model.GetAvatarResponse, err error)
 }
