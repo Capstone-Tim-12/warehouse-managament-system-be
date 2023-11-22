@@ -134,3 +134,38 @@ func (s *defaultUser) GetAvatarList(ctx context.Context) (resp []model.GetAvatar
 	}
 	return
 }
+
+func (s *defaultUser) UpdateEmail(ctx context.Context, userId int, req model.OtpRequest) (err error) {
+	userData, _ := s.userRepo.GetUserByEmail(ctx, req.Email)
+	if userData.Email != "" {
+		fmt.Println("email is already existing")
+		err = errors.New(http.StatusInternalServerError, "email is already existing")
+		return
+	}
+	userData, err = s.userRepo.GetUserById(ctx, userId)
+	if err != nil {
+		fmt.Println("user not found")
+		err = errors.New(http.StatusNotFound, "user not found")
+		return
+	}
+
+	userData.Email = req.Email
+	userData.IsVerifyAccount = false
+	tx := s.userRepo.BeginTrans(ctx)
+	err = s.userRepo.UpdateUser(ctx, tx, userData)
+	if err != nil {
+		tx.Rollback()
+		fmt.Println("failed to update user")
+		err = errors.New(http.StatusInternalServerError, "failed to update email")
+		return
+	}
+
+	err = s.sendEmailOtp(ctx, *userData)
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+
+	tx.Commit()
+	return
+}

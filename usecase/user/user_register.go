@@ -34,7 +34,7 @@ func (s *defaultUser) UserRegister(ctx context.Context, req model.RegisterUserRe
 		return
 	}
 
-	err = s.sendEmailOtp(ctx, *userdata)
+	err = s.sendEmailOtp(ctx, createUser)
 	if err != nil {
 		fmt.Println("failed send email otp")
 		tx.Rollback()

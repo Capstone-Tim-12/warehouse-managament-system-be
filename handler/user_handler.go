@@ -305,3 +305,33 @@ func (h *UserHandler) GetAvatarList(c echo.Context) (err error) {
 	}
 	return response.NewSuccessResponse(c, data)
 }
+
+func (h *UserHandler) UpdateEmail(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	clamsData := utils.GetClamsJwt(c)
+
+	var req model.OtpRequest
+	err = c.Bind(&req)
+	if err != nil {
+		err = errors.New(http.StatusBadRequest, "invaid request")
+		fmt.Println("error bind  data: ", err)
+		return
+	}
+
+	if req.Email == "" {
+		err = errors.New(http.StatusBadRequest, "email is empty")
+		return
+	}
+
+	if !strings.Contains(req.Email, "@") {
+		err = errors.New(http.StatusBadRequest, "format email is invalid")
+		fmt.Println("email not valid")
+		return
+	}
+
+	err = h.userUsecase.UpdateEmail(ctx, clamsData.UserId, req)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, nil)
+}
