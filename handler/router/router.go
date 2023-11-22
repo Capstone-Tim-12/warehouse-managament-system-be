@@ -7,8 +7,9 @@ import (
 )
 
 type Router struct {
-	PingHandler *handler.PingHandler
-	UserHandler *handler.UserHandler
+	PingHandler      *handler.PingHandler
+	UserHandler      *handler.UserHandler
+	WarehouseHandler *handler.WarehouseHandler
 }
 
 func (r *Router) Validate() {
@@ -18,6 +19,10 @@ func (r *Router) Validate() {
 
 	if r.UserHandler == nil {
 		panic("user handler is nil")
+	}
+
+	if r.WarehouseHandler == nil {
+		panic("warehouse handler is nil")
 	}
 }
 
@@ -34,10 +39,15 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	e.POST("/user/login", r.UserHandler.LoginUser)
 	e.POST("/user/otp-verify", r.UserHandler.VerificationOtpUser)
 	e.POST("/user/reset-password", r.UserHandler.ResetPassword)
+	e.GET("/warehouse/detail/:warehouseId", r.WarehouseHandler.GetWarehouseById)
+	e.GET("/warehouse/", r.WarehouseHandler.GetAllWarehouse)
 
 	sc := e.Group("")
 	sc.Use(middleware.JwtMiddleware())
 	sc.GET("/user/profile", r.UserHandler.GetProfile)
+	sc.POST("/warehouse/detail", r.WarehouseHandler.CreateWarehouseDetail)
+	sc.PUT("/warehouse/detail/:warehouseId", r.WarehouseHandler.UpdateWarehouseById)
+
 	sc.PUT("/user/profile/username", r.UserHandler.UpdateUsername)
 	sc.PUT("/user/profile/photo", r.UserHandler.UpdatePhotoProfile)
 	return r
