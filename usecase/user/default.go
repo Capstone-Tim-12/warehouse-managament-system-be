@@ -159,13 +159,20 @@ func (s *defaultUser) RegisterData(ctx context.Context, req model.RegisterDataRe
 }
 
 func (s *defaultUser) UserRegister(ctx context.Context, req model.RegisterUserRequest) (resp model.RegisterUserResponse, err error) {
-	userdata, _ := s.userRepo.GetUserByEmailUsername(ctx, req.Email, req.Username)
+	userdata, err := s.userRepo.GetUserByEmailUsername(ctx, req.Email, req.Username)
+
+	if err != nil {
+		err = errors.New(http.StatusInternalServerError, "failed to get email")
+		fmt.Println("failed to get email")
+		return
+	}
+
 	if userdata.Email != "" {
 		err = errors.New(http.StatusConflict, "email or username already exists")
 		fmt.Println("email or username already exists")
 		return
 	}
-	
+
 	passwordByrpt := HashPassword(req.Password)
 	createUser := userdb.User{
 		Username: req.Username,
