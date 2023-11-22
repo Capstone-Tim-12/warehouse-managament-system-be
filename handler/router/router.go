@@ -35,8 +35,10 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	e.POST("/user/otp-verify", r.UserHandler.VerificationOtpUser)
 	e.POST("/user/reset-password", r.UserHandler.ResetPassword)
 
-	sc := e.Group("/in")
+	sc := e.Group("")
 	sc.Use(middleware.JwtMiddleware())
 	sc.GET("/user/profile", r.UserHandler.GetProfile)
+	sc.PUT("/user/profile/username", r.UserHandler.UpdateUsername)
+	sc.PUT("/user/profile/photo", r.UserHandler.UpdatePhotoProfile)
 	return r
 }

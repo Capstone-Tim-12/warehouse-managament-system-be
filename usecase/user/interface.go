@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"mime/multipart"
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/user/model"
 )
@@ -18,4 +19,5 @@ type UserUsecase interface {
 	ResetPassword(ctx context.Context, req model.ResetPasswordRequest) (err error)
 	UpdateUsernameProfile(ctx context.Context, userId string, req model.UpdateUsernameProfileRequest) (err error)
 	GetProfile(ctx context.Context, userId string) (resp model.GetProfileResponse, err error)
+	UpdatePhotoProfile(ctx context.Context, userId int, image *multipart.FileHeader) (err error)
 }

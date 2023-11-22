@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"fmt"
+	"mime/multipart"
 	"net/http"
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/user/model"
@@ -29,12 +30,49 @@ func (s *defaultUser) UpdateUsernameProfile(ctx context.Context, userId string, 
 	tx := s.userRepo.BeginTrans(ctx)
 	err = s.userRepo.UpdateUser(ctx, tx, userData)
 	if err != nil {
+		tx.Rollback()
 		fmt.Println("error update user: ", err.Error())
 		err = errors.New(http.StatusInternalServerError, "error updating user")
 		return
-	} 
+	}
+
+	tx.Commit()
 	return
-} 
+}
+
+func (s *defaultUser) UpdatePhotoProfile(ctx context.Context, userId int, image *multipart.FileHeader) (err error) {
+	userData, err := s.userRepo.GetUserById(ctx, cast.ToInt(userId))
+	if err != nil {
+		fmt.Println("user not found")
+		err = errors.New(http.StatusNotFound, "user not found")
+		return
+	}
+
+	urlImage, err := s.coreRepo.UploadImage(ctx, image)
+	if err != nil {
+		fmt.Println("error uploading image: ", err.Error())
+		err = errors.New(http.StatusInternalServerError, "error uploading image")
+		return
+	}
+
+	if len(urlImage.Data.Images) == 0 {
+		fmt.Println("failed upload images")
+		err = errors.New(http.StatusInternalServerError, "error uploading image")
+		return
+	}
+	tx := s.userRepo.BeginTrans(ctx)
+	userData.Photo =  urlImage.Data.Images[0]
+	err = s.userRepo.UpdateUser(ctx, tx, userData)
+	if err != nil {
+		tx.Rollback()
+		fmt.Println("error updating user")
+		err = errors.New(http.StatusInternalServerError, "error updating user")
+		return
+	}
+
+	tx.Commit()
+	return
+}
 
 func (s *defaultUser) GetProfile(ctx context.Context, userId string) (resp model.GetProfileResponse, err error) {
 	userData, err := s.userRepo.GetUserById(ctx, cast.ToInt(userId))
@@ -50,13 +88,13 @@ func (s *defaultUser) GetProfile(ctx context.Context, userId string) (resp model
 		Email:            userData.Email,
 		IsVerifyAccount:  userData.IsVerifyAccount,
 		IsVerifyIdentity: userData.IsVerifyIdentity,
+		Photo:            userData.Photo,
 	}
 
 	userDetail, _ := s.userRepo.GetUserDetailByUserId(ctx, userData.ID)
 	if userDetail.ID != 0 {
 		resp.Address = userDetail.Address
 		resp.Country = userDetail.Country
-		resp.Photo = userDetail.Photo
 		resp.NIK = userDetail.NIK
 		resp.FullName = userDetail.FullName
 		resp.Gender = userDetail.Gender
