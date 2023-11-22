@@ -1,25 +1,21 @@
 package warehouse
 
 import (
-	"context"
-
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/impl/regiondb"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/impl/userdb"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/impl/warehousedb"
-	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/warehouse/model"
 )
 
 type defaultWarehouse struct {
 	warehouseRepo warehousedb.WarehouseRepository
 	userRepo      userdb.UserRepository
+	regionRepo    regiondb.RegionRepository
 }
 
-func NewWarehouseUsecase(warehouseRepo warehousedb.WarehouseRepository, userRepo userdb.UserRepository) WarehouseUsecase {
+func NewWarehouseUsecase(warehouseRepo warehousedb.WarehouseRepository, userRepo userdb.UserRepository, regionRepo regiondb.RegionRepository) WarehouseUsecase {
 	return &defaultWarehouse{
 		warehouseRepo: warehouseRepo,
 		userRepo:      userRepo,
+		regionRepo:    regionRepo,
 	}
-}
-
-func (s *defaultWarehouse) CreateWarehouse(ctx context.Context, req model.WarehouseDataRequest) (err error) {
-	return
 }
