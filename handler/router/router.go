@@ -40,6 +40,7 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	e.POST("/user/otp-verify", r.UserHandler.VerificationOtpUser)
 	e.POST("/user/reset-password", r.UserHandler.ResetPassword)
 	e.GET("/warehouse/detail/:warehouseId", r.WarehouseHandler.GetWarehouseById)
+	e.GET("/warehouse/", r.WarehouseHandler.GetAllWarehouse)
 
 	sc := e.Group("")
 	sc.Use(middleware.JwtMiddleware())

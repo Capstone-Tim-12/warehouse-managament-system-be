@@ -5,7 +5,7 @@ type WarehouseDataRequest struct {
 	Description  string   `json:"description"`
 	ProvinceID   string   `json:"provinceId"`
 	RegencyID    string   `json:"regencyId"`
-	DistrictID   string   `json:"DistrictId"`
+	DistrictID   string   `json:"districId"`
 	Address      string   `json:"address"`
 	SurfaceArea  float64  `json:"surfaceArea"`
 	BuildingArea float64  `json:"buildingArea"`
@@ -34,4 +34,10 @@ type WarehouseDataResponse struct {
 	Latitude     float64  `json:"latitude"`
 	Status       string   `json:"status"`
 	Image        []string `json:"image"`
+}
+
+type WarehouseIdResponse struct {
+	Id          int    `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }

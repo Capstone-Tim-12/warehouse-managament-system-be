@@ -121,3 +121,20 @@ func (s *defaultWarehouse) GetWarehouse(ctx context.Context, id string) (resp *m
 
 	return
 }
+
+func (s *defaultWarehouse) GetAllWarehouse(ctx context.Context) (resp []*model.WarehouseIdResponse, err error) {
+	data, err := s.warehouseRepo.FindAllWarehouse(ctx)
+	if err != nil {
+		err = errors.New(http.StatusNotFound, "failed to get data regency")
+		return
+	}
+
+	for i := 0; i < len(data); i++ {
+		resp = append(resp, &model.WarehouseIdResponse{
+			Id:          data[i].ID,
+			Name:        data[i].Name,
+			Description: data[i].Description,
+		})
+	}
+	return
+}

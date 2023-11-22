@@ -48,10 +48,20 @@ func (h *WarehouseHandler) GetWarehouseById(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	id := c.Param("warehouseId")
 
+	fmt.Println(id)
 	data, err := h.warehouseusecase.GetWarehouse(ctx, id)
 	if err != nil {
 		fmt.Println("error get warehouse: ", err.Error())
 		err = errors.New(http.StatusInternalServerError, "error get Warehouse")
+		return
+	}
+	return response.NewSuccessResponse(c, data)
+}
+
+func (h *WarehouseHandler) GetAllWarehouse(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	data, err := h.warehouseusecase.GetAllWarehouse(ctx)
+	if err != nil {
 		return
 	}
 	return response.NewSuccessResponse(c, data)

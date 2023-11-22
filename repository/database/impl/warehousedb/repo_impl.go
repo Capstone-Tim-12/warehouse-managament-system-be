@@ -29,6 +29,12 @@ func (r *defaultRepo) FindWarehouseById(ctx context.Context, id string) (resp *e
 	err = r.db.WithContext(ctx).Take(&resp, "id = ?", id).Error
 	return
 }
+
+func (r *defaultRepo) FindAllWarehouse(ctx context.Context) (resp []entity.Warehouse, err error) {
+	err = r.db.WithContext(ctx).Find(&resp).Error
+	return
+}
+
 func (r *defaultRepo) BeginTrans(ctx context.Context) *gorm.DB {
 	return r.db.WithContext(ctx).Begin()
 }
