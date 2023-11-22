@@ -10,6 +10,7 @@ import (
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/errors"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/response"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/validation"
 	"github.com/labstack/echo/v4"
 	"github.com/spf13/cast"
 )
@@ -199,6 +200,12 @@ func (h *UserHandler) ResetPassword(c echo.Context) (err error) {
 		return
 	}
 
+	if req.NewPassword == "" {
+		err = errors.New(http.StatusBadRequest, "new password is empty")
+		fmt.Println("email is empty ", err)
+		return
+	}
+
 	err = h.userUsecase.ResetPassword(ctx, req)
 	if err != nil {
 		return
@@ -246,6 +253,12 @@ func (h *UserHandler) UpdatePhotoProfile(c echo.Context) (err error) {
 	clamsData := utils.GetClamsJwt(c)
 
 	file, err := c.FormFile("photo")
+	if err != nil {
+		err = errors.New(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = validation.ValidationImages(file.Filename, int(file.Size))
 	if err != nil {
 		err = errors.New(http.StatusBadRequest, err.Error())
 		return

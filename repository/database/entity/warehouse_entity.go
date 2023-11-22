@@ -18,9 +18,9 @@ type Warehouse struct {
 	Name         string
 	Longitude    float64
 	Latitude     float64
-	ProvinceID   int
-	RegencyID    int
-	DistrictID   int
+	ProvinceID   string
+	RegencyID    string
+	DistrictID   string
 	Address      string
 	BuildingArea float64
 	SurfaceArea  float64
