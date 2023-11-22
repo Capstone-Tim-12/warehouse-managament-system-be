@@ -21,6 +21,7 @@ type User struct {
 	IsVerifyIdentity bool
 	Password         string
 	Role             Role
+	Photo            string
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 	DeletedAt        gorm.DeletedAt `gorm:"index"`
@@ -31,7 +32,6 @@ type UserDetail struct {
 	ID           int `gorm:"primarykey"`
 	Address      string
 	Country      string
-	Photo        string
 	NIK          string
 	FullName     string
 	Gender       string

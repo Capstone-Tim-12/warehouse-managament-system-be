@@ -216,3 +216,45 @@ func (h *UserHandler) GetProfile(c echo.Context) (err error) {
 	}
 	return response.NewSuccessResponse(c, data)
 }
+
+func (h *UserHandler) UpdateUsername(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	var req model.UpdateUsernameProfileRequest
+	clamsData := utils.GetClamsJwt(c)
+
+	err = c.Bind(&req)
+	if err != nil {
+		err = errors.New(http.StatusBadRequest, "invaid request")
+		fmt.Println("error bind  data: ", err)
+		return
+	}
+
+	if req.Username == "" {
+		err = errors.New(http.StatusBadRequest, "username is empty")
+		fmt.Println("username is empty ", err)
+		return
+	}
+
+	err = h.userUsecase.UpdateUsernameProfile(ctx, cast.ToString(clamsData.UserId), req)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, nil)
+}
+
+func (h *UserHandler) UpdatePhotoProfile(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	clamsData := utils.GetClamsJwt(c)
+
+	file, err := c.FormFile("photo")
+	if err != nil {
+		err = errors.New(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = h.userUsecase.UpdatePhotoProfile(ctx, clamsData.UserId, file)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, nil)
+}
