@@ -30,8 +30,18 @@ func (r *defaultRepo) FindWarehouseById(ctx context.Context, id string) (resp *e
 	return
 }
 
+func (r *defaultRepo) FindImageWarehouseById(ctx context.Context, id string) (resp *entity.WarehouseImg, err error) {
+	err = r.db.WithContext(ctx).Take(&resp, "warehouse_id = ?", id).Error
+	return
+}
+
 func (r *defaultRepo) FindAllWarehouse(ctx context.Context) (resp []entity.Warehouse, err error) {
 	err = r.db.WithContext(ctx).Find(&resp).Error
+	return
+}
+
+func (r *defaultRepo) UpdateWarehouse(ctx context.Context, tx *gorm.DB, req *entity.Warehouse) (err error) {
+	err = tx.WithContext(ctx).Save(req).Error
 	return
 }
 

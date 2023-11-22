@@ -46,6 +46,7 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	sc.Use(middleware.JwtMiddleware())
 	sc.GET("/user/profile", r.UserHandler.GetProfile)
 	sc.POST("/warehouse/detail", r.WarehouseHandler.CreateWarehouseDetail)
+	sc.PUT("/warehouse/detail/:warehouseId", r.WarehouseHandler.UpdateWarehouseById)
 
 	return r
 }

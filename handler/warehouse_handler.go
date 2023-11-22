@@ -37,7 +37,7 @@ func (h *WarehouseHandler) CreateWarehouseDetail(c echo.Context) (err error) {
 
 	err = h.warehouseusecase.CreateWarehouse(ctx, req, cast.ToString(clamsData.UserId))
 	if err != nil {
-		fmt.Println("error create warehouse: ", err.Error())
+		fmt.Println("error creating warehouse: ", err.Error())
 		err = errors.New(http.StatusInternalServerError, "error creating Warehouse")
 		return
 	}
@@ -48,7 +48,6 @@ func (h *WarehouseHandler) GetWarehouseById(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	id := c.Param("warehouseId")
 
-	fmt.Println(id)
 	data, err := h.warehouseusecase.GetWarehouse(ctx, id)
 	if err != nil {
 		fmt.Println("error get warehouse: ", err.Error())
@@ -65,4 +64,26 @@ func (h *WarehouseHandler) GetAllWarehouse(c echo.Context) (err error) {
 		return
 	}
 	return response.NewSuccessResponse(c, data)
+}
+
+func (h *WarehouseHandler) UpdateWarehouseById(c echo.Context) (err error) {
+	var req model.WarehouseDataRequest
+	ctx := c.Request().Context()
+	clamsData := utils.GetClamsJwt(c)
+	id := c.Param("warehouseId")
+
+	err = c.Bind(&req)
+	if err != nil {
+		err = errors.New(http.StatusBadRequest, "invalid request")
+		fmt.Println("error bind register warehouse data: ", err.Error())
+		return
+	}
+
+	err = h.warehouseusecase.UpdateWarehouseDetails(ctx, req, cast.ToString(clamsData.UserId), id)
+	if err != nil {
+		fmt.Println("error update warehouse: ", err.Error())
+		err = errors.New(http.StatusInternalServerError, "error update Warehouse")
+		return
+	}
+	return response.NewSuccessResponse(c, nil)
 }

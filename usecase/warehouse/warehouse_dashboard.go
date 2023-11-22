@@ -125,16 +125,75 @@ func (s *defaultWarehouse) GetWarehouse(ctx context.Context, id string) (resp *m
 func (s *defaultWarehouse) GetAllWarehouse(ctx context.Context) (resp []*model.WarehouseIdResponse, err error) {
 	data, err := s.warehouseRepo.FindAllWarehouse(ctx)
 	if err != nil {
+		fmt.Println("failed to get data regency")
 		err = errors.New(http.StatusNotFound, "failed to get data regency")
 		return
 	}
-
+	var images []string
 	for i := 0; i < len(data); i++ {
+		for _, img := range data[i].WareHouseImg {
+			images = append(images, img.Image)
+		}
+
 		resp = append(resp, &model.WarehouseIdResponse{
 			Id:          data[i].ID,
 			Name:        data[i].Name,
 			Description: data[i].Description,
+			Image:       images,
 		})
 	}
+	return
+}
+
+func (s *defaultWarehouse) UpdateWarehouseDetails(ctx context.Context, req model.WarehouseDataRequest, userId string, id string) (err error) {
+	userData, err := s.userRepo.GetUserById(ctx, cast.ToInt(userId))
+	if err != nil {
+		fmt.Printf("user not found")
+		err = errors.New(http.StatusNotFound, "user not found")
+		return
+	}
+
+	if userData.Role != "admin" {
+		fmt.Println("role is not admin")
+		err = errors.New(http.StatusForbidden, "role is not admin")
+		return
+	}
+
+	warehouseData, err := s.warehouseRepo.FindWarehouseById(ctx, id)
+	if err != nil {
+		fmt.Println("failed to get data warehouse")
+		err = errors.New(http.StatusNotFound, "failed to get data warehouse")
+		return
+	}
+
+	warehouseData.Name = req.Name
+	warehouseData.Description = req.Description
+	warehouseData.ProvinceID = req.ProvinceID
+	warehouseData.RegencyID = req.RegencyID
+	warehouseData.DistrictID = req.DistrictID
+	warehouseData.Address = req.Address
+	warehouseData.SurfaceArea = req.SurfaceArea
+	warehouseData.BuildingArea = req.BuildingArea
+	warehouseData.Owner = req.Owner
+	warehouseData.PhoneNumber = req.PhoneNumber
+	warehouseData.Longitude = req.Longitude
+	warehouseData.Latitude = req.Latitude
+
+	for _, img := range req.Image {
+		for _, images := range warehouseData.WareHouseImg {
+			images.Image = img
+		}
+	}
+
+	tx := s.warehouseRepo.BeginTrans(ctx)
+	err = s.warehouseRepo.UpdateWarehouse(ctx, tx, warehouseData)
+	if err != nil {
+		tx.Rollback()
+		err = errors.New(http.StatusInternalServerError, "failed update warehouse data")
+		fmt.Println("failed update warehouse data")
+		return
+	}
+
+	tx.Commit()
 	return
 }
