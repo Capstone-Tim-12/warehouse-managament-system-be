@@ -50,3 +50,11 @@ type UserDetail struct {
 	UpdatedAt    time.Time
 	DeletedAt    gorm.DeletedAt `gorm:"index"`
 }
+
+type Avatar struct {
+	ID        int `gorm:"primarykey"`
+	Image     string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+}

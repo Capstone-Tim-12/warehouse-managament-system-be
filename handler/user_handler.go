@@ -10,6 +10,7 @@ import (
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/errors"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/response"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/validation"
 	"github.com/labstack/echo/v4"
 	"github.com/spf13/cast"
 )
@@ -199,6 +200,12 @@ func (h *UserHandler) ResetPassword(c echo.Context) (err error) {
 		return
 	}
 
+	if req.NewPassword == "" {
+		err = errors.New(http.StatusBadRequest, "new password is empty")
+		fmt.Println("email is empty ", err)
+		return
+	}
+
 	err = h.userUsecase.ResetPassword(ctx, req)
 	if err != nil {
 		return
@@ -246,15 +253,55 @@ func (h *UserHandler) UpdatePhotoProfile(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	clamsData := utils.GetClamsJwt(c)
 
+	var req model.UpdatePhotoProfileRequest
+	err = c.Bind(&req)
+	if err != nil {
+		err = errors.New(http.StatusBadRequest, "invaid request")
+		fmt.Println("error bind  data: ", err)
+		return
+	}
+
+	if req.UrlImage == "" {
+		err = errors.New(http.StatusBadRequest, "image is empty")
+		fmt.Println("image is empty ", err)
+		return
+	}
+
+	err = h.userUsecase.UpdatePhotoProfile(ctx, clamsData.UserId, req)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, nil)
+}
+
+func (h *UserHandler) UploadPhoto(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+
 	file, err := c.FormFile("photo")
 	if err != nil {
 		err = errors.New(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	err = h.userUsecase.UpdatePhotoProfile(ctx, clamsData.UserId, file)
+	err = validation.ValidationImages(file.Filename, int(file.Size))
+	if err != nil {
+		err = errors.New(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	data, err := h.userUsecase.UploadPhoto(ctx, file)
 	if err != nil {
 		return
 	}
-	return response.NewSuccessResponse(c, nil)
+	return response.NewSuccessResponse(c, data)
+}
+
+func (h *UserHandler) GetAvatarList(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	data, err := h.userUsecase.GetAvatarList(ctx)
+	if err != nil {
+		fmt.Println("failed to get profile", err)
+		return
+	}
+	return response.NewSuccessResponse(c, data)
 }

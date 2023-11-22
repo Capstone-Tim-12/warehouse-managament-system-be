@@ -35,6 +35,7 @@ func InitDB() *gorm.DB {
 		DB.AutoMigrate(&entity.Village{})
 		DB.AutoMigrate(&entity.User{})
 		DB.AutoMigrate(&entity.UserDetail{})
+		DB.AutoMigrate(&entity.Avatar{})
 		DB.AutoMigrate(&entity.Warehouse{})
 		DB.AutoMigrate(&entity.WarehouseImg{})
 	}

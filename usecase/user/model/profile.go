@@ -29,3 +29,16 @@ type GetProfileResponse struct {
 	DistrictID       string    `json:"districtID"`
 	DistrictName     string    `json:"districtName"`
 }
+
+type UploadPhotoResponse struct {
+	UrlImage string `json:"urlImage"`
+}
+
+type UpdatePhotoProfileRequest struct {
+	UrlImage string `json:"urlImage"`
+}
+
+type GetAvatarResponse struct {
+	Id    int    `json:"id"`
+	Image string `json:"image"`
+}
