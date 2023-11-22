@@ -1,4 +1,4 @@
-package userdb
+package entity
 
 import (
 	"time"
@@ -41,8 +41,11 @@ type UserDetail struct {
 	Citizenship  string
 	UserID       int
 	ProvinceID   string
+	Province     Province `gorm:"foreignKey:ProvinceID"`
 	RegencyID    string
+	Regency      Regency `gorm:"foreignKey:RegencyID"`
 	DistrictID   string
+	District     District `gorm:"foreignKey:DistrictID"`
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 	DeletedAt    gorm.DeletedAt `gorm:"index"`
