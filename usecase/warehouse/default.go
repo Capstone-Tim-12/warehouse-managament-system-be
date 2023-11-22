@@ -3,8 +3,8 @@ package warehouse
 import (
 	"context"
 
-	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/userdb"
-	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/warehousedb"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/impl/userdb"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/impl/warehousedb"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/warehouse/model"
 )
 
