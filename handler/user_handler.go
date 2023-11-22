@@ -69,7 +69,7 @@ func (h *UserHandler) RegisterUserData(c echo.Context) (err error) {
 		return
 	}
 
-	if !strings.Contains(req.Email, "@" ) {
+	if !strings.Contains(req.Email, "@") {
 		err = errors.New(http.StatusBadRequest, "format email is invalid")
 		fmt.Println("email not valid")
 		return
@@ -97,7 +97,7 @@ func (h *UserHandler) RegisterUser(c echo.Context) (err error) {
 		fmt.Println("username is empty")
 		return
 	}
-	if !strings.Contains(req.Email, "@" ) {
+	if !strings.Contains(req.Email, "@") {
 		err = errors.New(http.StatusBadRequest, "format email is invalid")
 		fmt.Println("email not valid")
 		return
@@ -119,7 +119,7 @@ func (h *UserHandler) ResendUserOTP(c echo.Context) (err error) {
 		fmt.Println("error bind  data: ", err)
 		return
 	}
-	
+
 	if req.Email == "" {
 		err = errors.New(http.StatusBadRequest, "email is empty")
 		fmt.Println("email is empty ", err)
@@ -193,7 +193,7 @@ func (h *UserHandler) ResetPassword(c echo.Context) (err error) {
 		fmt.Println("error bind  data: ", err)
 		return
 	}
-	
+
 	if req.Email == "" {
 		err = errors.New(http.StatusBadRequest, "email is empty")
 		fmt.Println("email is empty ", err)
@@ -218,6 +218,7 @@ func (h *UserHandler) GetProfile(c echo.Context) (err error) {
 	clamsData := utils.GetClamsJwt(c)
 	data, err := h.userUsecase.GetProfile(ctx, cast.ToString(clamsData.UserId))
 	if err != nil {
+		fmt.Println("failed to get profile", err)
 		return
 	}
 	return response.NewSuccessResponse(c, data)
@@ -234,7 +235,7 @@ func (h *UserHandler) UpdateUsername(c echo.Context) (err error) {
 		fmt.Println("error bind  data: ", err)
 		return
 	}
-	
+
 	if req.Username == "" {
 		err = errors.New(http.StatusBadRequest, "username is empty")
 		fmt.Println("username is empty ", err)
@@ -270,6 +271,3 @@ func (h *UserHandler) UpdatePhotoProfile(c echo.Context) (err error) {
 	}
 	return response.NewSuccessResponse(c, nil)
 }
-
-
-
