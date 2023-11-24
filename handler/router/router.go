@@ -40,7 +40,7 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	e.POST("/user/otp-verify", r.UserHandler.VerificationOtpUser)
 	e.POST("/user/reset-password", r.UserHandler.ResetPassword)
 	e.GET("/warehouse/detail/:warehouseId", r.WarehouseHandler.GetWarehouseById)
-	e.GET("/warehouse/", r.WarehouseHandler.GetAllWarehouse)
+	// e.GET("/warehouse/", r.WarehouseHandler.GetAllWarehouse)
 
 	sc := e.Group("")
 	sc.Use(middleware.JwtMiddleware())
@@ -53,6 +53,7 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 
 	sc.POST("/warehouse/detail", r.WarehouseHandler.CreateWarehouseDetail)
 	sc.PUT("/warehouse/detail/:warehouseId", r.WarehouseHandler.UpdateWarehouseById)
+	sc.GET("/warehouse/user/list", r.WarehouseHandler.GetWarehouseList)
 
 	return r
 }

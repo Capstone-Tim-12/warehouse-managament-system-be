@@ -22,6 +22,8 @@ type User struct {
 	Password         string
 	Role             Role
 	Photo            string
+	Longitude        float64
+	Latitude         float64
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 	DeletedAt        gorm.DeletedAt `gorm:"index"`
