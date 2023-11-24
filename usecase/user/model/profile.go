@@ -24,7 +24,7 @@ type GetProfileResponse struct {
 	Citizenship      string    `json:"citizenship"`
 	ProvinceID       string    `json:"provinceID"`
 	ProvinceName     string    `json:"provinceName"`
-	RegencyID        string    `json:"regionID"`
+	RegencyID        string    `json:"regencyID"`
 	RegencyName      string    `json:"regencyName"`
 	DistrictID       string    `json:"districtID"`
 	DistrictName     string    `json:"districtName"`

@@ -12,18 +12,6 @@ import (
 )
 
 func (s *defaultWarehouse) CreateWarehouse(ctx context.Context, req model.WarehouseDataRequest) (err error) {
-	_, err = s.regionRepo.GetProvinceById(ctx, req.ProvinceID)
-	if err != nil {
-		fmt.Println("Error getting province id", err.Error())
-		err = errors.New(http.StatusNotFound, "province not found")
-		return
-	}
-	_, err = s.regionRepo.GetRegencyById(ctx, req.RegencyID)
-	if err != nil {
-		fmt.Println("Error getting regency id", err.Error())
-		err = errors.New(http.StatusNotFound, "regency not found")
-		return
-	}
 	_, err = s.regionRepo.GetDistrictById(ctx, req.DistrictID)
 	if err != nil {
 		fmt.Println("Error getting regency id", err.Error())
@@ -33,8 +21,6 @@ func (s *defaultWarehouse) CreateWarehouse(ctx context.Context, req model.Wareho
 	warehouseData := entity.Warehouse{
 		Name:         req.Name,
 		Description:  req.Description,
-		ProvinceID:   req.ProvinceID,
-		RegencyID:    req.RegencyID,
 		DistrictID:   req.DistrictID,
 		Address:      req.Address,
 		SurfaceArea:  req.SurfaceArea,
@@ -83,10 +69,10 @@ func (s *defaultWarehouse) GetWarehouse(ctx context.Context, id string) (resp *m
 	resp = &model.WarehouseDataResponse{
 		Name:         warehouseData.Name,
 		Description:  warehouseData.Description,
-		ProvinceID:   warehouseData.ProvinceID,
-		ProvinceName: warehouseData.Province.Name,
-		RegencyID:    warehouseData.RegencyID,
-		RegencyName:  warehouseData.Regency.Name,
+		ProvinceID:   warehouseData.District.Regency.ProvinceID,
+		ProvinceName: warehouseData.District.Regency.Province.Name,
+		RegencyID:    warehouseData.District.RegencyID,
+		RegencyName:  warehouseData.District.Regency.Name,
 		DistrictID:   warehouseData.DistrictID,
 		DistrictName: warehouseData.District.Name,
 		Address:      warehouseData.Address,
@@ -107,18 +93,6 @@ func (s *defaultWarehouse) GetWarehouse(ctx context.Context, id string) (resp *m
 }
 
 func (s *defaultWarehouse) UpdateWarehouseDetails(ctx context.Context, req model.WarehouseDataRequest, id string) (err error) {
-	_, err = s.regionRepo.GetProvinceById(ctx, req.ProvinceID)
-	if err != nil {
-		fmt.Println("Error getting province id", err.Error())
-		err = errors.New(http.StatusNotFound, "province not found")
-		return
-	}
-	_, err = s.regionRepo.GetRegencyById(ctx, req.RegencyID)
-	if err != nil {
-		fmt.Println("Error getting regency id", err.Error())
-		err = errors.New(http.StatusNotFound, "regency not found")
-		return
-	}
 	_, err = s.regionRepo.GetDistrictById(ctx, req.DistrictID)
 	if err != nil {
 		fmt.Println("Error getting regency id", err.Error())
@@ -135,8 +109,6 @@ func (s *defaultWarehouse) UpdateWarehouseDetails(ctx context.Context, req model
 
 	warehouseData.Name = req.Name
 	warehouseData.Description = req.Description
-	warehouseData.ProvinceID = req.ProvinceID
-	warehouseData.RegencyID = req.RegencyID
 	warehouseData.DistrictID = req.DistrictID
 	warehouseData.Address = req.Address
 	warehouseData.SurfaceArea = req.SurfaceArea

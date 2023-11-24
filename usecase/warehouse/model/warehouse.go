@@ -3,8 +3,6 @@ package model
 type WarehouseDataRequest struct {
 	Name         string   `json:"name"`
 	Description  string   `json:"description"`
-	ProvinceID   string   `json:"provinceId"`
-	RegencyID    string   `json:"regencyId"`
 	DistrictID   string   `json:"districId"`
 	Address      string   `json:"address"`
 	SurfaceArea  float64  `json:"surfaceArea"`

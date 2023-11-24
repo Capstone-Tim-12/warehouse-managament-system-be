@@ -18,10 +18,6 @@ type Warehouse struct {
 	Name         string
 	Longitude    float64
 	Latitude     float64
-	ProvinceID   string
-	Province     Province `gorm:"foreignKey:ProvinceID"`
-	RegencyID    string
-	Regency      Regency `gorm:"foreignKey:RegencyID"`
 	DistrictID   string
 	District     District `gorm:"foreignKey:DistrictID"`
 	Address      string
