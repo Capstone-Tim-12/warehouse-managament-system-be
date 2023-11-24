@@ -58,5 +58,22 @@ func GetParams(c echo.Context) (Pagination, error) {
 		Recomendation: cast.ToBool(c.QueryParam("recomendation")),
 	}
 
+	counter := 0
+	if params.LowerPrice {
+		counter += 1
+	}
+	if params.HigestPrice {
+		counter += 1
+	}
+	if params.Recomendation {
+		counter += 1
+	}
+
+	if counter > 1 {
+		params.LowerPrice = false
+		params.HigestPrice = false
+		params.Recomendation = false
+	}
+
 	return params, nil
 }

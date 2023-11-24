@@ -60,18 +60,6 @@ func (s *defaultUser) RegisterData(ctx context.Context, req model.RegisterDataRe
 		return
 	}
 
-	_, err = s.regionRepo.GetProvinceById(ctx, req.ProvinceID)
-	if err != nil {
-		fmt.Println("Error getting province id", err.Error())
-		err = errors.New(http.StatusNotFound, "province not found")
-		return
-	}
-	_, err = s.regionRepo.GetRegencyById(ctx, req.RegencyID)
-	if err != nil {
-		fmt.Println("Error getting regency id", err.Error())
-		err = errors.New(http.StatusNotFound, "regency not found")
-		return
-	}
 	_, err = s.regionRepo.GetDistrictById(ctx, req.DistrictID)
 	if err != nil {
 		fmt.Println("Error getting regency id", err.Error())
@@ -90,8 +78,6 @@ func (s *defaultUser) RegisterData(ctx context.Context, req model.RegisterDataRe
 		Work:         req.Work,
 		Citizenship:  req.Citizenship,
 		UserID:       userData.ID,
-		ProvinceID:   req.ProvinceID,
-		RegencyID:    req.RegencyID,
 		DistrictID:   req.DistrictID,
 	}
 
