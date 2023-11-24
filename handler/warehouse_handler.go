@@ -41,9 +41,10 @@ func (h *WarehouseHandler) CreateWarehouseDetail(c echo.Context) (err error) {
 		return
 	}
 
-	if req.Name == "" {
-		err = errors.New(http.StatusBadRequest, "name is empty")
-		fmt.Println("name is empty ", err)
+	err = c.Validate(req)
+	if err != nil {
+		fmt.Println("error validate data: ", err.Error())
+		err = errors.New(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -98,9 +99,10 @@ func (h *WarehouseHandler) UpdateWarehouseById(c echo.Context) (err error) {
 		return
 	}
 
-	if req.Name == "" {
-		err = errors.New(http.StatusBadRequest, "name is empty")
-		fmt.Println("name is empty ", err)
+	err = c.Validate(req)
+	if err != nil {
+		fmt.Println("error validate data: ", err.Error())
+		err = errors.New(http.StatusBadRequest, err.Error())
 		return
 	}
 

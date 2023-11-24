@@ -3,7 +3,7 @@ package model
 import "time"
 
 type UpdateUsernameProfileRequest struct {
-	Username string `json:"username"`
+	Username string `json:"username" validate:"required"`
 }
 
 type GetProfileResponse struct {
@@ -35,7 +35,7 @@ type UploadPhotoResponse struct {
 }
 
 type UpdatePhotoProfileRequest struct {
-	UrlImage string `json:"urlImage"`
+	UrlImage string `json:"urlImage" validate:"url,required"`
 }
 
 type GetAvatarResponse struct {
