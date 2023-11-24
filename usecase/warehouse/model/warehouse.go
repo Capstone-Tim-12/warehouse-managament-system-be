@@ -1,16 +1,16 @@
 package model
 
 type WarehouseDataRequest struct {
-	Name         string   `json:"name"`
-	Description  string   `json:"description"`
-	DistrictID   string   `json:"districId"`
-	Address      string   `json:"address"`
-	SurfaceArea  float64  `json:"surfaceArea"`
-	BuildingArea float64  `json:"buildingArea"`
-	Owner        string   `json:"owner"`
-	PhoneNumber  string   `json:"phoneNumber"`
-	Longitude    float64  `json:"longitude"`
-	Latitude     float64  `json:"latitude"`
+	Name         string   `json:"name" validate:"required"`
+	Description  string   `json:"description" validate:"required"`
+	DistrictID   string   `json:"districId" validate:"number"`
+	Address      string   `json:"address" validate:"required"`
+	SurfaceArea  float64  `json:"surfaceArea" validate:"required"`
+	BuildingArea float64  `json:"buildingArea" validate:"required"`
+	Owner        string   `json:"owner" validate:"required"`
+	PhoneNumber  string   `json:"phoneNumber" validate:"number"`
+	Longitude    float64  `json:"longitude" validate:"longitude"`
+	Latitude     float64  `json:"latitude" validate:"latitude"`
 	Status       string   `json:"status"`
 	Price        float64  `json:"price"`
 	Image        []string `json:"image"`
