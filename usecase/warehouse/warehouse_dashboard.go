@@ -107,6 +107,10 @@ func (s *defaultWarehouse) UpdateWarehouseDetails(ctx context.Context, req model
 		return
 	}
 
+	if req.Status == string(entity.NotAvailable) {
+		req.Status = string(entity.Available)
+	}
+
 	warehouseData.Name = req.Name
 	warehouseData.Description = req.Description
 	warehouseData.DistrictID = req.DistrictID
