@@ -14,7 +14,7 @@ type UserUsecase interface {
 	RegisterData(ctx context.Context, req model.RegisterDataRequest) (err error)
 	UserRegister(ctx context.Context, req model.RegisterUserRequest) (resp model.RegisterUserResponse, err error)
 	ResendOtp(ctx context.Context, req model.OtpRequest) (err error)
-	Login(ctx context.Context, req model.LoginRequest) (resp model.LoginResponse, err error)
+	Login(ctx context.Context, req model.LoginRequest, lat, long float64) (resp model.LoginResponse, err error)
 	VerificationUser(ctx context.Context, req model.VerificationUserRequest) (resp model.VerificationUserResponse, err error)
 	ResetPassword(ctx context.Context, req model.ResetPasswordRequest) (err error)
 	UpdateUsernameProfile(ctx context.Context, userId string, req model.UpdateUsernameProfileRequest) (err error)

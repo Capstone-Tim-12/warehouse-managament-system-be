@@ -59,13 +59,13 @@ func (h *UserHandler) RegisterUserData(c echo.Context) (err error) {
 	err = c.Bind(&req)
 	if err != nil {
 		err = errors.New(http.StatusBadRequest, "invalid request")
-		fmt.Println("error bind register user data: ", err)
+		fmt.Println("error bind register user data: ", err.Error())
 		return
 	}
 
 	if req.NIK == "" {
 		err = errors.New(http.StatusBadRequest, "nik is empty")
-		fmt.Println("nik is empty ", err)
+		fmt.Println("nik is empty ")
 		return
 	}
 
@@ -136,6 +136,8 @@ func (h *UserHandler) ResendUserOTP(c echo.Context) (err error) {
 func (h *UserHandler) LoginUser(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	var req model.LoginRequest
+	longitude := c.Request().Header.Get("longitude")
+	latitude := c.Request().Header.Get("latitude")
 
 	err = c.Bind(&req)
 	if err != nil {
@@ -155,7 +157,7 @@ func (h *UserHandler) LoginUser(c echo.Context) (err error) {
 		return
 	}
 
-	userResponse, err := h.userUsecase.Login(ctx, req)
+	userResponse, err := h.userUsecase.Login(ctx, req, cast.ToFloat64(latitude), cast.ToFloat64(longitude))
 	if err != nil {
 		return
 	}

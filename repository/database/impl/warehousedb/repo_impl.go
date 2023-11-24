@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/entity"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/paginate"
 	"gorm.io/gorm"
 )
 
@@ -26,7 +27,12 @@ func (r *defaultRepo) CreateImg(ctx context.Context, tx *gorm.DB, req *entity.Wa
 }
 
 func (r *defaultRepo) FindWarehouseById(ctx context.Context, id string) (resp *entity.Warehouse, err error) {
-	err = r.db.WithContext(ctx).Take(&resp, "id = ?", id).Error
+	err = r.db.WithContext(ctx).
+		Preload("Province").
+		Preload("Regency").
+		Preload("District").
+		Preload("WarehouseImg").
+		Take(&resp, "id = ?", id).Error
 	return
 }
 
@@ -35,9 +41,38 @@ func (r *defaultRepo) FindImageWarehouseById(ctx context.Context, id string) (re
 	return
 }
 
-func (r *defaultRepo) FindAllWarehouse(ctx context.Context) (resp []entity.Warehouse, err error) {
-	err = r.db.WithContext(ctx).Find(&resp).Error
-	return
+func (r *defaultRepo) FindWarehouseList(ctx context.Context, param paginate.Pagination, long, lat float64) (resp []entity.Warehouse, count int64, err error) {
+	query := func(condision *gorm.DB) *gorm.DB {
+		if param.Search != "" {
+			condision.Where("name LIKE ?", param.Search)
+		}
+		if param.MaxSize != 0 {
+			condision.Where("building_area >= ? AND building_area <= ?", param.MinSize, param.MaxSize)
+		}
+
+		if param.MaxPrice != 0 {
+			condision.Where("price >= ? AND price <= ?", param.MinPrice, param.HigestPrice)
+		}
+
+		switch true {
+		case param.HigestPrice:
+			condision.Order("price desc")
+		case param.LowerPrice:
+			condision.Order("price asc")
+		case param.Recomendation:
+			condision.Where("SQRT(POW(69.1 * (Latitude - ?), 2) + POW(69.1 * (? - Longitude) * COS(Latitude / 57.3), 2)) as distance", lat, long).Order("distance asc")
+		}
+
+		
+		return condision
+	}
+	err = r.db.WithContext(ctx).Model(&entity.Warehouse{}).Scopes(query).Count(&count).Error
+	if err != nil {
+		return
+	}
+	err = r.db.WithContext(ctx).Preload("District").Preload("WarehouseImg").
+		Scopes(paginate.Paginate(param.Page, param.Limit)).Scopes(query).Find(&resp).Error
+    return
 }
 
 func (r *defaultRepo) UpdateWarehouse(ctx context.Context, tx *gorm.DB, req *entity.Warehouse) (err error) {
@@ -47,4 +82,9 @@ func (r *defaultRepo) UpdateWarehouse(ctx context.Context, tx *gorm.DB, req *ent
 
 func (r *defaultRepo) BeginTrans(ctx context.Context) *gorm.DB {
 	return r.db.WithContext(ctx).Begin()
+}
+
+func (s *defaultRepo) DeleteWarehouseImgByWarehouseId(ctx context.Context, tx *gorm.DB, warehouseId int) (err error) {
+	err = tx.WithContext(ctx).Delete(&entity.WarehouseImg{}, "warehouse_id = ?", warehouseId).Error
+	return
 }

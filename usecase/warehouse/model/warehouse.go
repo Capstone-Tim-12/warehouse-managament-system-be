@@ -13,6 +13,8 @@ type WarehouseDataRequest struct {
 	PhoneNumber  string   `json:"phoneNumber"`
 	Longitude    float64  `json:"longitude"`
 	Latitude     float64  `json:"latitude"`
+	Status       string   `json:"status"`
+	Price        float64  `json:"price"`
 	Image        []string `json:"image"`
 }
 
@@ -33,12 +35,20 @@ type WarehouseDataResponse struct {
 	Longitude    float64  `json:"longitude"`
 	Latitude     float64  `json:"latitude"`
 	Status       string   `json:"status"`
+	WeeklyPrice  float64  `json:"weeklyPrice"`
+	MonthlyPrice float64  `json:"monthlyPrice"`
+	AnnualPrice  float64  `json:"annualPrice"`
 	Image        []string `json:"image"`
 }
 
-type WarehouseIdResponse struct {
-	Id          int      `json:"id"`
-	Name        string   `json:"name"`
-	Description string   `json:"description"`
-	Image       []string `json:"image"`
+type WarehouseListResponse struct {
+	Id           int     `json:"id"`
+	Name         string  `json:"name"`
+	DistrictName string  `json:"DistrictName"`
+	SurfaceArea  float64 `json:"surfaceArea"`
+	BuildingArea float64 `json:"buildingArea"`
+	WeeklyPrice  float64 `json:"weeklyPrice"`
+	MonthlyPrice float64 `json:"monthlyPrice"`
+	AnnualPrice  float64 `json:"annualPrice"`
+	Image        string  `json:"image"`
 }
