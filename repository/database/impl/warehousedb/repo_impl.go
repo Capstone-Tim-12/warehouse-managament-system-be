@@ -28,9 +28,9 @@ func (r *defaultRepo) CreateImg(ctx context.Context, tx *gorm.DB, req *entity.Wa
 
 func (r *defaultRepo) FindWarehouseById(ctx context.Context, id string) (resp *entity.Warehouse, err error) {
 	err = r.db.WithContext(ctx).
-		Preload("Province").
-		Preload("Regency").
 		Preload("District").
+		Preload("District.Regency").
+		Preload("District.Regency.Province").
 		Preload("WarehouseImg").
 		Take(&resp, "id = ?", id).Error
 	return
