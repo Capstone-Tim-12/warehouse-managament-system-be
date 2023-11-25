@@ -335,3 +335,13 @@ func (h *UserHandler) UpdateEmail(c echo.Context) (err error) {
 	}
 	return response.NewSuccessResponse(c, nil)
 }
+
+func (h *UserHandler) DeleteUser(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	clamsData := utils.GetClamsJwt(c)
+	err = h.userUsecase.DeleteUser(ctx, cast.ToInt(clamsData.UserId))
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, nil)
+}

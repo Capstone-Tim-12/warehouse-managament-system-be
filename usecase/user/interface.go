@@ -22,5 +22,6 @@ type UserUsecase interface {
 	UpdatePhotoProfile(ctx context.Context, userId int, req model.UpdatePhotoProfileRequest) (err error)
 	UploadPhoto(ctx context.Context, image *multipart.FileHeader) (resp model.UploadPhotoResponse, err error)
 	GetAvatarList(ctx context.Context) (resp []model.GetAvatarResponse, err error)
-	UpdateEmail(ctx context.Context, userId int, req model.OtpRequest) (err error) 
+	UpdateEmail(ctx context.Context, userId int, req model.OtpRequest) (err error)
+	DeleteUser(ctx context.Context, id int) (err error)
 }

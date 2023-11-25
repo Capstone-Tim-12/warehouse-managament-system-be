@@ -53,6 +53,7 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 
 	sc.POST("/warehouse/detail", r.WarehouseHandler.CreateWarehouseDetail)
 	sc.PUT("/warehouse/detail/:warehouseId", r.WarehouseHandler.UpdateWarehouseById)
+	sc.DELETE("/user/:userId", r.UserHandler.DeleteUser)
 
 	return r
 }
