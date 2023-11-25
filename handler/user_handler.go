@@ -80,6 +80,10 @@ func (h *UserHandler) RegisterUserData(c echo.Context) (err error) {
 func (h *UserHandler) RegisterUser(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	var req model.RegisterUserRequest
+
+	longitude := c.Request().Header.Get("longitude")
+	latitude := c.Request().Header.Get("latitude")
+
 	err = c.Bind(&req)
 	if err != nil {
 		err = errors.New(http.StatusBadRequest, "invalid request")
@@ -92,7 +96,7 @@ func (h *UserHandler) RegisterUser(c echo.Context) (err error) {
 		err = errors.New(http.StatusBadRequest, err.Error())
 		return
 	}
-	registerResponse, err := h.userUsecase.UserRegister(ctx, req)
+	registerResponse, err := h.userUsecase.UserRegister(ctx, req, cast.ToFloat64(longitude), cast.ToFloat64(latitude))
 	if err != nil {
 		return
 	}

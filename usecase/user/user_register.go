@@ -10,7 +10,7 @@ import (
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/errors"
 )
 
-func (s *defaultUser) UserRegister(ctx context.Context, req model.RegisterUserRequest) (resp model.RegisterUserResponse, err error) {
+func (s *defaultUser) UserRegister(ctx context.Context, req model.RegisterUserRequest, long, lat float64) (resp model.RegisterUserResponse, err error) {
 	userdata, _ := s.userRepo.GetUserByEmailUsername(ctx, req.Email, req.Username)
 	if userdata.Email != "" {
 		err = errors.New(http.StatusConflict, "email or username already exists")
@@ -20,10 +20,12 @@ func (s *defaultUser) UserRegister(ctx context.Context, req model.RegisterUserRe
 
 	passwordByrpt := HashPassword(req.Password)
 	createUser := entity.User{
-		Username: req.Username,
-		Password: passwordByrpt,
-		Email:    req.Email,
-		Role:     entity.RoleUser,
+		Username:  req.Username,
+		Password:  passwordByrpt,
+		Email:     req.Email,
+		Role:      entity.RoleUser,
+		Longitude: long,
+		Latitude:  lat,
 	}
 	tx := s.userRepo.BeginTrans(ctx)
 	err = s.userRepo.CreateUser(ctx, tx, &createUser)
