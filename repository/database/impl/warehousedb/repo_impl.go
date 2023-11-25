@@ -2,6 +2,7 @@ package warehousedb
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/entity"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/paginate"
@@ -44,7 +45,7 @@ func (r *defaultRepo) FindImageWarehouseById(ctx context.Context, id string) (re
 func (r *defaultRepo) FindWarehouseList(ctx context.Context, param paginate.Pagination, long, lat float64) (resp []entity.Warehouse, count int64, err error) {
 	query := func(condision *gorm.DB) *gorm.DB {
 		if param.Search != "" {
-			condision.Where("name LIKE ?", param.Search)
+			condision.Where("name LIKE ?", "%" + param.Search + "%")
 		}
 		if param.MaxSize != 0 {
 			condision.Where("building_area >= ? AND building_area <= ?", param.MinSize, param.MaxSize)
@@ -60,7 +61,7 @@ func (r *defaultRepo) FindWarehouseList(ctx context.Context, param paginate.Pagi
 		case param.LowerPrice:
 			condision.Order("price asc")
 		case param.Recomendation:
-			condision.Where("SQRT(POW(69.1 * (Latitude - ?), 2) + POW(69.1 * (? - Longitude) * COS(Latitude / 57.3), 2)) as distance", lat, long).Order("distance asc")
+			condision.Order(fmt.Sprintf("SQRT(POW(69.1 * (latitude - %v), 2) + POW(69.1 * (%v - longitude) * COS(latitude / 57.3), 2))", lat, long))
 		}
 
 		
@@ -70,7 +71,8 @@ func (r *defaultRepo) FindWarehouseList(ctx context.Context, param paginate.Pagi
 	if err != nil {
 		return
 	}
-	err = r.db.WithContext(ctx).Preload("District").Preload("WarehouseImg").
+	err = r.db.WithContext(ctx).Preload("District").Preload("District.Regency").
+		Preload("District.Regency.Province").Preload("WarehouseImg").
 		Scopes(paginate.Paginate(param.Page, param.Limit)).Scopes(query).Find(&resp).Error
     return
 }

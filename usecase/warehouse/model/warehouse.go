@@ -43,10 +43,13 @@ type WarehouseListResponse struct {
 	Id           int     `json:"id"`
 	Name         string  `json:"name"`
 	DistrictName string  `json:"DistrictName"`
+	RegencyName  string  `json:"RegencyName"`
+	ProvinceName string  `json:"ProvinceName"`
 	SurfaceArea  float64 `json:"surfaceArea"`
 	BuildingArea float64 `json:"buildingArea"`
 	WeeklyPrice  float64 `json:"weeklyPrice"`
 	MonthlyPrice float64 `json:"monthlyPrice"`
 	AnnualPrice  float64 `json:"annualPrice"`
+	Distance     float64  `json:"distance"`
 	Image        string  `json:"image"`
 }
