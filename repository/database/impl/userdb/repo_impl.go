@@ -60,9 +60,10 @@ func (r *defaultRepo) DeleteUser(ctx context.Context, req *entity.User) (err err
 }
 
 func (r *defaultRepo) GetUserDetailByUserId(ctx context.Context, userId int) (resp *entity.UserDetail, err error) {
-	err = r.db.WithContext(ctx).Preload("Province").
-		Preload("Regency").
+	err = r.db.WithContext(ctx).
 		Preload("District").
+		Preload("District.Regency").
+		Preload("District.Regency.Province").
 		Take(&resp, "user_id = ?", userId).
 		Error
 	return

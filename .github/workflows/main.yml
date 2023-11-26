@@ -54,3 +54,6 @@ jobs:
               -e CORE_HOST=${{ secrets.CORE_HOST }} \
               --name warehouse-apps \
               fadilahonespot/warehouse:1.0.0
+
+            # delete image not tag
+             sudo docker images -f "dangling=true" -q | xargs docker rmi

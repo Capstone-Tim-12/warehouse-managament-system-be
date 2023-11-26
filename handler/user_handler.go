@@ -3,7 +3,6 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/user"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/user/model"
@@ -59,19 +58,14 @@ func (h *UserHandler) RegisterUserData(c echo.Context) (err error) {
 	err = c.Bind(&req)
 	if err != nil {
 		err = errors.New(http.StatusBadRequest, "invalid request")
-		fmt.Println("error bind register user data: ", err)
+		fmt.Println("error bind register user data: ", err.Error())
 		return
 	}
 
-	if req.NIK == "" {
-		err = errors.New(http.StatusBadRequest, "nik is empty")
-		fmt.Println("nik is empty ", err)
-		return
-	}
-
-	if !strings.Contains(req.Email, "@") {
-		err = errors.New(http.StatusBadRequest, "format email is invalid")
-		fmt.Println("email not valid")
+	err = c.Validate(req)
+	if err != nil {
+		fmt.Println("error validate data: ", err.Error())
+		err = errors.New(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -86,23 +80,23 @@ func (h *UserHandler) RegisterUserData(c echo.Context) (err error) {
 func (h *UserHandler) RegisterUser(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	var req model.RegisterUserRequest
+
+	longitude := c.Request().Header.Get("longitude")
+	latitude := c.Request().Header.Get("latitude")
+
 	err = c.Bind(&req)
 	if err != nil {
 		err = errors.New(http.StatusBadRequest, "invalid request")
 		fmt.Println("error bind register user data: ", err.Error())
 		return
 	}
-	if req.Username == "" {
-		err = errors.New(http.StatusBadRequest, "username must be filled in")
-		fmt.Println("username is empty")
+	err = c.Validate(req)
+	if err != nil {
+		fmt.Println("error validate data: ", err.Error())
+		err = errors.New(http.StatusBadRequest, err.Error())
 		return
 	}
-	if !strings.Contains(req.Email, "@") {
-		err = errors.New(http.StatusBadRequest, "format email is invalid")
-		fmt.Println("email not valid")
-		return
-	}
-	registerResponse, err := h.userUsecase.UserRegister(ctx, req)
+	registerResponse, err := h.userUsecase.UserRegister(ctx, req, cast.ToFloat64(longitude), cast.ToFloat64(latitude))
 	if err != nil {
 		return
 	}
@@ -120,9 +114,10 @@ func (h *UserHandler) ResendUserOTP(c echo.Context) (err error) {
 		return
 	}
 
-	if req.Email == "" {
-		err = errors.New(http.StatusBadRequest, "email is empty")
-		fmt.Println("email is empty ", err)
+	err = c.Validate(req)
+	if err != nil {
+		fmt.Println("error validate data: ", err.Error())
+		err = errors.New(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -136,11 +131,20 @@ func (h *UserHandler) ResendUserOTP(c echo.Context) (err error) {
 func (h *UserHandler) LoginUser(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	var req model.LoginRequest
+	longitude := c.Request().Header.Get("longitude")
+	latitude := c.Request().Header.Get("latitude")
 
 	err = c.Bind(&req)
 	if err != nil {
 		err = errors.New(http.StatusBadRequest, "invaid request")
 		fmt.Println("error bind  data: ", err)
+		return
+	}
+
+	err = c.Validate(req)
+	if err != nil {
+		fmt.Println("error validate data: ", err.Error())
+		err = errors.New(http.StatusBadRequest, err.Error())
 		return
 	}
 	if req.Email == "" {
@@ -155,7 +159,7 @@ func (h *UserHandler) LoginUser(c echo.Context) (err error) {
 		return
 	}
 
-	userResponse, err := h.userUsecase.Login(ctx, req)
+	userResponse, err := h.userUsecase.Login(ctx, req, cast.ToFloat64(latitude), cast.ToFloat64(longitude))
 	if err != nil {
 		return
 	}
@@ -171,11 +175,13 @@ func (h *UserHandler) VerificationOtpUser(c echo.Context) (err error) {
 		fmt.Println("error bind register user data: ", err)
 		return
 	}
-	if req.Email == "" {
-		err = errors.New(http.StatusBadRequest, "email is empty")
-		fmt.Println("email is empty ", err)
+	err = c.Validate(req)
+	if err != nil {
+		fmt.Println("error validate data: ", err.Error())
+		err = errors.New(http.StatusBadRequest, err.Error())
 		return
 	}
+
 	data, err := h.userUsecase.VerificationUser(ctx, req)
 	if err != nil {
 		return
@@ -194,15 +200,10 @@ func (h *UserHandler) ResetPassword(c echo.Context) (err error) {
 		return
 	}
 
-	if req.Email == "" {
-		err = errors.New(http.StatusBadRequest, "email is empty")
-		fmt.Println("email is empty ", err)
-		return
-	}
-
-	if req.NewPassword == "" {
-		err = errors.New(http.StatusBadRequest, "new password is empty")
-		fmt.Println("email is empty ", err)
+	err = c.Validate(req)
+	if err != nil {
+		fmt.Println("error validate data: ", err.Error())
+		err = errors.New(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -236,9 +237,10 @@ func (h *UserHandler) UpdateUsername(c echo.Context) (err error) {
 		return
 	}
 
-	if req.Username == "" {
-		err = errors.New(http.StatusBadRequest, "username is empty")
-		fmt.Println("username is empty ", err)
+	err = c.Validate(req)
+	if err != nil {
+		fmt.Println("error validate data: ", err.Error())
+		err = errors.New(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -261,9 +263,10 @@ func (h *UserHandler) UpdatePhotoProfile(c echo.Context) (err error) {
 		return
 	}
 
-	if req.UrlImage == "" {
-		err = errors.New(http.StatusBadRequest, "image is empty")
-		fmt.Println("image is empty ", err)
+	err = c.Validate(req)
+	if err != nil {
+		fmt.Println("error validate data: ", err.Error())
+		err = errors.New(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -318,14 +321,10 @@ func (h *UserHandler) UpdateEmail(c echo.Context) (err error) {
 		return
 	}
 
-	if req.Email == "" {
-		err = errors.New(http.StatusBadRequest, "email is empty")
-		return
-	}
-
-	if !strings.Contains(req.Email, "@") {
-		err = errors.New(http.StatusBadRequest, "format email is invalid")
-		fmt.Println("email not valid")
+	err = c.Validate(req)
+	if err != nil {
+		fmt.Println("error validate data: ", err.Error())
+		err = errors.New(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -339,7 +338,13 @@ func (h *UserHandler) UpdateEmail(c echo.Context) (err error) {
 func (h *UserHandler) DeleteUser(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	clamsData := utils.GetClamsJwt(c)
-	err = h.userUsecase.DeleteUser(ctx, cast.ToInt(clamsData.UserId))
+	if clamsData.UserRole != "admin" {
+		fmt.Println("role is not admin")
+		err = errors.New(http.StatusUnauthorized, "role is not admin")
+		return
+	}
+	userId := c.Param("userId")
+	err = h.userUsecase.DeleteUser(ctx, cast.ToInt(userId))
 	if err != nil {
 		return
 	}

@@ -170,7 +170,7 @@ func (w *wrapper) UploadImage(ctx context.Context, req *multipart.FileHeader) (r
 	}
 	
 	writer.Close()
-	fmt.Println(ctx, "[UploadImage Request]", address+path, req)
+	fmt.Println(ctx, "[UploadImage Request]", address+path)
 
 	reqhttp, err := http.NewRequest("POST", address+path, &requestBody)
 	if err != nil {

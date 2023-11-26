@@ -18,9 +18,8 @@ type Warehouse struct {
 	Name         string
 	Longitude    float64
 	Latitude     float64
-	ProvinceID   string
-	RegencyID    string
 	DistrictID   string
+	District     District `gorm:"foreignKey:DistrictID"`
 	Address      string
 	BuildingArea float64
 	SurfaceArea  float64
@@ -32,7 +31,7 @@ type Warehouse struct {
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 	DeletedAt    gorm.DeletedAt `gorm:"index"`
-	WareHouseImg []WarehouseImg
+	WarehouseImg []WarehouseImg
 }
 
 type WarehouseImg struct {

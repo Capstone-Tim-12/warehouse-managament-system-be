@@ -3,7 +3,7 @@ package model
 import "time"
 
 type UpdateUsernameProfileRequest struct {
-	Username string `json:"username"`
+	Username string `json:"username" validate:"required"`
 }
 
 type GetProfileResponse struct {
@@ -24,7 +24,7 @@ type GetProfileResponse struct {
 	Citizenship      string    `json:"citizenship"`
 	ProvinceID       string    `json:"provinceID"`
 	ProvinceName     string    `json:"provinceName"`
-	RegencyID        string    `json:"regionID"`
+	RegencyID        string    `json:"regencyID"`
 	RegencyName      string    `json:"regencyName"`
 	DistrictID       string    `json:"districtID"`
 	DistrictName     string    `json:"districtName"`
@@ -35,7 +35,7 @@ type UploadPhotoResponse struct {
 }
 
 type UpdatePhotoProfileRequest struct {
-	UrlImage string `json:"urlImage"`
+	UrlImage string `json:"urlImage" validate:"url,required"`
 }
 
 type GetAvatarResponse struct {

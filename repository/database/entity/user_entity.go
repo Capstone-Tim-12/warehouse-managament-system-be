@@ -22,6 +22,8 @@ type User struct {
 	Password         string
 	Role             Role
 	Photo            string
+	Longitude        float64
+	Latitude         float64
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 	DeletedAt        gorm.DeletedAt `gorm:"index"`
@@ -40,10 +42,6 @@ type UserDetail struct {
 	Work         string
 	Citizenship  string
 	UserID       int
-	ProvinceID   string
-	Province     Province `gorm:"foreignKey:ProvinceID"`
-	RegencyID    string
-	Regency      Regency `gorm:"foreignKey:RegencyID"`
 	DistrictID   string
 	District     District `gorm:"foreignKey:DistrictID"`
 	CreatedAt    time.Time

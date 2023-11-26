@@ -90,10 +90,10 @@ func (s *defaultUser) GetProfile(ctx context.Context, userId string) (resp model
 		resp.DateBirth = userDetail.DateBirth
 		resp.Work = userDetail.Work
 		resp.Citizenship = userDetail.Citizenship
-		resp.ProvinceID = userDetail.ProvinceID
-		resp.ProvinceName = userDetail.Province.Name
-		resp.RegencyID = userDetail.RegencyID
-		resp.RegencyName = userDetail.Regency.Name
+		resp.ProvinceID = userDetail.District.Regency.ProvinceID
+		resp.ProvinceName = userDetail.District.Regency.Province.Name
+		resp.RegencyID = userDetail.District.RegencyID
+		resp.RegencyName = userDetail.District.Regency.Name
 		resp.DistrictID = userDetail.DistrictID
 		resp.DistrictName = userDetail.District.Name
 	}

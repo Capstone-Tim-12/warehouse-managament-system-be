@@ -4,22 +4,20 @@ type Province struct {
 	ID         string `gorm:"size:12;primarykey"`
 	Name       string
 	Regency    []Regency
-	UserDetail []UserDetail
-	Warehouse  []Warehouse
 }
 
 type Regency struct {
 	ID         string `gorm:"size:12;primarykey"`
 	ProvinceID string
+	Province   Province `gorm:"foreignKey:ProvinceID"`
 	Name       string
 	District   []District
-	UserDetail []UserDetail
-	Warehouse  []Warehouse
 }
 
 type District struct {
 	ID         string `gorm:"size:12;primarykey"`
 	RegencyID  string
+	Regency    Regency `gorm:"foreignKey:RegencyID"`
 	Name       string
 	Village    []Village
 	UserDetail []UserDetail
@@ -27,7 +25,8 @@ type District struct {
 }
 
 type Village struct {
-	ID         string `gorm:"size:12;primarykey"`
+	ID         string   `gorm:"size:12;primarykey"`
+	District   District `gorm:"foreignKey:DistrictID"`
 	DistrictID string
 	Name       string
 }
