@@ -50,6 +50,8 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	sc.POST("/user/upload/photo", r.UserHandler.UploadPhoto)
 	sc.GET("/user/avatar", r.UserHandler.GetAvatarList)
 	sc.PUT("/user/profile/email", r.UserHandler.UpdateEmail)
+	
+	sc.DELETE("/dasboard/user/:userId", r.UserHandler.DeleteUser)
 
 	sc.POST("/warehouse/detail", r.WarehouseHandler.CreateWarehouseDetail)
 	sc.PUT("/warehouse/detail/:warehouseId", r.WarehouseHandler.UpdateWarehouseById)

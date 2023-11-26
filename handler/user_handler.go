@@ -334,3 +334,19 @@ func (h *UserHandler) UpdateEmail(c echo.Context) (err error) {
 	}
 	return response.NewSuccessResponse(c, nil)
 }
+
+func (h *UserHandler) DeleteUser(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	clamsData := utils.GetClamsJwt(c)
+	if clamsData.UserRole != "admin" {
+		fmt.Println("role is not admin")
+		err = errors.New(http.StatusUnauthorized, "role is not admin")
+		return
+	}
+	userId := c.Param("userId")
+	err = h.userUsecase.DeleteUser(ctx, cast.ToInt(userId))
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, nil)
+}
