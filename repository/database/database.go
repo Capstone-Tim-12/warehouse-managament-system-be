@@ -36,8 +36,14 @@ func InitDB() *gorm.DB {
 		DB.AutoMigrate(&entity.User{})
 		DB.AutoMigrate(&entity.UserDetail{})
 		DB.AutoMigrate(&entity.Avatar{})
+		DB.AutoMigrate(&entity.WarehouseType{})
 		DB.AutoMigrate(&entity.Warehouse{})
 		DB.AutoMigrate(&entity.WarehouseImg{})
+		DB.AutoMigrate(&entity.PaymentScheme{})
+		DB.AutoMigrate(&entity.Transaction{})
+		DB.AutoMigrate(&entity.Instalment{})
+		DB.AutoMigrate(&entity.PaymentMethod{})
+		DB.AutoMigrate(&entity.OngoingInstalment{})
 	}
 
 	return DB

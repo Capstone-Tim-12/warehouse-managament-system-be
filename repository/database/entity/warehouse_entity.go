@@ -14,24 +14,26 @@ const (
 )
 
 type Warehouse struct {
-	ID           int `gorm:"primarykey"`
-	Name         string
-	Longitude    float64
-	Latitude     float64
-	DistrictID   string
-	District     District `gorm:"foreignKey:DistrictID"`
-	Address      string
-	BuildingArea float64
-	SurfaceArea  float64
-	Owner        string
-	PhoneNumber  string
-	Price        float64
-	Description  string
-	Status       WarehouseStatus
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	DeletedAt    gorm.DeletedAt `gorm:"index"`
-	WarehouseImg []WarehouseImg
+	ID              int `gorm:"primarykey"`
+	Name            string
+	Longitude       float64
+	Latitude        float64
+	DistrictID      string
+	District        District `gorm:"foreignKey:DistrictID"`
+	Address         string
+	BuildingArea    float64
+	SurfaceArea     float64
+	Owner           string
+	PhoneNumber     string
+	Price           float64
+	Description     string
+	WarehouseTypeID int
+	WarehouseType   WarehouseType `gorm:"foreignKey:WarehouseTypeID"`
+	Status          WarehouseStatus
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
+	DeletedAt       gorm.DeletedAt `gorm:"index"`
+	WarehouseImg    []WarehouseImg
 }
 
 type WarehouseImg struct {
@@ -41,4 +43,13 @@ type WarehouseImg struct {
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   gorm.DeletedAt `gorm:"index"`
+}
+
+type WarehouseType struct {
+	ID        int `gorm:"primarykey"`
+	Name      string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+	Warehouse []Warehouse
 }
