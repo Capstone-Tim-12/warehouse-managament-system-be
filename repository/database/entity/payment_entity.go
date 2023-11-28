@@ -10,9 +10,9 @@ type TranscationStatus string
 type InstalmentStatus string
 
 const (
-	Approved   = "disetujui"
-	Rejected   = "ditolak"
-	Submission = "pengajuan"
+	Approved   TranscationStatus = "disetujui"
+	Rejected   TranscationStatus = "ditolak"
+	Submission TranscationStatus = "pengajuan"
 )
 
 const (

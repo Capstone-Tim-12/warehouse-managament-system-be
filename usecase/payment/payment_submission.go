@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/entity"
@@ -34,16 +35,16 @@ func (s *defaultPayment) SubmissionWarehouse(ctx context.Context, userId int, re
 	}
 
 	var dateOut time.Time
-	if schemeData.Scheme == "tahunan" {
+	if strings.EqualFold(schemeData.Scheme, "tahunan") {
 		dateOut = time.Now().AddDate(req.Duration, 0, 0)
-	}
-
-	if schemeData.Scheme == "bulanan" {
+	} else if strings.EqualFold(schemeData.Scheme,"bulanan") {
 		dateOut = time.Now().AddDate(0, req.Duration, 0)
-	}
-
-	if schemeData.Scheme == "mingguan" {
+	} else if strings.EqualFold(schemeData.Scheme, "mingguan") {
 		dateOut = time.Now().AddDate(0, 0, req.Duration*7)
+	} else {
+		fmt.Println("data payment scheme not supported")
+		err  = errors.New(http.StatusForbidden, "data payment scheme not supported")
+		return
 	}
 
 	reqTransaction := entity.Transaction{
