@@ -50,6 +50,16 @@ type WarehouseListResponse struct {
 	WeeklyPrice  float64 `json:"weeklyPrice"`
 	MonthlyPrice float64 `json:"monthlyPrice"`
 	AnnualPrice  float64 `json:"annualPrice"`
-	Distance     float64  `json:"distance"`
+	Distance     float64 `json:"distance"`
+	Image        string  `json:"image"`
+}
+
+type GetWarehouseAppResponse struct {
+	Id           int     `json:"id"`
+	Name         string  `json:"name"`
+	RegencyName  string  `json:"regencyName"`
+	WeeklyPrice  float64 `json:"weeklyPrice"`
+	MonthlyPrice float64 `json:"monthlyPrice"`
+	AnnualPrice  float64 `json:"annualPrice"`
 	Image        string  `json:"image"`
 }

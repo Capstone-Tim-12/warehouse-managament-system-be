@@ -147,17 +147,6 @@ func (h *UserHandler) LoginUser(c echo.Context) (err error) {
 		err = errors.New(http.StatusBadRequest, err.Error())
 		return
 	}
-	if req.Email == "" {
-		err = errors.New(http.StatusBadRequest, "email is empty")
-		fmt.Println("Email is empty ", err)
-		return
-	}
-
-	if req.Password == "" {
-		err = errors.New(http.StatusBadRequest, "password is empty")
-		fmt.Println("password is empty ", err)
-		return
-	}
 
 	userResponse, err := h.userUsecase.Login(ctx, req, cast.ToFloat64(latitude), cast.ToFloat64(longitude))
 	if err != nil {

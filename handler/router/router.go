@@ -10,6 +10,7 @@ type Router struct {
 	PingHandler      *handler.PingHandler
 	UserHandler      *handler.UserHandler
 	WarehouseHandler *handler.WarehouseHandler
+	PaymentHandler   *handler.PaymentHandler
 }
 
 func (r *Router) Validate() {
@@ -23,6 +24,10 @@ func (r *Router) Validate() {
 
 	if r.WarehouseHandler == nil {
 		panic("warehouse handler is nil")
+	}
+
+	if r.PaymentHandler == nil {
+		panic("payment handler is nil")
 	}
 }
 
@@ -39,8 +44,6 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	e.POST("/user/login", r.UserHandler.LoginUser)
 	e.POST("/user/otp-verify", r.UserHandler.VerificationOtpUser)
 	e.POST("/user/reset-password", r.UserHandler.ResetPassword)
-	e.GET("/warehouse/detail/:warehouseId", r.WarehouseHandler.GetWarehouseById)
-	// e.GET("/warehouse/", r.WarehouseHandler.GetAllWarehouse)
 
 	sc := e.Group("")
 	sc.Use(middleware.JwtMiddleware())
@@ -50,12 +53,15 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	sc.POST("/user/upload/photo", r.UserHandler.UploadPhoto)
 	sc.GET("/user/avatar", r.UserHandler.GetAvatarList)
 	sc.PUT("/user/profile/email", r.UserHandler.UpdateEmail)
-	
+
 	sc.DELETE("/dasboard/user/:userId", r.UserHandler.DeleteUser)
 
 	sc.POST("/warehouse/detail", r.WarehouseHandler.CreateWarehouseDetail)
 	sc.PUT("/warehouse/detail/:warehouseId", r.WarehouseHandler.UpdateWarehouseById)
 	sc.GET("/warehouse/user/list", r.WarehouseHandler.GetWarehouseList)
+	sc.GET("/warehouse/detail/:warehouseId", r.WarehouseHandler.GetWarehouseById)
+
+	sc.POST("/payment/user/submission", r.PaymentHandler.SubmissionWarehouse)
 
 	return r
 }
