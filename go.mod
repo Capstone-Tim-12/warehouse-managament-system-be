@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/fadilahonespot/library v0.0.0-20231001042206-a325165c2334
+	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.11.3
@@ -15,7 +16,6 @@ require (
 require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator v9.31.0+incompatible // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	golang.org/x/time v0.3.0 // indirect
 )
