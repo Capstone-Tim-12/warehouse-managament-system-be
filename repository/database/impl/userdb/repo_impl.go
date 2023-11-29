@@ -73,5 +73,3 @@ func (r *defaultRepo) GetAllAvatar(ctx context.Context) (resp []entity.Avatar, e
 	err = r.db.WithContext(ctx).Find(&resp).Error
 	return
 }
-
-

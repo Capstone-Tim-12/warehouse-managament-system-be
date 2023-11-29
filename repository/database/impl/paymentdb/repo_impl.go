@@ -25,6 +25,11 @@ func (s *defaultRepo) CreateTransaction(ctx context.Context, req *entity.Transac
 	return
 }
 
+func (s *defaultRepo) FindPaymentScheme(ctx context.Context) (resp []entity.PaymentScheme, err error) {
+	err = s.db.WithContext(ctx).Find(&resp).Error
+	return
+}
+
 func (s *defaultRepo) GetListTransactionDasboar(ctx context.Context) (resp []entity.Transaction, err error) {
 	err = s.db.WithContext(ctx).Preload("User").Find(&resp).Error
 	return

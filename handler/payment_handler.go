@@ -46,4 +46,13 @@ func (h *PaymentHandler) SubmissionWarehouse(c echo.Context) (err error) {
 	return response.NewSuccessResponse(c, nil)
 }
 
+func (h *PaymentHandler) GetScheme(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	clamsData := utils.GetClamsJwt(c)
 
+	data, err := h.paymentUsecase.GetPaymentScheme(ctx, clamsData.UserId)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, data)
+}
