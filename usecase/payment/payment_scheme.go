@@ -9,14 +9,7 @@ import (
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/errors"
 )
 
-func (s *defaultPayment) GetPaymentScheme(ctx context.Context, id int) (resp []model.SchemeResponse, err error) {
-	_, err = s.userRepo.GetUserById(ctx, id)
-	if err != nil {
-		fmt.Println("error finding user: ", err.Error())
-		err = errors.New(http.StatusNotFound, "user not found")
-		return
-	}
-
+func (s *defaultPayment) GetPaymentScheme(ctx context.Context) (resp []model.SchemeResponse, err error) {
 	schemeData, err := s.paymentRepo.FindPaymentScheme(ctx)
 	if err != nil {
 		fmt.Println("error finding scheme: ", err.Error())
