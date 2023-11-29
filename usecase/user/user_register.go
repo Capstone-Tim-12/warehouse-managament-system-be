@@ -20,7 +20,7 @@ func (s *defaultUser) UserRegister(ctx context.Context, req model.RegisterUserRe
 		return
 	}
 
-	userData2, _ := s.userRepo.GetUserByEmail(ctx, req.Username)
+	userData2, _ := s.userRepo.GetUserByUsername(ctx, req.Username)
 	if userData2.Username != "" {
 		err = errors.New(http.StatusConflict, "username already exists")
 		fmt.Println("username already exists")
