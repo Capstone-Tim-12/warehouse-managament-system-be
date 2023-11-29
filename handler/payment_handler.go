@@ -48,9 +48,8 @@ func (h *PaymentHandler) SubmissionWarehouse(c echo.Context) (err error) {
 
 func (h *PaymentHandler) GetScheme(c echo.Context) (err error) {
 	ctx := c.Request().Context()
-	clamsData := utils.GetClamsJwt(c)
 
-	data, err := h.paymentUsecase.GetPaymentScheme(ctx, clamsData.UserId)
+	data, err := h.paymentUsecase.GetPaymentScheme(ctx)
 	if err != nil {
 		return
 	}

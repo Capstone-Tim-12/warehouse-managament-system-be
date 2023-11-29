@@ -63,7 +63,7 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	sc.DELETE("/warehouse/detail/:warehouseId", r.WarehouseHandler.DeleteWarehouseById)
 
 	sc.POST("/payment/user/submission", r.PaymentHandler.SubmissionWarehouse)
-	sc.GET(" /payment/scheme", r.PaymentHandler.GetScheme)
+	sc.GET("/payment/scheme", r.PaymentHandler.GetScheme)
 
 	return r
 }
