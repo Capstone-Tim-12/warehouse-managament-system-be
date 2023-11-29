@@ -8,6 +8,7 @@ import (
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/user/model"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/errors"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/paginate"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/response"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/validation"
 	"github.com/labstack/echo/v4"
@@ -28,7 +29,7 @@ func (h *UserHandler) GetAllProvince(c echo.Context) (err error) {
 	if err != nil {
 		return
 	}
-	return response.NewSuccessResponse(c, data)
+	return response.NewSuccessResponse(c, http.StatusOK, data)
 }
 
 func (h *UserHandler) GetRegencyByProvinceId(c echo.Context) (err error) {
@@ -38,7 +39,7 @@ func (h *UserHandler) GetRegencyByProvinceId(c echo.Context) (err error) {
 	if err != nil {
 		return
 	}
-	return response.NewSuccessResponse(c, data)
+	return response.NewSuccessResponse(c, http.StatusOK, data)
 }
 
 func (h *UserHandler) GetDistricByRegencyId(c echo.Context) (err error) {
@@ -49,7 +50,7 @@ func (h *UserHandler) GetDistricByRegencyId(c echo.Context) (err error) {
 		return
 	}
 
-	return response.NewSuccessResponse(c, data)
+	return response.NewSuccessResponse(c, http.StatusOK, data)
 }
 
 func (h *UserHandler) RegisterUserData(c echo.Context) (err error) {
@@ -74,7 +75,7 @@ func (h *UserHandler) RegisterUserData(c echo.Context) (err error) {
 		return
 	}
 
-	return response.NewSuccessResponse(c, nil)
+	return response.NewSuccessResponse(c, http.StatusCreated, nil)
 }
 
 func (h *UserHandler) RegisterUser(c echo.Context) (err error) {
@@ -100,7 +101,7 @@ func (h *UserHandler) RegisterUser(c echo.Context) (err error) {
 	if err != nil {
 		return
 	}
-	return response.NewSuccessResponse(c, registerResponse)
+	return response.NewSuccessResponse(c, http.StatusCreated, registerResponse)
 }
 
 func (h *UserHandler) ResendUserOTP(c echo.Context) (err error) {
@@ -125,7 +126,7 @@ func (h *UserHandler) ResendUserOTP(c echo.Context) (err error) {
 	if err != nil {
 		return
 	}
-	return response.NewSuccessResponse(c, nil)
+	return response.NewSuccessResponse(c, http.StatusOK, nil)
 }
 
 func (h *UserHandler) LoginUser(c echo.Context) (err error) {
@@ -152,7 +153,7 @@ func (h *UserHandler) LoginUser(c echo.Context) (err error) {
 	if err != nil {
 		return
 	}
-	return response.NewSuccessResponse(c, userResponse)
+	return response.NewSuccessResponse(c, http.StatusOK, userResponse)
 }
 
 func (h *UserHandler) VerificationOtpUser(c echo.Context) (err error) {
@@ -175,7 +176,7 @@ func (h *UserHandler) VerificationOtpUser(c echo.Context) (err error) {
 	if err != nil {
 		return
 	}
-	return response.NewSuccessResponse(c, data)
+	return response.NewSuccessResponse(c, http.StatusOK, data)
 }
 
 func (h *UserHandler) ResetPassword(c echo.Context) (err error) {
@@ -200,7 +201,7 @@ func (h *UserHandler) ResetPassword(c echo.Context) (err error) {
 	if err != nil {
 		return
 	}
-	return response.NewSuccessResponse(c, nil)
+	return response.NewSuccessResponse(c, http.StatusOK, nil)
 }
 
 func (h *UserHandler) GetProfile(c echo.Context) (err error) {
@@ -211,7 +212,7 @@ func (h *UserHandler) GetProfile(c echo.Context) (err error) {
 		fmt.Println("failed to get profile", err)
 		return
 	}
-	return response.NewSuccessResponse(c, data)
+	return response.NewSuccessResponse(c, http.StatusOK, data)
 }
 
 func (h *UserHandler) UpdateUsername(c echo.Context) (err error) {
@@ -237,7 +238,7 @@ func (h *UserHandler) UpdateUsername(c echo.Context) (err error) {
 	if err != nil {
 		return
 	}
-	return response.NewSuccessResponse(c, nil)
+	return response.NewSuccessResponse(c, http.StatusOK, nil)
 }
 
 func (h *UserHandler) UpdatePhotoProfile(c echo.Context) (err error) {
@@ -263,7 +264,7 @@ func (h *UserHandler) UpdatePhotoProfile(c echo.Context) (err error) {
 	if err != nil {
 		return
 	}
-	return response.NewSuccessResponse(c, nil)
+	return response.NewSuccessResponse(c, http.StatusOK, nil)
 }
 
 func (h *UserHandler) UploadPhoto(c echo.Context) (err error) {
@@ -285,7 +286,7 @@ func (h *UserHandler) UploadPhoto(c echo.Context) (err error) {
 	if err != nil {
 		return
 	}
-	return response.NewSuccessResponse(c, data)
+	return response.NewSuccessResponse(c, http.StatusOK, data)
 }
 
 func (h *UserHandler) GetAvatarList(c echo.Context) (err error) {
@@ -295,7 +296,7 @@ func (h *UserHandler) GetAvatarList(c echo.Context) (err error) {
 		fmt.Println("failed to get profile", err)
 		return
 	}
-	return response.NewSuccessResponse(c, data)
+	return response.NewSuccessResponse(c, http.StatusOK, data)
 }
 
 func (h *UserHandler) UpdateEmail(c echo.Context) (err error) {
@@ -321,7 +322,7 @@ func (h *UserHandler) UpdateEmail(c echo.Context) (err error) {
 	if err != nil {
 		return
 	}
-	return response.NewSuccessResponse(c, nil)
+	return response.NewSuccessResponse(c, http.StatusOK, nil)
 }
 
 func (h *UserHandler) DeleteUser(c echo.Context) (err error) {
@@ -337,5 +338,18 @@ func (h *UserHandler) DeleteUser(c echo.Context) (err error) {
 	if err != nil {
 		return
 	}
-	return response.NewSuccessResponse(c, nil)
+	return response.NewSuccessResponse(c, http.StatusOK, nil)
+}
+
+func (h *UserHandler) GetUserList(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	param, _ := paginate.GetParams(c)
+	data, count, err := h.userUsecase.GetUserList(ctx, param)
+	if err != nil {
+		return
+	}
+
+	resp := response.NewResponseSuccessPagination(float64(count), param, data)
+	err = c.JSON(http.StatusOK, resp)
+	return
 }

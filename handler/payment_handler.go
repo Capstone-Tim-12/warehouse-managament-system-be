@@ -43,7 +43,7 @@ func (h *PaymentHandler) SubmissionWarehouse(c echo.Context) (err error) {
 		return
 	}
 
-	return response.NewSuccessResponse(c, nil)
+	return response.NewSuccessResponse(c, http.StatusOK, nil)
 }
 
 func (h *PaymentHandler) GetScheme(c echo.Context) (err error) {
@@ -53,5 +53,5 @@ func (h *PaymentHandler) GetScheme(c echo.Context) (err error) {
 	if err != nil {
 		return
 	}
-	return response.NewSuccessResponse(c, data)
+	return response.NewSuccessResponse(c, http.StatusOK, data)
 }
