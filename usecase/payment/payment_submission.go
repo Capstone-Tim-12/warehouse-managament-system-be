@@ -65,6 +65,6 @@ func (s *defaultPayment) SubmissionWarehouse(ctx context.Context, userId int, re
 	return
 }
 
-func (s *defaultPayment) GetTransactionListDasboard(ctx context.Context) {
-
+func (s *defaultPayment) GetTransactionListDasboard(ctx context.Context) (resp []model.TransactionListDasboard, err error) {
+	return
 }

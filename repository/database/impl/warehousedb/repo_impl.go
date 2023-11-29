@@ -86,7 +86,12 @@ func (r *defaultRepo) BeginTrans(ctx context.Context) *gorm.DB {
 	return r.db.WithContext(ctx).Begin()
 }
 
-func (s *defaultRepo) DeleteWarehouseImgByWarehouseId(ctx context.Context, tx *gorm.DB, warehouseId int) (err error) {
+func (r *defaultRepo) DeleteWarehouseImgByWarehouseId(ctx context.Context, tx *gorm.DB, warehouseId int) (err error) {
 	err = tx.WithContext(ctx).Delete(&entity.WarehouseImg{}, "warehouse_id = ?", warehouseId).Error
+	return
+}
+
+func (r *defaultRepo) GetWarehouseTypeById(ctx context.Context, id int) (resp *entity.WarehouseType, err error) {
+	err = r.db.WithContext(ctx).Take(&resp, "id = ?", id).Error
 	return
 }

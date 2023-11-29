@@ -24,3 +24,8 @@ func (s *defaultRepo) CreateTransaction(ctx context.Context, req *entity.Transac
 	err = s.db.WithContext(ctx).Create(req).Error
 	return
 }
+
+func (s *defaultRepo) GetListTransactionDasboar(ctx context.Context) (resp []entity.Transaction, err error) {
+	err = s.db.WithContext(ctx).Preload("User").Find(&resp).Error
+	return
+}

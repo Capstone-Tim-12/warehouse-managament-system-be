@@ -1,19 +1,20 @@
 package model
 
 type WarehouseDataRequest struct {
-	Name         string   `json:"name" validate:"required"`
-	Description  string   `json:"description" validate:"required"`
-	DistrictID   string   `json:"districId" validate:"number"`
-	Address      string   `json:"address" validate:"required"`
-	SurfaceArea  float64  `json:"surfaceArea" validate:"required"`
-	BuildingArea float64  `json:"buildingArea" validate:"required"`
-	Owner        string   `json:"owner" validate:"required"`
-	PhoneNumber  string   `json:"phoneNumber" validate:"number"`
-	Longitude    float64  `json:"longitude" validate:"longitude"`
-	Latitude     float64  `json:"latitude" validate:"latitude"`
-	Status       string   `json:"status"`
-	Price        float64  `json:"price"`
-	Image        []string `json:"image"`
+	Name            string   `json:"name" validate:"required"`
+	Description     string   `json:"description" validate:"required"`
+	DistrictID      string   `json:"districId" validate:"number"`
+	WarehouseTypeId int      `json:"warehouseTypeId" validate:"number"`
+	Address         string   `json:"address" validate:"required"`
+	SurfaceArea     float64  `json:"surfaceArea" validate:"required"`
+	BuildingArea    float64  `json:"buildingArea" validate:"required"`
+	Owner           string   `json:"owner" validate:"required"`
+	PhoneNumber     string   `json:"phoneNumber" validate:"number"`
+	Longitude       float64  `json:"longitude" validate:"longitude"`
+	Latitude        float64  `json:"latitude" validate:"latitude"`
+	Status          string   `json:"status"`
+	Price           float64  `json:"price"`
+	Image           []string `json:"image"`
 }
 
 type WarehouseDataResponse struct {
