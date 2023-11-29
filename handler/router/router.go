@@ -65,5 +65,7 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	sc.POST("/payment/user/submission", r.PaymentHandler.SubmissionWarehouse)
 	sc.GET(" /payment/scheme", r.PaymentHandler.GetScheme)
 
+	sc.GET(" /dasboard/home/trx-history", r.PaymentHandler.GetTransactiionList)
+
 	return r
 }
