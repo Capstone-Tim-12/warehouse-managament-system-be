@@ -94,3 +94,8 @@ func (r *defaultRepo) GetWarehouseTypeById(ctx context.Context, id int) (resp *e
 	err = r.db.WithContext(ctx).Take(&resp, "id = ?", id).Error
 	return
 }
+
+func (r *defaultRepo) DeleteWarehouse(ctx context.Context, req *entity.Warehouse) (err error) {
+	err = r.db.WithContext(ctx).Delete(&req).Error
+	return
+}

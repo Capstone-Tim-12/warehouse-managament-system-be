@@ -60,6 +60,7 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	sc.PUT("/warehouse/detail/:warehouseId", r.WarehouseHandler.UpdateWarehouseById)
 	sc.GET("/warehouse/user/list", r.WarehouseHandler.GetWarehouseList)
 	sc.GET("/warehouse/detail/:warehouseId", r.WarehouseHandler.GetWarehouseById)
+	sc.DELETE("/warehouse/detail/:warehouseId", r.WarehouseHandler.DeleteWarehouseById)
 
 	sc.POST("/payment/user/submission", r.PaymentHandler.SubmissionWarehouse)
 	sc.GET(" /payment/scheme", r.PaymentHandler.GetScheme)

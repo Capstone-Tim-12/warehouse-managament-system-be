@@ -164,3 +164,20 @@ func (s *defaultWarehouse) UpdateWarehouseDetails(ctx context.Context, req model
 	tx.Commit()
 	return
 }
+
+func (s *defaultWarehouse) DeleteWarehouse(ctx context.Context, id string) (err error) {
+	warehouseData, err := s.warehouseRepo.FindWarehouseById(ctx, id)
+	if err != nil {
+		fmt.Println("error found warehouse: ", err.Error())
+		err = errors.New(http.StatusNotFound, "warehouse not found")
+		return
+	}
+
+	err = s.warehouseRepo.DeleteWarehouse(ctx, warehouseData)
+	if err != nil {
+		fmt.Println("error delete warehouse: ", err.Error())
+		err = errors.New(http.StatusInternalServerError, "failed delete warehouse")
+		return
+	}
+	return
+}
