@@ -18,4 +18,5 @@ type WarehouseRepository interface {
 	BeginTrans(ctx context.Context) *gorm.DB
 	DeleteWarehouseImgByWarehouseId(ctx context.Context, tx *gorm.DB, warehouseId int) (err error)
 	GetWarehouseTypeById(ctx context.Context, id int) (resp *entity.WarehouseType, err error)
+	DeleteWarehouse(ctx context.Context, req *entity.Warehouse) (err error)
 }

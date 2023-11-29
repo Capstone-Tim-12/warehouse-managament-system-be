@@ -112,3 +112,21 @@ func (h *WarehouseHandler) UpdateWarehouseById(c echo.Context) (err error) {
 	}
 	return response.NewSuccessResponse(c, nil)
 }
+
+func (h *WarehouseHandler) DeleteWarehouseById(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	clamsData := utils.GetClamsJwt(c)
+	id := c.Param("warehouseId")
+
+	if clamsData.UserRole != "admin" {
+		fmt.Println("role is not admin")
+		err = errors.New(http.StatusUnauthorized, "role is not admin")
+		return
+	}
+
+	err = h.warehouseusecase.DeleteWarehouse(ctx, id)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, nil)
+}
