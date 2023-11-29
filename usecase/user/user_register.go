@@ -13,10 +13,17 @@ import (
 )
 
 func (s *defaultUser) UserRegister(ctx context.Context, req model.RegisterUserRequest, long, lat float64) (resp model.RegisterUserResponse, err error) {
-	userdata, _ := s.userRepo.GetUserByEmailUsername(ctx, req.Email, req.Username)
+	userdata, _ := s.userRepo.GetUserByEmail(ctx, req.Email)
 	if userdata.Email != "" {
-		err = errors.New(http.StatusConflict, "email or username already exists")
-		fmt.Println("email or username already exists")
+		err = errors.New(http.StatusConflict, "email already exists")
+		fmt.Println("email already exists")
+		return
+	}
+
+	userData2, _ := s.userRepo.GetUserByEmail(ctx, req.Username)
+	if userData2.Username != "" {
+		err = errors.New(http.StatusConflict, "username already exists")
+		fmt.Println("username already exists")
 		return
 	}
 
