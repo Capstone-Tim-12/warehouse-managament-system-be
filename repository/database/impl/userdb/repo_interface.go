@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/entity"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/paginate"
 	"gorm.io/gorm"
 )
 
@@ -19,4 +20,5 @@ type UserRepository interface {
 	GetUserById(ctx context.Context, id int) (resp *entity.User, err error)
 	GetUserDetailByUserId(ctx context.Context, userId int) (resp *entity.UserDetail, err error)
 	GetAllAvatar(ctx context.Context) (resp []entity.Avatar, err error)
+	GetUserList(ctx context.Context, param paginate.Pagination) (resp []entity.User, count int64, err error)
 }

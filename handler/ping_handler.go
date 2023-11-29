@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/response"
@@ -18,5 +19,5 @@ func (h *PingHandler) PingTestConnection(c echo.Context) error {
 		"time": time.Now().UTC().Format(time.ANSIC),
 		"service": "status server is running",
 	}
-	return response.NewSuccessResponse(c, data)
+	return response.NewSuccessResponse(c, http.StatusOK, data)
 }
