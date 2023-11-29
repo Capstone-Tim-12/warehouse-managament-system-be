@@ -29,3 +29,8 @@ func (s *defaultRepo) FindPaymentScheme(ctx context.Context) (resp []entity.Paym
 	err = s.db.WithContext(ctx).Find(&resp).Error
 	return
 }
+
+func (s *defaultRepo) GetListTransactionDasboar(ctx context.Context) (resp []entity.Transaction, err error) {
+	err = s.db.WithContext(ctx).Preload("User").Find(&resp).Error
+	return
+}

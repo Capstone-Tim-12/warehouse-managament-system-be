@@ -18,19 +18,26 @@ func (s *defaultWarehouse) CreateWarehouse(ctx context.Context, req model.Wareho
 		err = errors.New(http.StatusNotFound, "district not found")
 		return
 	}
+	_, err = s.warehouseRepo.GetWarehouseTypeById(ctx, req.WarehouseTypeId)
+	if err != nil {
+		fmt.Println("error getting type id", err.Error())
+		err = errors.New(http.StatusNotFound, "warehouse type not found")
+		return
+	}
 	warehouseData := entity.Warehouse{
-		Name:         req.Name,
-		Description:  req.Description,
-		DistrictID:   req.DistrictID,
-		Address:      req.Address,
-		SurfaceArea:  req.SurfaceArea,
-		BuildingArea: req.BuildingArea,
-		Owner:        req.Owner,
-		PhoneNumber:  req.PhoneNumber,
-		Longitude:    req.Longitude,
-		Latitude:     req.Latitude,
-		Status:       entity.Available,
-		Price:        req.Price,
+		Name:            req.Name,
+		Description:     req.Description,
+		DistrictID:      req.DistrictID,
+		Address:         req.Address,
+		SurfaceArea:     req.SurfaceArea,
+		BuildingArea:    req.BuildingArea,
+		Owner:           req.Owner,
+		PhoneNumber:     req.PhoneNumber,
+		Longitude:       req.Longitude,
+		Latitude:        req.Latitude,
+		Status:          entity.Available,
+		Price:           req.Price,
+		WarehouseTypeID: req.WarehouseTypeId,
 	}
 
 	for _, img := range req.Image {
@@ -100,6 +107,13 @@ func (s *defaultWarehouse) UpdateWarehouseDetails(ctx context.Context, req model
 		return
 	}
 
+	_, err = s.warehouseRepo.GetWarehouseTypeById(ctx, req.WarehouseTypeId)
+	if err != nil {
+		fmt.Println("error getting type id", err.Error())
+		err = errors.New(http.StatusNotFound, "warehouse type not found")
+		return
+	}
+
 	warehouseData, err := s.warehouseRepo.FindWarehouseById(ctx, id)
 	if err != nil {
 		fmt.Println("failed to get data warehouse")
@@ -122,6 +136,7 @@ func (s *defaultWarehouse) UpdateWarehouseDetails(ctx context.Context, req model
 	warehouseData.Longitude = req.Longitude
 	warehouseData.Latitude = req.Latitude
 	warehouseData.Status = entity.WarehouseStatus(req.Status)
+	warehouseData.WarehouseTypeID = req.WarehouseTypeId
 
 	for _, img := range req.Image {
 		warehouseData.WarehouseImg = append(warehouseData.WarehouseImg, entity.WarehouseImg{
