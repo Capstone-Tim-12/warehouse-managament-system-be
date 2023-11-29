@@ -24,3 +24,8 @@ func (s *defaultRepo) CreateTransaction(ctx context.Context, req *entity.Transac
 	err = s.db.WithContext(ctx).Create(req).Error
 	return
 }
+
+func (s *defaultRepo) FindPaymentScheme(ctx context.Context) (resp []entity.PaymentScheme, err error) {
+	err = s.db.WithContext(ctx).Find(&resp).Error
+	return
+}

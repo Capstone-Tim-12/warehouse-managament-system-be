@@ -62,6 +62,7 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	sc.GET("/warehouse/detail/:warehouseId", r.WarehouseHandler.GetWarehouseById)
 
 	sc.POST("/payment/user/submission", r.PaymentHandler.SubmissionWarehouse)
+	sc.GET(" /payment/scheme", r.PaymentHandler.GetScheme)
 
 	return r
 }
