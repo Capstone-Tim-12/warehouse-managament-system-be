@@ -10,6 +10,7 @@ import (
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/errors"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/response"
 	"github.com/labstack/echo/v4"
+	"github.com/spf13/cast"
 )
 
 type PaymentHandler struct {
@@ -55,3 +56,22 @@ func (h *PaymentHandler) GetScheme(c echo.Context) (err error) {
 	}
 	return response.NewSuccessResponse(c, http.StatusOK, data)
 }
+
+func (h *PaymentHandler) GetListTransactionIdUser(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	userId := c.Param("userId")
+
+	clamsData := utils.GetClamsJwt(c)
+	if clamsData.UserRole != "admin" {
+		fmt.Println("role is not admin")
+		err = errors.New(http.StatusUnauthorized, "role is not admin")
+		return
+	}
+
+	data, err := h.paymentUsecase.GetListTransactionIdUser(ctx, cast.ToInt(userId))
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, http.StatusOK, data)
+}
+

@@ -45,6 +45,7 @@ func (s *defaultWarehouse) GetWarehouseList(ctx context.Context, param paginate.
 			MonthlyPrice: math.Ceil(list[i].Price / 12),
 			AnnualPrice:  list[i].Price,
 			Distance:     distance,
+			Status:       string(list[i].Status),
 			Image:        image,
 		})
 	}

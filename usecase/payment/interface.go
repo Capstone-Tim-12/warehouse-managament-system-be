@@ -9,4 +9,5 @@ import (
 type PaymentUsecase interface {
 	SubmissionWarehouse(ctx context.Context, userId int, req model.SubmissionRequest) (err error)
 	GetPaymentScheme(ctx context.Context) (resp []model.SchemeResponse, err error)
+	GetListTransactionIdUser(ctx context.Context, userId int) (resp []model.ListTrxUser, err error)
 }
