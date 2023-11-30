@@ -55,17 +55,25 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	sc.PUT("/user/profile/email", r.UserHandler.UpdateEmail)
 	
 	sc.GET("/dasboard/user/list", r.UserHandler.GetUserList)
-	sc.GET("/dasboard/warehouse/type", r.WarehouseHandler.GetWarehouseType)
+	sc.GET("/dasboard/warehouse/type", r.WarehouseHandler.GetListWarehouseType)
 	sc.DELETE("/dasboard/user/:userId", r.UserHandler.DeleteUser)
+	sc.GET("/dasboard/user/:userId", r.UserHandler.GetUserById)
+	sc.GET("/dasboard/user/:userId/transaction", r.PaymentHandler.GetListTransactionByUserId)
 
 	sc.POST("/warehouse/detail", r.WarehouseHandler.CreateWarehouseDetail)
 	sc.PUT("/warehouse/detail/:warehouseId", r.WarehouseHandler.UpdateWarehouseById)
 	sc.GET("/warehouse/user/list", r.WarehouseHandler.GetWarehouseList)
 	sc.GET("/warehouse/detail/:warehouseId", r.WarehouseHandler.GetWarehouseById)
 	sc.DELETE("/warehouse/detail/:warehouseId", r.WarehouseHandler.DeleteWarehouseById)
+	sc.POST("/warehouse/photo/upload", r.WarehouseHandler.UploadPhotoWarehouse)
 
 	sc.POST("/payment/user/submission", r.PaymentHandler.SubmissionWarehouse)
 	sc.GET("/payment/scheme", r.PaymentHandler.GetScheme)
+
+	sc.GET("/dasboard/home/trx-history", r.PaymentHandler.GetHistoryInstalmentUser)
+	sc.GET("/dasboard/list/trx-history", r.PaymentHandler.GetAllTransaction)
+	sc.PUT("/dasboard/transaction/approval/:transactionId", r.PaymentHandler.TransactionApproved)
+	sc.PUT("dasboard/transaction/rejected/:transactionId", r.PaymentHandler.TransactionRejected)
 
 	return r
 }

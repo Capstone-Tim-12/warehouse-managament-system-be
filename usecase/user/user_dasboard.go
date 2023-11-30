@@ -27,3 +27,19 @@ func (s *defaultUser) GetUserList(ctx context.Context, param paginate.Pagination
 	}
 	return
 }
+
+func (s *defaultUser) GetUserById(ctx context.Context, userId int) (resp model.UserListResponse, err error) {
+	userData, err := s.userRepo.GetUserById(ctx, userId)
+	if err != nil {
+		fmt.Println("user not found: ", err.Error())
+		err = errors.New(http.StatusNotFound, http.StatusText(http.StatusNotFound))
+		return
+	}
+	resp = model.UserListResponse{
+		UserId:   userData.ID,
+		Username: userData.Username,
+		Email:    userData.Email,
+		Photo:    userData.Photo,
+	}
+	return
+}

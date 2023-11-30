@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"mime/multipart"
 	"net/http"
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/entity"
@@ -182,16 +183,35 @@ func (s *defaultWarehouse) DeleteWarehouse(ctx context.Context, id string) (err 
 	return
 }
 
-func (s *defaultWarehouse) GetWarehouseType(ctx context.Context, id string) (resp *model.WarehouseTypeResponse, err error) {
-	warehouseData, err := s.warehouseRepo.FindWarehouseById(ctx, id)
+func (s *defaultWarehouse) GetListWarehouseType(ctx context.Context) (resp []model.WarehouseTypeResponse, err error) {
+	warehouseData, err := s.warehouseRepo.GetListWarehouseType(ctx)
 	if err != nil {
 		fmt.Println("failed find warehouse")
 		err = errors.New(http.StatusInternalServerError, "failed find warehouse")
 		return
 	}
-	resp = &model.WarehouseTypeResponse{
-		Id:   warehouseData.ID,
-		Name: warehouseData.Name,
+
+	for i := 0; i < len(warehouseData); i++ {
+		resp = append(resp, model.WarehouseTypeResponse{
+			Id:   warehouseData[i].ID,
+			Name: warehouseData[i].Name,
+		})
 	}
+	
 	return 
+}
+
+func (s *defaultWarehouse) UploadPhotoWarehouse(ctx context.Context, photo []*multipart.FileHeader) (resp model.UploadPhotoResponse, err error) {
+	for i := 0; i < len(photo); i++ {
+		data, errRes := s.coreWrapper.UploadImage(ctx, photo[i])
+		if errRes != nil {
+			fmt.Println("failed upload image: ", errRes.Error())
+			err = errors.New(http.StatusInternalServerError, "failed upload photo")
+			return
+		}
+		if len(data.Data.Images) != 0 {
+			resp.Images = append(resp.Images, data.Data.Images...)
+		}
+	}
+	return
 }
