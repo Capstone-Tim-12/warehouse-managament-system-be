@@ -132,6 +132,24 @@ func (h *WarehouseHandler) DeleteWarehouseById(c echo.Context) (err error) {
 	return response.NewSuccessResponse(c, http.StatusOK, nil)
 }
 
+func (h *WarehouseHandler) GetListWarehouseType(c echo.Context) (err error){
+	ctx := c.Request().Context()
+	clamsData := utils.GetClamsJwt(c)
+	if clamsData.UserRole != "admin" {
+		fmt.Println("role is not admin")
+		err = errors.New(http.StatusUnauthorized, "role is not admin")
+		return
+	}
+	data, err := h.warehouseusecase.GetListWarehouseType(ctx)
+	if err != nil {
+		return
+	}
+
+	resp := response.NewSuccessResponse(c, http.StatusOK, data)
+	err = c.JSON(http.StatusOK, resp)
+	return
+}
+
 func (h *WarehouseHandler) UploadPhotoWarehouse(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	clamsData := utils.GetClamsJwt(c)

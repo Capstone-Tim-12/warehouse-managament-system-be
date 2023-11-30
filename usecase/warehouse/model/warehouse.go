@@ -41,19 +41,21 @@ type WarehouseDataResponse struct {
 }
 
 type WarehouseListResponse struct {
-	Id           int     `json:"id"`
-	Name         string  `json:"name"`
-	DistrictName string  `json:"DistrictName"`
-	RegencyName  string  `json:"RegencyName"`
-	ProvinceName string  `json:"ProvinceName"`
-	SurfaceArea  float64 `json:"surfaceArea"`
-	BuildingArea float64 `json:"buildingArea"`
-	WeeklyPrice  float64 `json:"weeklyPrice"`
-	MonthlyPrice float64 `json:"monthlyPrice"`
-	AnnualPrice  float64 `json:"annualPrice"`
-	Distance     float64 `json:"distance"`
-	Status       string  `json:"status"`
-	Image        string  `json:"image"`
+	Id                int     `json:"id"`
+	Name              string  `json:"name"`
+	DistrictName      string  `json:"DistrictName"`
+	RegencyName       string  `json:"RegencyName"`
+	ProvinceName      string  `json:"ProvinceName"`
+	SurfaceArea       float64 `json:"surfaceArea"`
+	BuildingArea      float64 `json:"buildingArea"`
+	WeeklyPrice       float64 `json:"weeklyPrice"`
+	MonthlyPrice      float64 `json:"monthlyPrice"`
+	AnnualPrice       float64 `json:"annualPrice"`
+	Distance          float64 `json:"distance"`
+	Status            string  `json:"status"`
+	WarehouseTypeId   int     `json:"warehouseTypeId"`
+	WarehouseTypeName string  `json:"warehouseTypeName"`
+	Image             string  `json:"image"`
 }
 
 type GetWarehouseAppResponse struct {
@@ -66,6 +68,10 @@ type GetWarehouseAppResponse struct {
 	Image        string  `json:"image"`
 }
 
+type WarehouseTypeResponse struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
+}
 type UploadPhotoResponse struct {
 	Images []string `json:"images"`
 }

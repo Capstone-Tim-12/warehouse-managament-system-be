@@ -34,19 +34,21 @@ func (s *defaultWarehouse) GetWarehouseList(ctx context.Context, param paginate.
 
 		distance := calculate.Haversine(userData.Latitude, userData.Longitude, list[i].Latitude, list[i].Longitude)
 		resp = append(resp, model.WarehouseListResponse{
-			Id:           list[i].ID,
-			Name:         list[i].Name,
-			DistrictName: list[i].District.Name,
-			RegencyName:  list[i].District.Regency.Name,
-			ProvinceName: list[i].District.Regency.Province.Name,
-			SurfaceArea:  list[i].SurfaceArea,
-			BuildingArea: list[i].BuildingArea,
-			WeeklyPrice:  math.Ceil(list[i].Price / 52),
-			MonthlyPrice: math.Ceil(list[i].Price / 12),
-			AnnualPrice:  list[i].Price,
-			Distance:     distance,
-			Status:       string(list[i].Status),
-			Image:        image,
+			Id:                list[i].ID,
+			Name:              list[i].Name,
+			DistrictName:      list[i].District.Name,
+			RegencyName:       list[i].District.Regency.Name,
+			ProvinceName:      list[i].District.Regency.Province.Name,
+			SurfaceArea:       list[i].SurfaceArea,
+			BuildingArea:      list[i].BuildingArea,
+			WeeklyPrice:       math.Ceil(list[i].Price / 52),
+			MonthlyPrice:      math.Ceil(list[i].Price / 12),
+			AnnualPrice:       list[i].Price,
+			Distance:          distance,
+			Status:            string(list[i].Status),
+			WarehouseTypeId:   list[i].WarehouseType.ID,
+			WarehouseTypeName: list[i].WarehouseType.Name,
+			Image:             image,
 		})
 	}
 

@@ -71,7 +71,7 @@ func (r *defaultRepo) FindWarehouseList(ctx context.Context, param paginate.Pagi
 		return
 	}
 	err = r.db.WithContext(ctx).Preload("District").Preload("District.Regency").
-		Preload("District.Regency.Province").Preload("WarehouseImg").
+		Preload("District.Regency.Province").Preload("WarehouseImg").Preload("WarehouseType").
 		Scopes(paginate.Paginate(param.Page, param.Limit)).Scopes(query).Find(&resp).Error
 	return
 }
@@ -97,5 +97,10 @@ func (r *defaultRepo) GetWarehouseTypeById(ctx context.Context, id int) (resp *e
 
 func (r *defaultRepo) DeleteWarehouse(ctx context.Context, req *entity.Warehouse) (err error) {
 	err = r.db.WithContext(ctx).Delete(&req).Error
+	return
+}
+
+func (r *defaultRepo) GetListWarehouseType(ctx context.Context) (resp []entity.WarehouseType, err error) {
+	err = r.db.WithContext(ctx).Find(&resp).Error
 	return
 }

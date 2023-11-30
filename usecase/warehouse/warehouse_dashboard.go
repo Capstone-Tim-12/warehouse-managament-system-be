@@ -183,6 +183,24 @@ func (s *defaultWarehouse) DeleteWarehouse(ctx context.Context, id string) (err 
 	return
 }
 
+func (s *defaultWarehouse) GetListWarehouseType(ctx context.Context) (resp []model.WarehouseTypeResponse, err error) {
+	warehouseData, err := s.warehouseRepo.GetListWarehouseType(ctx)
+	if err != nil {
+		fmt.Println("failed find warehouse")
+		err = errors.New(http.StatusInternalServerError, "failed find warehouse")
+		return
+	}
+
+	for i := 0; i < len(warehouseData); i++ {
+		resp = append(resp, model.WarehouseTypeResponse{
+			Id:   warehouseData[i].ID,
+			Name: warehouseData[i].Name,
+		})
+	}
+	
+	return 
+}
+
 func (s *defaultWarehouse) UploadPhotoWarehouse(ctx context.Context, photo []*multipart.FileHeader) (resp model.UploadPhotoResponse, err error) {
 	for i := 0; i < len(photo); i++ {
 		data, errRes := s.coreWrapper.UploadImage(ctx, photo[i])
