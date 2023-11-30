@@ -34,3 +34,8 @@ func (s *defaultRepo) GetListTransactionDasboar(ctx context.Context) (resp []ent
 	err = s.db.WithContext(ctx).Preload("User").Find(&resp).Error
 	return
 }
+
+func (s *defaultRepo) GetTransactionByUserId(ctx context.Context, userId int) (resp []entity.Transaction, err error) {
+	err  = s.db.WithContext(ctx).Find(&resp, "user_id = ?", userId).Error
+	return
+}

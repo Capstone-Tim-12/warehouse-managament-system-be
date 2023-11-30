@@ -52,6 +52,7 @@ type WarehouseListResponse struct {
 	MonthlyPrice float64 `json:"monthlyPrice"`
 	AnnualPrice  float64 `json:"annualPrice"`
 	Distance     float64 `json:"distance"`
+	Status       string  `json:"status"`
 	Image        string  `json:"image"`
 }
 

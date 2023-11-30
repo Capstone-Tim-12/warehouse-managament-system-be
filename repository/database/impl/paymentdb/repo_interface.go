@@ -10,4 +10,5 @@ type PaymentRepository interface {
 	FindPaymentSchemeById(ctx context.Context, id int) (resp *entity.PaymentScheme, err error)
 	CreateTransaction(ctx context.Context, req *entity.Transaction) (err error)
 	FindPaymentScheme(ctx context.Context) (resp []entity.PaymentScheme, err error)
+	GetTransactionByUserId(ctx context.Context, userId int) (resp []entity.Transaction, err error)
 }
