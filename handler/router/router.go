@@ -53,8 +53,11 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	sc.POST("/user/upload/photo", r.UserHandler.UploadPhoto)
 	sc.GET("/user/avatar", r.UserHandler.GetAvatarList)
 	sc.PUT("/user/profile/email", r.UserHandler.UpdateEmail)
-
+	
+	sc.GET("/dasboard/user/list", r.UserHandler.GetUserList)
 	sc.DELETE("/dasboard/user/:userId", r.UserHandler.DeleteUser)
+	sc.GET("/dasboard/user/:userId", r.UserHandler.GetUserById)
+	sc.GET("/dasboard/user/:userId/transaction", r.PaymentHandler.GetListTransactionIdUser)
 
 	sc.POST("/warehouse/detail", r.WarehouseHandler.CreateWarehouseDetail)
 	sc.PUT("/warehouse/detail/:warehouseId", r.WarehouseHandler.UpdateWarehouseById)
@@ -63,9 +66,9 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	sc.DELETE("/warehouse/detail/:warehouseId", r.WarehouseHandler.DeleteWarehouseById)
 
 	sc.POST("/payment/user/submission", r.PaymentHandler.SubmissionWarehouse)
-	sc.GET(" /payment/scheme", r.PaymentHandler.GetScheme)
+	sc.GET("/payment/scheme", r.PaymentHandler.GetScheme)
 
-	sc.GET(" /dasboard/home/trx-history", r.PaymentHandler.GetTransactiionList)
+	sc.GET("/dasboard/home/trx-history", r.PaymentHandler.GetHistoryInstalmentUser)
 
 	return r
 }

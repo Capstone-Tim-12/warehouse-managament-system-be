@@ -10,8 +10,8 @@ import (
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/paginate"
 )
 
-func (s *defaultPayment) HistoryTransactions(ctx context.Context, param paginate.Pagination) (resp []model.TransactionHistoryResponse, count int64, err error) {
-	list, count, err := s.paymentRepo.GetListTransactionDasboar(ctx, param)
+func (s *defaultPayment) GetHistoryInstalmentUser(ctx context.Context, param paginate.Pagination) (resp []model.TransactionHistoryResponse, count int64, err error) {
+	list, count, err := s.paymentRepo.GetInstalmentUser(ctx, param)
 	if err != nil {
 		fmt.Println("error getting transactionList: ", err.Error())
 		err = errors.New(http.StatusInternalServerError, "error getting transaction list")
@@ -19,18 +19,13 @@ func (s *defaultPayment) HistoryTransactions(ctx context.Context, param paginate
 	}
 
 	for i := 0; i < len(list); i++ {
-		userData, _ := s.userRepo.GetUserById(ctx, list[i].UserID)
-		var nominal float64
-		if len(list[i].Instalment) != 0 {
-			nominal = list[i].Instalment[0].Nominal
-		}
-
 		resp = append(resp, model.TransactionHistoryResponse{
-			TransactionID:     list[i].ID,
-			UserID:            list[i].UserID,
-			UserName:          userData.Username,
+			TransactionID:     list[i].TransactionID,
+			InstalmentId:      list[i].ID,
+			UserID:            list[i].Transaction.User.ID,
+			UserName:          list[i].Transaction.User.Username,
 			StatusTransaction: string(list[i].Status),
-			Nominal:           nominal,
+			Nominal:           list[i].Nominal,
 		})
 	}
 	return

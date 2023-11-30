@@ -52,7 +52,7 @@ func (h *WarehouseHandler) CreateWarehouseDetail(c echo.Context) (err error) {
 	if err != nil {
 		return
 	}
-	return response.NewSuccessResponse(c, nil)
+	return response.NewSuccessResponse(c, http.StatusCreated, nil)
 }
 
 func (h *WarehouseHandler) GetWarehouseById(c echo.Context) (err error) {
@@ -63,7 +63,7 @@ func (h *WarehouseHandler) GetWarehouseById(c echo.Context) (err error) {
 	if err != nil {
 		return
 	}
-	return response.NewSuccessResponse(c, data)
+	return response.NewSuccessResponse(c, http.StatusOK, data)
 }
 
 func (h *WarehouseHandler) GetWarehouseList(c echo.Context) (err error) {
@@ -110,7 +110,7 @@ func (h *WarehouseHandler) UpdateWarehouseById(c echo.Context) (err error) {
 	if err != nil {
 		return
 	}
-	return response.NewSuccessResponse(c, nil)
+	return response.NewSuccessResponse(c, http.StatusOK, nil)
 }
 
 func (h *WarehouseHandler) DeleteWarehouseById(c echo.Context) (err error) {
@@ -128,5 +128,5 @@ func (h *WarehouseHandler) DeleteWarehouseById(c echo.Context) (err error) {
 	if err != nil {
 		return
 	}
-	return response.NewSuccessResponse(c, nil)
+	return response.NewSuccessResponse(c, http.StatusOK, nil)
 }

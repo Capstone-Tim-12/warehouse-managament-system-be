@@ -1,7 +1,8 @@
 package model
 
 type TransactionHistoryResponse struct {
-	TransactionID     int     `json:"transnactionId"`
+	TransactionID     string  `json:"transnactionId"`
+	InstalmentId      int     `json:"instalmentId"`
 	UserID            int     `json:"userId"`
 	UserName          string  `json:"userName"`
 	StatusTransaction string  `json:"statusTransaction"`

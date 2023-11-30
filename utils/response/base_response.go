@@ -2,7 +2,6 @@ package response
 
 import (
 	"math"
-	"net/http"
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/paginate"
 	"github.com/labstack/echo/v4"
@@ -19,8 +18,8 @@ type responsePagination struct {
 	Pagination paginate.ItemPages `json:"pagination"`
 }
 
-func NewSuccessResponse(c echo.Context, data interface{}) error {
-	return c.JSON(http.StatusOK, BaseResponse{
+func NewSuccessResponse(c echo.Context, code int, data interface{}) error {
+	return c.JSON(code, BaseResponse{
 		Status:  true,
 		Message: "Success",
 		Data:    data,

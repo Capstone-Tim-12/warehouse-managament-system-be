@@ -3,6 +3,7 @@ package entity
 import (
 	"time"
 
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/generate"
 	"gorm.io/gorm"
 )
 
@@ -18,6 +19,7 @@ const (
 const (
 	Paid   InstalmentStatus = "dibayar"
 	Unpaid InstalmentStatus = "belum dibayar"
+	Failed InstalmentStatus = "gagal bayar"
 )
 
 type PaymentScheme struct {
@@ -31,7 +33,7 @@ type PaymentScheme struct {
 }
 
 type Transaction struct {
-	ID              int `gorm:"primarykey"`
+	ID              string `gorm:"size:20;primarykey"`
 	DateEntry       time.Time
 	DateOut         time.Time
 	UserID          int
@@ -48,7 +50,7 @@ type Transaction struct {
 
 type Instalment struct {
 	ID                int `gorm:"primarykey"`
-	TransactionID     int
+	TransactionID     string
 	Transaction       Transaction `gorm:"foreignKey:TransactionID"`
 	Nominal           float64
 	DueDate           time.Time
@@ -85,4 +87,11 @@ type PaymentMethod struct {
 	UpdatedAt         time.Time
 	DeletedAt         gorm.DeletedAt `gorm:"index"`
 	OngoingInstalment []OngoingInstalment
+}
+
+func (m *Transaction) BeforeCreate(tx *gorm.DB) (err error) {
+	uuid := generate.GenerateRandomString(20)
+	m.ID = uuid
+
+	return nil
 }

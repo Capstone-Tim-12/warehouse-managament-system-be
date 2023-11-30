@@ -5,6 +5,7 @@ import (
 	"mime/multipart"
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/user/model"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/paginate"
 )
 
 type UserUsecase interface {
@@ -24,4 +25,6 @@ type UserUsecase interface {
 	GetAvatarList(ctx context.Context) (resp []model.GetAvatarResponse, err error)
 	UpdateEmail(ctx context.Context, userId int, req model.OtpRequest) (err error)
 	DeleteUser(ctx context.Context, id int) (err error)
+	GetUserList(ctx context.Context, param paginate.Pagination) (resp []model.UserListResponse, count int64, err error)
+	GetUserById(ctx context.Context, userId int) (resp model.UserListResponse, err error) 
 }

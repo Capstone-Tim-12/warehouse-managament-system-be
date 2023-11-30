@@ -12,4 +12,6 @@ type PaymentRepository interface {
 	CreateTransaction(ctx context.Context, req *entity.Transaction) (err error)
 	FindPaymentScheme(ctx context.Context) (resp []entity.PaymentScheme, err error)
 	GetListTransactionDasboar(ctx context.Context, param paginate.Pagination) (resp []entity.Transaction, count int64, err error)
+	GetTransactionByUserId(ctx context.Context, userId int) (resp []entity.Transaction, err error)
+	GetInstalmentUser(ctx context.Context, param paginate.Pagination) (resp []entity.Instalment, count int64, err error)
 }

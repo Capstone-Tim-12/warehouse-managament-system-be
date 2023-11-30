@@ -9,6 +9,7 @@ import (
 
 type PaymentUsecase interface {
 	SubmissionWarehouse(ctx context.Context, userId int, req model.SubmissionRequest) (err error)
-	GetPaymentScheme(ctx context.Context, id int) (resp []model.SchemeResponse, err error)
-	HistoryTransactions(ctx context.Context, param paginate.Pagination) (resp []model.TransactionHistoryResponse, count int64, err error)
+	GetPaymentScheme(ctx context.Context) (resp []model.SchemeResponse, err error)
+	GetHistoryInstalmentUser(ctx context.Context, param paginate.Pagination) (resp []model.TransactionHistoryResponse, count int64, err error)
+	GetListTransactionIdUser(ctx context.Context, userId int) (resp []model.ListTrxUser, err error)
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/entity"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/paginate"
 	"gorm.io/gorm"
 )
 
@@ -71,5 +72,21 @@ func (r *defaultRepo) GetUserDetailByUserId(ctx context.Context, userId int) (re
 
 func (r *defaultRepo) GetAllAvatar(ctx context.Context) (resp []entity.Avatar, err error) {
 	err = r.db.WithContext(ctx).Find(&resp).Error
+	return
+}
+
+func (r *defaultRepo) GetUserList(ctx context.Context, param paginate.Pagination) (resp []entity.User, count int64, err error) {
+	query := func(condision *gorm.DB) *gorm.DB {
+		if param.Search != "" {
+			condision.Where("username LIKE ?", "%"+param.Search+"%")
+		}
+		return condision
+	}
+	err = r.db.WithContext(ctx).Model(&entity.User{}).Scopes(query).Count(&count).Error
+	if err != nil {
+		return
+	}
+
+	err = r.db.WithContext(ctx).Scopes(paginate.Paginate(param.Page, param.Limit)).Scopes(query).Find(&resp).Error
 	return
 }
