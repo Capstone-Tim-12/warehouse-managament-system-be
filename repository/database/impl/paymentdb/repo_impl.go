@@ -37,12 +37,12 @@ func (s *defaultRepo) GetListTransactionDasboar(ctx context.Context, param pagin
 		return
 	}
 	err = s.db.WithContext(ctx).
-	Preload("User").Scopes(paginate.Paginate(param.Page, param.Limit)).Find(&resp).Error
+		Preload("User").Scopes(paginate.Paginate(param.Page, param.Limit)).Find(&resp).Error
 	return
 }
 
 func (s *defaultRepo) GetInstalmentUser(ctx context.Context, param paginate.Pagination) (resp []entity.Instalment, count int64, err error) {
-	query := func (condition *gorm.DB) *gorm.DB  {
+	query := func(condition *gorm.DB) *gorm.DB {
 		condition.Where("status = ? or status = ? ", entity.Paid, entity.Failed)
 		return condition
 	}
@@ -57,6 +57,44 @@ func (s *defaultRepo) GetInstalmentUser(ctx context.Context, param paginate.Pagi
 }
 
 func (s *defaultRepo) GetTransactionByUserId(ctx context.Context, userId int) (resp []entity.Transaction, err error) {
-	err  = s.db.WithContext(ctx).Find(&resp, "user_id = ?", userId).Error
+	err = s.db.WithContext(ctx).Find(&resp, "user_id = ?", userId).Error
+	return
+}
+
+func (s *defaultRepo) GetListTransactionData(ctx context.Context, param paginate.PaginationTrx) (resp []entity.Transaction, count int64, err error) {
+	query := func(db *gorm.DB) *gorm.DB {
+		if param.ProvinceId != 0 || param.Search != "" {
+			db.Joins("JOIN warehouses ON transactions.warehouse_id = warehouses.id").
+				Joins("JOIN districts ON warehouses.district_id = districts.id").
+				Joins("JOIN regencies ON districts.regency_id = regencies.id").
+				Joins("JOIN provinces ON regencies.province_id = provinces.id").
+				Joins("JOIN users ON transactions.user_id = users.id")
+			if param.ProvinceId != 0 {
+				db.Where("provinces.id = ?", param.ProvinceId)
+			}
+			if param.Search != "" {
+				db.Where("warehouses.name LIKE ?", "%"+param.Search+"%").
+					Or("users.username LIKE ?", "%"+param.Search+"%")
+			}
+		}
+
+		if param.Status != "" {
+			db.Where("status = ?", param.Status)
+		}
+
+		return db
+	}
+	err = s.db.WithContext(ctx).Model(&entity.Transaction{}).Scopes(query).Count(&count).Error
+	if err != nil {
+		return
+	}
+	err = s.db.WithContext(ctx).Scopes(paginate.Paginate(param.Page, param.Limit)).
+		Preload("User").
+		Preload("Warehouse.District.Regency").
+		Preload("Warehouse.District.Regency.Province").
+		Preload("Warehouse").
+		Preload("PaymentScheme").
+		Scopes(query).
+		Find(&resp).Error
 	return
 }

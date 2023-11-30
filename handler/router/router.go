@@ -57,7 +57,7 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	sc.GET("/dasboard/user/list", r.UserHandler.GetUserList)
 	sc.DELETE("/dasboard/user/:userId", r.UserHandler.DeleteUser)
 	sc.GET("/dasboard/user/:userId", r.UserHandler.GetUserById)
-	sc.GET("/dasboard/user/:userId/transaction", r.PaymentHandler.GetListTransactionIdUser)
+	sc.GET("/dasboard/user/:userId/transaction", r.PaymentHandler.GetListTransactionByUserId)
 
 	sc.POST("/warehouse/detail", r.WarehouseHandler.CreateWarehouseDetail)
 	sc.PUT("/warehouse/detail/:warehouseId", r.WarehouseHandler.UpdateWarehouseById)
@@ -69,6 +69,7 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	sc.GET("/payment/scheme", r.PaymentHandler.GetScheme)
 
 	sc.GET("/dasboard/home/trx-history", r.PaymentHandler.GetHistoryInstalmentUser)
+	sc.GET("/dasboard/list/trx-history", r.PaymentHandler.GetAllTransaction)
 
 	return r
 }
