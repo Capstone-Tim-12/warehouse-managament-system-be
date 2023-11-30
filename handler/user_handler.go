@@ -353,3 +353,21 @@ func (h *UserHandler) GetUserList(c echo.Context) (err error) {
 	err = c.JSON(http.StatusOK, resp)
 	return
 }
+
+func (h *UserHandler) GetUserById(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	userId := c.Param("userId")
+	clamsData := utils.GetClamsJwt(c)
+	if clamsData.UserRole != "admin" {
+		fmt.Println("role is not admin")
+		err = errors.New(http.StatusUnauthorized, "role is not admin")
+		return
+	}
+	data, err := h.userUsecase.GetUserById(ctx, cast.ToInt(userId))
+	if err != nil {
+		fmt.Println("failed to get profile", err)
+		return
+	}
+	return response.NewSuccessResponse(c, http.StatusOK, data)
+}
+

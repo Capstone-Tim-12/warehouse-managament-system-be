@@ -48,7 +48,6 @@ func (s *defaultPayment) SubmissionWarehouse(ctx context.Context, userId int, re
 	}
 
 	reqTransaction := entity.Transaction{
-		ID:              userId,
 		DateEntry:       req.DateEntry,
 		DateOut:         dateOut,
 		UserID:          userId,
