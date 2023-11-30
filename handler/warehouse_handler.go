@@ -130,3 +130,7 @@ func (h *WarehouseHandler) DeleteWarehouseById(c echo.Context) (err error) {
 	}
 	return response.NewSuccessResponse(c, http.StatusOK, nil)
 }
+
+func (h *WarehouseHandler) GetWarehouseType(c echo.Context) (err error){
+	return
+}

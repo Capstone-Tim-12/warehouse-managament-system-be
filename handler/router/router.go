@@ -55,6 +55,7 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	sc.PUT("/user/profile/email", r.UserHandler.UpdateEmail)
 	
 	sc.GET("/dasboard/user/list", r.UserHandler.GetUserList)
+	sc.GET("/dasboard/warehouse/type", r.WarehouseHandler.GetWarehouseType)
 	sc.DELETE("/dasboard/user/:userId", r.UserHandler.DeleteUser)
 
 	sc.POST("/warehouse/detail", r.WarehouseHandler.CreateWarehouseDetail)

@@ -181,3 +181,17 @@ func (s *defaultWarehouse) DeleteWarehouse(ctx context.Context, id string) (err 
 	}
 	return
 }
+
+func (s *defaultWarehouse) GetWarehouseType(ctx context.Context, id string) (resp *model.WarehouseTypeResponse, err error) {
+	warehouseData, err := s.warehouseRepo.FindWarehouseById(ctx, id)
+	if err != nil {
+		fmt.Println("failed find warehouse")
+		err = errors.New(http.StatusInternalServerError, "failed find warehouse")
+		return
+	}
+	resp = &model.WarehouseTypeResponse{
+		Id:   warehouseData.ID,
+		Name: warehouseData.Name,
+	}
+	return 
+}

@@ -13,4 +13,5 @@ type WarehouseUsecase interface {
 	GetWarehouseList(ctx context.Context, param paginate.Pagination, userId int) (resp []model.WarehouseListResponse, count int64, err error)
 	UpdateWarehouseDetails(ctx context.Context, req model.WarehouseDataRequest, id string) (err error)
 	DeleteWarehouse(ctx context.Context, id string) (err error)
+	GetWarehouseType(ctx context.Context, id string) (resp *model.WarehouseTypeResponse, err error)
 }
