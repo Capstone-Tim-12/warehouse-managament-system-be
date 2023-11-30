@@ -1,0 +1,58 @@
+package entity
+
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
+
+type Role string
+
+const (
+	RoleAdmin Role = "admin"
+	RoleUser  Role = "user"
+)
+
+type User struct {
+	ID               int `gorm:"primarykey"`
+	Username         string
+	Email            string
+	IsVerifyAccount  bool
+	IsVerifyIdentity bool
+	Password         string
+	Role             Role
+	Photo            string
+	Longitude        float64
+	Latitude         float64
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
+	DeletedAt        gorm.DeletedAt `gorm:"index"`
+	UserDetail       UserDetail
+}
+
+type UserDetail struct {
+	ID           int `gorm:"primarykey"`
+	Address      string
+	Country      string
+	NIK          string
+	FullName     string
+	Gender       string
+	PlaceOfBirth string
+	DateBirth    time.Time
+	Work         string
+	Citizenship  string
+	UserID       int
+	DistrictID   string
+	District     District `gorm:"foreignKey:DistrictID"`
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+	DeletedAt    gorm.DeletedAt `gorm:"index"`
+}
+
+type Avatar struct {
+	ID        int `gorm:"primarykey"`
+	Image     string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+}
