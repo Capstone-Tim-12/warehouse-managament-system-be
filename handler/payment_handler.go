@@ -121,3 +121,39 @@ func (h *PaymentHandler) GetAllTransaction(c echo.Context) (err error) {
 	err = c.JSON(http.StatusOK, resp)
 	return
 }
+
+func (h *PaymentHandler) TransactionApproved(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	trxId := c.Param("transactionId")
+
+	clamsData := utils.GetClamsJwt(c)
+	if clamsData.UserRole != "admin" {
+		fmt.Println("role is not admin")
+		err = errors.New(http.StatusUnauthorized, "role is not admin")
+		return
+	}
+
+	err = h.paymentUsecase.TransactionApproved(ctx, trxId)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, http.StatusOK, nil)
+}
+
+func (h *PaymentHandler) TransactionRejected(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	trxId := c.Param("transactionId")
+
+	clamsData := utils.GetClamsJwt(c)
+	if clamsData.UserRole != "admin" {
+		fmt.Println("role is not admin")
+		err = errors.New(http.StatusUnauthorized, "role is not admin")
+		return
+	}
+
+	err = h.paymentUsecase.TransactionRejected(ctx, trxId)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, http.StatusOK, nil)
+}

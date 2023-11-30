@@ -36,6 +36,7 @@ func (s *defaultPayment) GetAllTransaction(ctx context.Context, param paginate.P
 
 	for i := 0; i < len(trxData); i++ {
 		resp = append(resp, model.ListAllTrxResponse{
+			TransactionId: trxData[i].ID,
 			UserId:        trxData[i].UserID,
 			Username:      trxData[i].User.Username,
 			RegencyId:     trxData[i].Warehouse.District.Regency.ID,

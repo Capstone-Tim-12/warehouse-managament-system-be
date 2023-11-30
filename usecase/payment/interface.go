@@ -13,4 +13,6 @@ type PaymentUsecase interface {
 	GetHistoryInstalmentUser(ctx context.Context, param paginate.Pagination) (resp []model.TransactionHistoryResponse, count int64, err error)
 	GetListTransactionByUserId(ctx context.Context, userId int) (resp []model.ListTrxUser, err error)
 	GetAllTransaction(ctx context.Context, param paginate.PaginationTrx) (resp []model.ListAllTrxResponse, count int64, err error) 
+	TransactionApproved(ctx context.Context, transactionId string) (err error)
+	TransactionRejected(ctx context.Context, transactionId string) (err error)
 }

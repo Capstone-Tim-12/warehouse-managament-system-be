@@ -5,6 +5,7 @@ type ListTrxUser struct {
 }
 
 type ListAllTrxResponse struct {
+	TransactionId string `json:"transactionId"`
 	UserId        int    `json:"userId"`
 	Username      string `json:"username"`
 	RegencyId     string `json:"regencyId"`

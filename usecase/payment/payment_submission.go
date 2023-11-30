@@ -9,6 +9,7 @@ import (
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/entity"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/payment/model"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/constrans"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/errors"
 	"github.com/spf13/cast"
 )
@@ -35,11 +36,11 @@ func (s *defaultPayment) SubmissionWarehouse(ctx context.Context, userId int, re
 	}
 
 	var dateOut time.Time
-	if strings.EqualFold(schemeData.Scheme, "tahunan") {
+	if strings.EqualFold(schemeData.Scheme, constrans.PaymentSchemeAnnualy) {
 		dateOut = time.Now().AddDate(req.Duration, 0, 0)
-	} else if strings.EqualFold(schemeData.Scheme, "bulanan") {
+	} else if strings.EqualFold(schemeData.Scheme, constrans.PaymentSchemeMonthly) {
 		dateOut = time.Now().AddDate(0, req.Duration, 0)
-	} else if strings.EqualFold(schemeData.Scheme, "mingguan") {
+	} else if strings.EqualFold(schemeData.Scheme, constrans.PaymentSchemeWeekly) {
 		dateOut = time.Now().AddDate(0, 0, req.Duration*7)
 	} else {
 		fmt.Println("data payment scheme not supported")

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"mime/multipart"
 	"net/http"
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/entity"
@@ -178,6 +179,21 @@ func (s *defaultWarehouse) DeleteWarehouse(ctx context.Context, id string) (err 
 		fmt.Println("error delete warehouse: ", err.Error())
 		err = errors.New(http.StatusInternalServerError, "failed delete warehouse")
 		return
+	}
+	return
+}
+
+func (s *defaultWarehouse) UploadPhotoWarehouse(ctx context.Context, photo []*multipart.FileHeader) (resp model.UploadPhotoResponse, err error) {
+	for i := 0; i < len(photo); i++ {
+		data, errRes := s.coreWrapper.UploadImage(ctx, photo[i])
+		if errRes != nil {
+			fmt.Println("failed upload image: ", errRes.Error())
+			err = errors.New(http.StatusInternalServerError, "failed upload photo")
+			return
+		}
+		if len(data.Data.Images) != 0 {
+			resp.Images = append(resp.Images, data.Data.Images...)
+		}
 	}
 	return
 }

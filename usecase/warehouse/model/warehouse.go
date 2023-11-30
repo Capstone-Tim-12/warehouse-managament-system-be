@@ -65,3 +65,7 @@ type GetWarehouseAppResponse struct {
 	AnnualPrice  float64 `json:"annualPrice"`
 	Image        string  `json:"image"`
 }
+
+type UploadPhotoResponse struct {
+	Images []string `json:"images"`
+}
