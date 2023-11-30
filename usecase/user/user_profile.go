@@ -19,13 +19,6 @@ func (s *defaultUser) UpdateUsernameProfile(ctx context.Context, userId string, 
 		return
 	}
 
-	user, _ := s.userRepo.GetUserByUsername(ctx, req.Username)
-	if user.Username != "" {
-		fmt.Println("username already set")
-		err = errors.New(http.StatusConflict, "username already set in other user")
-		return
-	}
-
 	userData.Username = req.Username
 	tx := s.userRepo.BeginTrans(ctx)
 	err = s.userRepo.UpdateUser(ctx, tx, userData)

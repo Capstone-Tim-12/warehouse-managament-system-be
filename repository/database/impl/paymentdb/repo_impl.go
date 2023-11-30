@@ -98,3 +98,22 @@ func (s *defaultRepo) GetListTransactionData(ctx context.Context, param paginate
 		Find(&resp).Error
 	return
 }
+
+func (s *defaultRepo) GetTransactionById(ctx context.Context, transactionId string) (resp *entity.Transaction, err error) {
+	err = s.db.WithContext(ctx).Preload("PaymentScheme").Preload("Warehouse").Take(&resp, "id = ?", transactionId).Error
+	return
+}
+
+func (s *defaultRepo) BeginTrans(ctx context.Context) *gorm.DB {
+	return s.db.Begin()
+}
+
+func (s *defaultRepo) CreateInstalment(ctx context.Context, tx *gorm.DB, req *entity.Instalment) (err error) {
+	err = tx.WithContext(ctx).Create(req).Error
+	return
+}
+
+func (s *defaultRepo) UpdateTransaction(ctx context.Context, tx *gorm.DB, req *entity.Transaction) (err error) {
+	err = tx.WithContext(ctx).Save(req).Error
+	return
+}
