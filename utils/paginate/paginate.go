@@ -19,6 +19,14 @@ type Pagination struct {
 	Recomendation bool
 }
 
+type PaginationTrx struct {
+	Page       int
+	Limit      int
+	Search     string
+	ProvinceId int
+	Status     string
+}
+
 type ItemPages struct {
 	Page      int64 `json:"page"`
 	Limit     int64 `json:"limit"`

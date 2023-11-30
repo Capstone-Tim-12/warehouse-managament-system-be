@@ -11,5 +11,6 @@ type PaymentUsecase interface {
 	SubmissionWarehouse(ctx context.Context, userId int, req model.SubmissionRequest) (err error)
 	GetPaymentScheme(ctx context.Context) (resp []model.SchemeResponse, err error)
 	GetHistoryInstalmentUser(ctx context.Context, param paginate.Pagination) (resp []model.TransactionHistoryResponse, count int64, err error)
-	GetListTransactionIdUser(ctx context.Context, userId int) (resp []model.ListTrxUser, err error)
+	GetListTransactionByUserId(ctx context.Context, userId int) (resp []model.ListTrxUser, err error)
+	GetAllTransaction(ctx context.Context, param paginate.PaginationTrx) (resp []model.ListAllTrxResponse, count int64, err error) 
 }

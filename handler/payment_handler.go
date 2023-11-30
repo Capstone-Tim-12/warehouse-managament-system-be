@@ -78,7 +78,7 @@ func (h *PaymentHandler) GetHistoryInstalmentUser(c echo.Context) (err error) {
 	return
 }
 
-func (h *PaymentHandler) GetListTransactionIdUser(c echo.Context) (err error) {
+func (h *PaymentHandler) GetListTransactionByUserId(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	userId := c.Param("userId")
 
@@ -89,10 +89,35 @@ func (h *PaymentHandler) GetListTransactionIdUser(c echo.Context) (err error) {
 		return
 	}
 
-	data, err := h.paymentUsecase.GetListTransactionIdUser(ctx, cast.ToInt(userId))
+	data, err := h.paymentUsecase.GetListTransactionByUserId(ctx, cast.ToInt(userId))
 	if err != nil {
 		return
 	}
 	return response.NewSuccessResponse(c, http.StatusOK, data)
 }
 
+func (h *PaymentHandler) GetAllTransaction(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	param := paginate.PaginationTrx{
+		Page:       cast.ToInt(c.QueryParam("page")),
+		Limit:      cast.ToInt(c.QueryParam("limit")),
+		Search:     c.QueryParam("search"),
+		ProvinceId: cast.ToInt(c.QueryParam("provinceId")),
+		Status:     c.QueryParam("status"),
+	}
+	data, count, err := h.paymentUsecase.GetAllTransaction(ctx, param)
+	if err != nil {
+		return
+	}
+
+	clamsData := utils.GetClamsJwt(c)
+	if clamsData.UserRole != "admin" {
+		fmt.Println("role is not admin")
+		err = errors.New(http.StatusUnauthorized, "role is not admin")
+		return
+	}
+
+	resp := response.NewResponseSuccessPaginationTrx(float64(count), param, data)
+	err = c.JSON(http.StatusOK, resp)
+	return
+}

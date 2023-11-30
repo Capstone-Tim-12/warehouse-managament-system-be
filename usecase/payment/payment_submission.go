@@ -37,13 +37,13 @@ func (s *defaultPayment) SubmissionWarehouse(ctx context.Context, userId int, re
 	var dateOut time.Time
 	if strings.EqualFold(schemeData.Scheme, "tahunan") {
 		dateOut = time.Now().AddDate(req.Duration, 0, 0)
-	} else if strings.EqualFold(schemeData.Scheme,"bulanan") {
+	} else if strings.EqualFold(schemeData.Scheme, "bulanan") {
 		dateOut = time.Now().AddDate(0, req.Duration, 0)
 	} else if strings.EqualFold(schemeData.Scheme, "mingguan") {
 		dateOut = time.Now().AddDate(0, 0, req.Duration*7)
 	} else {
 		fmt.Println("data payment scheme not supported")
-		err  = errors.New(http.StatusForbidden, "data payment scheme not supported")
+		err = errors.New(http.StatusForbidden, "data payment scheme not supported")
 		return
 	}
 
@@ -54,6 +54,7 @@ func (s *defaultPayment) SubmissionWarehouse(ctx context.Context, userId int, re
 		PaymentSchemeID: req.PaymentSchemeId,
 		Duration:        req.Duration,
 		Status:          entity.Submission,
+		WarehouseID:     req.WarehouseId,
 	}
 	err = s.paymentRepo.CreateTransaction(ctx, &reqTransaction)
 	if err != nil {

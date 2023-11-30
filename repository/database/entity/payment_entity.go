@@ -38,6 +38,8 @@ type Transaction struct {
 	DateOut         time.Time
 	UserID          int
 	User            User `gorm:"foreignKey:UserID"`
+	WarehouseID     int
+	Warehouse       Warehouse `gorm:"foreignKey:WarehouseID"`
 	PaymentSchemeID int
 	PaymentScheme   PaymentScheme `gorm:"foreignKey:PaymentSchemeID"`
 	Duration        int
