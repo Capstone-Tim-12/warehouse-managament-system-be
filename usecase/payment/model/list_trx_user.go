@@ -18,3 +18,18 @@ type ListAllTrxResponse struct {
 	PaymentScheme string `json:"paymentScheme"`
 	Status        string `json:"status"`
 }
+
+type TrxListDetail struct {
+	WarehouseId       int     `json:"warehouseId"`
+	WarehouseName     string  `json:"warehouseName"`
+	WarehousePrice    float64 `json:"warehousePrice"`
+	WarehouseAdreess  string  `json:"warehouseAdreess"`
+	WarehouseDistrict string  `json:"warehouseDistrict"`
+	WarehouseRegency  string  `json:"warehouseRegency"`
+	WarehouseProvince string  `json:"warehouseProvince"`
+	WarehouseImage    string  `json:"warehouseImage"`
+	Username          string  `json:"username"`
+	IsVerifyIdentity  bool    `json:"isVerifyIdentity"`
+	RentalDuration    int     `json:"rentalDuration"`
+	PaymentScheme     string  `json:"paymentScheme"`
+}

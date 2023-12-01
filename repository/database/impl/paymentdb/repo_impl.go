@@ -90,9 +90,7 @@ func (s *defaultRepo) GetListTransactionData(ctx context.Context, param paginate
 	}
 	err = s.db.WithContext(ctx).Scopes(paginate.Paginate(param.Page, param.Limit)).
 		Preload("User").
-		Preload("Warehouse.District.Regency").
 		Preload("Warehouse.District.Regency.Province").
-		Preload("Warehouse").
 		Preload("PaymentScheme").
 		Scopes(query).
 		Find(&resp).Error
@@ -101,6 +99,15 @@ func (s *defaultRepo) GetListTransactionData(ctx context.Context, param paginate
 
 func (s *defaultRepo) GetTransactionById(ctx context.Context, transactionId string) (resp *entity.Transaction, err error) {
 	err = s.db.WithContext(ctx).Preload("PaymentScheme").Preload("Warehouse").Take(&resp, "id = ?", transactionId).Error
+	return
+}
+
+func (s *defaultRepo) GetTransactionDetailById(ctx context.Context, transactionId string) (resp *entity.Transaction, err error) {
+	err = s.db.WithContext(ctx).Preload("PaymentScheme").
+		Preload("Warehouse.District.Regency.Province").
+		Preload("Warehouse.WarehouseImg").
+		Preload("User").
+		Take(&resp, "id = ?", transactionId).Error
 	return
 }
 
