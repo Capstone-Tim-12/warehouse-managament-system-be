@@ -1,7 +1,7 @@
 package model
 
 type ListTrxUser struct {
-	TransactionId string
+	TransactionId string `json:"transactionId"`
 }
 
 type ListAllTrxResponse struct {
