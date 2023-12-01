@@ -73,7 +73,8 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	sc.GET("/dasboard/home/trx-history", r.PaymentHandler.GetHistoryInstalmentUser)
 	sc.GET("/dasboard/list/trx-history", r.PaymentHandler.GetAllTransaction)
 	sc.PUT("/dasboard/transaction/approval/:transactionId", r.PaymentHandler.TransactionApproved)
-	sc.PUT("dasboard/transaction/rejected/:transactionId", r.PaymentHandler.TransactionRejected)
+	sc.PUT("/dasboard/transaction/rejected/:transactionId", r.PaymentHandler.TransactionRejected)
+	sc.GET("/dasboard/transaction/detail/:transactionId", r.PaymentHandler.GetTransactionListDetail)
 
 	return r
 }

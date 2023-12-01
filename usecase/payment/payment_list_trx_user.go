@@ -52,3 +52,31 @@ func (s *defaultPayment) GetAllTransaction(ctx context.Context, param paginate.P
 	}
 	return
 }
+
+func (s *defaultPayment) GetTransactionListDetail(ctx context.Context, transactionId string) (resp model.TrxListDetail, err error) {
+	trxData, err := s.paymentRepo.GetTransactionDetailById(ctx, transactionId)
+	if err != nil {
+		fmt.Println("error getting transaction")
+		err = errors.New(http.StatusNotFound, http.StatusText(http.StatusNotFound))
+		return
+	}
+	var image string
+	if len(trxData.Warehouse.WarehouseImg) != 0 {
+		image = trxData.Warehouse.WarehouseImg[0].Image
+	}
+	resp = model.TrxListDetail{
+		WarehouseId:       trxData.WarehouseID,
+		WarehouseName:     trxData.Warehouse.Name,
+		WarehousePrice:    trxData.Warehouse.Price,
+		WarehouseAdreess:  trxData.Warehouse.Address,
+		WarehouseDistrict: trxData.Warehouse.District.Name,
+		WarehouseRegency:  trxData.Warehouse.District.Regency.Name,
+		WarehouseProvince: trxData.Warehouse.District.Regency.Province.Name,
+		WarehouseImage:    image,
+		Username:          trxData.User.Username,
+		IsVerifyIdentity:  trxData.User.IsVerifyIdentity,
+		RentalDuration:    trxData.Duration,
+		PaymentScheme:     trxData.PaymentScheme.Scheme,
+	}
+	return
+}

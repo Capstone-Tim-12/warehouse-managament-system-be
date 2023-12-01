@@ -20,4 +20,5 @@ type PaymentRepository interface {
 	BeginTrans(ctx context.Context) *gorm.DB
 	CreateInstalment(ctx context.Context, tx *gorm.DB, req *entity.Instalment) (err error)
 	UpdateTransaction(ctx context.Context, tx *gorm.DB, req *entity.Transaction) (err error)
+	GetTransactionDetailById(ctx context.Context, transactionId string) (resp *entity.Transaction, err error)
 }

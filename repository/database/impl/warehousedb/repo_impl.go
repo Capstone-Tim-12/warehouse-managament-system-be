@@ -29,8 +29,6 @@ func (r *defaultRepo) CreateImg(ctx context.Context, tx *gorm.DB, req *entity.Wa
 
 func (r *defaultRepo) FindWarehouseById(ctx context.Context, id string) (resp *entity.Warehouse, err error) {
 	err = r.db.WithContext(ctx).
-		Preload("District").
-		Preload("District.Regency").
 		Preload("District.Regency.Province").
 		Preload("WarehouseImg").
 		Take(&resp, "id = ?", id).Error
@@ -70,8 +68,10 @@ func (r *defaultRepo) FindWarehouseList(ctx context.Context, param paginate.Pagi
 	if err != nil {
 		return
 	}
-	err = r.db.WithContext(ctx).Preload("District").Preload("District.Regency").
-		Preload("District.Regency.Province").Preload("WarehouseImg").Preload("WarehouseType").
+	err = r.db.WithContext(ctx).
+		Preload("District.Regency.Province").
+		Preload("WarehouseImg").
+		Preload("WarehouseType").
 		Scopes(paginate.Paginate(param.Page, param.Limit)).Scopes(query).Find(&resp).Error
 	return
 }
