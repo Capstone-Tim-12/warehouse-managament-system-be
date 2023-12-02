@@ -45,6 +45,7 @@ type WarehouseDataResponse struct {
 
 type WarehouseListResponse struct {
 	Id                int     `json:"id"`
+	FavoritId         int     `json:"favoritId,omitempty"`
 	Name              string  `json:"name"`
 	DistrictName      string  `json:"districtName"`
 	RegencyName       string  `json:"regencyName"`

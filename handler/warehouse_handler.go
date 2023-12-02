@@ -12,6 +12,7 @@ import (
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/response"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/validation"
 	"github.com/labstack/echo/v4"
+	"github.com/spf13/cast"
 )
 
 type WarehouseHandler struct {
@@ -146,7 +147,6 @@ func (h *WarehouseHandler) GetListWarehouseType(c echo.Context) (err error){
 	}
 
 	return response.NewSuccessResponse(c, http.StatusOK, data)
-	return
 }
 
 func (h *WarehouseHandler) UploadPhotoWarehouse(c echo.Context) (err error) {
@@ -228,4 +228,55 @@ func (h *WarehouseHandler) GetWarehouseInfo(c echo.Context) (err error) {
 		return
 	}
 	return response.NewSuccessResponse(c, http.StatusOK, data)
+}
+
+func (h *WarehouseHandler) AddFavorit(c echo.Context) (err error) {
+	var req model.AddFavoritRequest
+	ctx := c.Request().Context()
+	clamsData := utils.GetClamsJwt(c)
+
+	err = c.Bind(&req)
+	if err != nil {
+		err = errors.New(http.StatusBadRequest, "invalid request")
+		fmt.Println("error bind register warehouse data: ", err.Error())
+		return
+	}
+
+	err = c.Validate(req)
+	if err != nil {
+		fmt.Println("error validate data: ", err.Error())
+		err = errors.New(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = h.warehouseusecase.AddFavorite(ctx, clamsData.UserId, req)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, http.StatusCreated, nil)
+}
+
+func (h *WarehouseHandler) DeleteFavorit(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	id := c.Param("favoritId")
+
+	err = h.warehouseusecase.DeleteFavorit(ctx, cast.ToInt(id))
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, http.StatusOK, nil)
+}
+
+func (h *WarehouseHandler) GetListFavorit(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	param, _ := paginate.GetParams(c)
+	clamsData := utils.GetClamsJwt(c)
+	data, count, err := h.warehouseusecase.GetListFavorite(ctx, clamsData.UserId, param)
+	if err != nil {
+		return
+	}
+
+	resp := response.NewResponseSuccessPagination(float64(count), param, data)
+	err = c.JSON(http.StatusOK, resp)
+	return
 }
