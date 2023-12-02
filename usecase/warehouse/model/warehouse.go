@@ -1,5 +1,7 @@
 package model
 
+import "github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/entity"
+
 type WarehouseDataRequest struct {
 	Name            string   `json:"name" validate:"required"`
 	Description     string   `json:"description" validate:"required"`
@@ -18,34 +20,35 @@ type WarehouseDataRequest struct {
 }
 
 type WarehouseDataResponse struct {
-	Name         string   `json:"name"`
-	Description  string   `json:"description"`
-	ProvinceID   string   `json:"provinceId"`
-	ProvinceName string   `json:"provinceName"`
-	RegencyID    string   `json:"regencyId"`
-	RegencyName  string   `json:"regencyName"`
-	DistrictID   string   `json:"districtId"`
-	DistrictName string   `json:"districtName"`
-	Address      string   `json:"address"`
-	SurfaceArea  float64  `json:"surfaceArea"`
-	BuildingArea float64  `json:"buildingArea"`
-	Owner        string   `json:"owner"`
-	PhoneNumber  string   `json:"phoneNumber"`
-	Longitude    float64  `json:"longitude"`
-	Latitude     float64  `json:"latitude"`
-	Status       string   `json:"status"`
-	WeeklyPrice  float64  `json:"weeklyPrice"`
-	MonthlyPrice float64  `json:"monthlyPrice"`
-	AnnualPrice  float64  `json:"annualPrice"`
-	Image        []string `json:"image"`
+	Name          string   `json:"name"`
+	Description   string   `json:"description"`
+	ProvinceID    string   `json:"provinceId"`
+	ProvinceName  string   `json:"provinceName"`
+	RegencyID     string   `json:"regencyId"`
+	RegencyName   string   `json:"regencyName"`
+	DistrictID    string   `json:"districtId"`
+	DistrictName  string   `json:"districtName"`
+	Address       string   `json:"address"`
+	SurfaceArea   float64  `json:"surfaceArea"`
+	BuildingArea  float64  `json:"buildingArea"`
+	Owner         string   `json:"owner"`
+	PhoneNumber   string   `json:"phoneNumber"`
+	Longitude     float64  `json:"longitude"`
+	Latitude      float64  `json:"latitude"`
+	Status        string   `json:"status"`
+	WeeklyPrice   float64  `json:"weeklyPrice"`
+	MonthlyPrice  float64  `json:"monthlyPrice"`
+	AnnualPrice   float64  `json:"annualPrice"`
+	WarehouseType string   `json:"warehouseType"`
+	Image         []string `json:"image"`
 }
 
 type WarehouseListResponse struct {
 	Id                int     `json:"id"`
 	Name              string  `json:"name"`
-	DistrictName      string  `json:"DistrictName"`
-	RegencyName       string  `json:"RegencyName"`
-	ProvinceName      string  `json:"ProvinceName"`
+	DistrictName      string  `json:"districtName"`
+	RegencyName       string  `json:"regencyName"`
+	ProvinceName      string  `json:"provinceName"`
 	SurfaceArea       float64 `json:"surfaceArea"`
 	BuildingArea      float64 `json:"buildingArea"`
 	WeeklyPrice       float64 `json:"weeklyPrice"`
@@ -56,6 +59,16 @@ type WarehouseListResponse struct {
 	WarehouseTypeId   int     `json:"warehouseTypeId"`
 	WarehouseTypeName string  `json:"warehouseTypeName"`
 	Image             string  `json:"image"`
+}
+
+type WarehouseInfoResponse struct {
+	Id           int     `json:"id"`
+	Name         string  `json:"name"`
+	DistrictName string  `json:"districtName"`
+	RegencyName  string  `json:"regencyName"`
+	ProvinceName string  `json:"provinceName"`
+	AnnualPrice  float64 `json:"annualPrice"`
+	Image        string  `json:"image"`
 }
 
 type GetWarehouseAppResponse struct {
@@ -74,4 +87,27 @@ type WarehouseTypeResponse struct {
 }
 type UploadPhotoResponse struct {
 	Images []string `json:"images"`
+}
+
+type MyWarehoyseResponse struct {
+	TransactionId     string  `json:"transactionId"`
+	TransactionStatus string  `json:"transactionStatus"`
+	WarehouseId       int     `json:"warehouseId"`
+	WarehouseName     string  `json:"warehouseName"`
+	WatehouseRegency  string  `json:"warehouseRegency"`
+	SurfaceArea       float64 `json:"surfaceArea"`
+	BuildingArea      float64 `json:"buildingArea"`
+	WarehouseImage    string  `json:"warehouseImage"`
+}
+
+type TrxStatus string
+
+const (
+	StatusSubmitted TrxStatus = "diajukan"
+	StatusRented    TrxStatus = "disewa"
+)
+
+var GetStatusTrx = map[TrxStatus]entity.TranscationStatus{
+	StatusSubmitted: entity.Submission,
+	StatusRented:    entity.Approved,
 }

@@ -16,4 +16,6 @@ type PaymentUsecase interface {
 	TransactionApproved(ctx context.Context, transactionId string) (err error)
 	TransactionRejected(ctx context.Context, transactionId string) (err error)
 	GetTransactionListDetail(ctx context.Context, transactionId string) (resp model.TrxListDetail, err error) 
+	GetListInstalmentByTrxId(ctx context.Context, transactionId string, param paginate.Pagination) (resp []model.ListInstalmentResponse, count int64, err error)
+	GetTransactionInfo(ctx context.Context, transactionId string) (resp model.TransactionInfoResponse, err error)
 }

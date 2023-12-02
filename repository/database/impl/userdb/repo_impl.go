@@ -26,6 +26,11 @@ func (r *defaultRepo) GetUserById(ctx context.Context, id int) (resp *entity.Use
 	return
 }
 
+func (r *defaultRepo) GetUserInfoById(ctx context.Context, id int) (resp *entity.User, err error) {
+	err = r.db.WithContext(ctx).Preload("UserDetail.District.Regency").Take(&resp, "id = ?", id).Error
+	return
+}
+
 func (r *defaultRepo) GetUserByUsername(ctx context.Context, username string) (resp *entity.User, err error) {
 	err = r.db.WithContext(ctx).Take(&resp, "username = ?", username).Error
 	return

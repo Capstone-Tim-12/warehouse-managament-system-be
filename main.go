@@ -31,7 +31,7 @@ func main() {
 	coreRepo := core.NewWrapper()
 
 	userUsecase := user.NewUserUsecase(regionRepo, userRepo, coreRepo)
-	warehouseUsecase := warehouse.NewWarehouseUsecase(warehouseRepo, userRepo, regionRepo, coreRepo)
+	warehouseUsecase := warehouse.NewWarehouseUsecase(warehouseRepo, userRepo, regionRepo, coreRepo, paymentRepo)
 	paymentUsecase := payment.NewPaymentUsecase(regionRepo, userRepo, coreRepo, warehouseRepo, paymentRepo)
 
 	pingHandler := handler.NewPingHandler()

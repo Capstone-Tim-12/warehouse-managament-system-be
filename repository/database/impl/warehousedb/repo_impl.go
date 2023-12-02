@@ -31,6 +31,7 @@ func (r *defaultRepo) FindWarehouseById(ctx context.Context, id string) (resp *e
 	err = r.db.WithContext(ctx).
 		Preload("District.Regency.Province").
 		Preload("WarehouseImg").
+		Preload("WarehouseType").
 		Take(&resp, "id = ?", id).Error
 	return
 }

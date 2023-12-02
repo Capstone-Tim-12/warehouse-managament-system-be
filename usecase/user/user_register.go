@@ -3,9 +3,7 @@ package user
 import (
 	"context"
 	"fmt"
-	"net"
 	"net/http"
-	"strings"
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/entity"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/user/model"
@@ -20,20 +18,20 @@ func (s *defaultUser) UserRegister(ctx context.Context, req model.RegisterUserRe
 		return
 	}
 
-	separator := strings.LastIndex(req.Email, "@")
-	host := req.Email[separator+1:]
-	mxRecords, err := net.LookupMX(host)
-	if err != nil {
-		fmt.Println("error Lookup MX: ", err.Error())
-		err = errors.New(http.StatusBadRequest, "bad MX email address")
-		return
-	}
+	// separator := strings.LastIndex(req.Email, "@")
+	// host := req.Email[separator+1:]
+	// mxRecords, err := net.LookupMX(host)
+	// if err != nil {
+	// 	fmt.Println("error Lookup MX: ", err.Error())
+	// 	err = errors.New(http.StatusBadRequest, "bad MX email address")
+	// 	return
+	// }
 
-	if len(mxRecords) == 0 {
-		fmt.Println("no MX records found")
-		err = errors.New(http.StatusBadRequest, "email address not valid")
-		return
-	}
+	// if len(mxRecords) == 0 {
+	// 	fmt.Println("no MX records found")
+	// 	err = errors.New(http.StatusBadRequest, "email address not valid")
+	// 	return
+	// }
 
 	passwordByrpt := HashPassword(req.Password)
 	createUser := entity.User{
@@ -53,12 +51,12 @@ func (s *defaultUser) UserRegister(ctx context.Context, req model.RegisterUserRe
 		return
 	}
 
-	err = s.sendEmailOtp(ctx, createUser)
-	if err != nil {
-		fmt.Println("failed send email otp")
-		tx.Rollback()
-		return
-	}
+	// err = s.sendEmailOtp(ctx, createUser)
+	// if err != nil {
+	// 	fmt.Println("failed send email otp")
+	// 	tx.Rollback()
+	// 	return
+	// }
 
 	resp.Email = req.Email
 	tx.Commit()

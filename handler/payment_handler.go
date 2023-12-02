@@ -175,3 +175,28 @@ func (h *PaymentHandler) GetTransactionListDetail(c echo.Context) (err error) {
 	}
 	return response.NewSuccessResponse(c, http.StatusOK, data)
 }
+
+func (h *PaymentHandler) GetListInstalment(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	trxId := c.Param("transactionId")
+
+	param, _ := paginate.GetParams(c)
+	data, count, err :=h.paymentUsecase.GetListInstalmentByTrxId(ctx, trxId, param)
+	if err != nil {
+		return
+	}
+
+	resp := response.NewResponseSuccessPagination(float64(count), param, data)
+	return c.JSON(http.StatusOK, resp)
+}
+
+func (h *PaymentHandler) GetTransactionInfo(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	trxId := c.Param("transactionId")
+
+	data, err := h.paymentUsecase.GetTransactionInfo(ctx, trxId)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, http.StatusOK, data)
+}
