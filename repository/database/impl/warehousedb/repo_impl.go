@@ -36,6 +36,11 @@ func (r *defaultRepo) FindWarehouseById(ctx context.Context, id string) (resp *e
 	return
 }
 
+func (r *defaultRepo) FindWarehouseByIdOnly(ctx context.Context, id string) (resp *entity.Warehouse, err error) {
+	err = r.db.WithContext(ctx).Take(&resp, "id = ?", id).Error
+	return
+}
+
 func (r *defaultRepo) FindImageWarehouseById(ctx context.Context, id string) (resp *entity.WarehouseImg, err error) {
 	err = r.db.WithContext(ctx).Take(&resp, "warehouse_id = ?", id).Error
 	return
@@ -105,3 +110,45 @@ func (r *defaultRepo) GetListWarehouseType(ctx context.Context) (resp []entity.W
 	err = r.db.WithContext(ctx).Find(&resp).Error
 	return
 }
+
+func (s *defaultRepo) AddFavorit(ctx context.Context, req *entity.Favorit) (err error) {
+	err = s.db.WithContext(ctx).Create(req).Error
+	return
+}
+
+func (s *defaultRepo) FindFavoritById(ctx context.Context, waehouseId int) (resp *entity.Favorit, err error) {
+	err = s.db.WithContext(ctx).Take(&resp, "id = ?", waehouseId).Error
+	return
+}
+
+func (s *defaultRepo) FindFavoritByWarehouseIdAndUserId(ctx context.Context, waehouseId, userId int) (resp *entity.Favorit, err error) {
+	err = s.db.WithContext(ctx).Take(&resp, "warehouse_id = ? AND user_id = ?", waehouseId, userId).Error
+	return
+}
+
+func (s *defaultRepo) DeleteFavorite(ctx context.Context, id int) (err error) {
+	favorite := entity.Favorit{
+		ID: id,
+	}
+	err = s.db.WithContext(ctx).Delete(&favorite).Error
+	return
+}
+
+func (s *defaultRepo) FindListFavoriteByUserId(ctx context.Context, userId int, param paginate.Pagination) (resp []entity.Favorit, count int64, err error) {
+	query := func (db *gorm.DB) *gorm.DB {
+		return db.Where("user_id = ?", userId)
+	}
+
+	err = s.db.WithContext(ctx).Model(&entity.Favorit{}).Scopes(query).Count(&count).Error
+	if err != nil {
+		return
+	}
+
+	err = s.db.WithContext(ctx).Scopes(paginate.Paginate(param.Page, param.Limit)).
+			Preload("Warehouse.District.Regency.Province").
+			Preload("Warehouse.WarehouseType").
+			Preload("Warehouse.WarehouseImg").
+			Preload("User").Scopes(query).Find(&resp).Error
+	return
+}
+

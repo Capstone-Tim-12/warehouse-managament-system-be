@@ -168,7 +168,7 @@ func (s *defaultWarehouse) UpdateWarehouseDetails(ctx context.Context, req model
 }
 
 func (s *defaultWarehouse) DeleteWarehouse(ctx context.Context, id string) (err error) {
-	warehouseData, err := s.warehouseRepo.FindWarehouseById(ctx, id)
+	warehouseData, err := s.warehouseRepo.FindWarehouseByIdOnly(ctx, id)
 	if err != nil {
 		fmt.Println("error found warehouse: ", err.Error())
 		err = errors.New(http.StatusNotFound, "warehouse not found")

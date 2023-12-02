@@ -15,7 +15,7 @@ import (
 )
 
 func (s *defaultPayment) SubmissionWarehouse(ctx context.Context, userId int, req model.SubmissionRequest) (err error) {
-	_, err = s.warehouseRepo.FindWarehouseById(ctx, cast.ToString(req.WarehouseId))
+	_, err = s.warehouseRepo.FindWarehouseByIdOnly(ctx, cast.ToString(req.WarehouseId))
 	if err != nil {
 		fmt.Println("error finding warehouse: ", err.Error())
 		err = errors.New(http.StatusNotFound, "warehouse not found")
