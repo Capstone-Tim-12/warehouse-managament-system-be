@@ -145,8 +145,7 @@ func (h *WarehouseHandler) GetListWarehouseType(c echo.Context) (err error){
 		return
 	}
 
-	resp := response.NewSuccessResponse(c, http.StatusOK, data)
-	err = c.JSON(http.StatusOK, resp)
+	return response.NewSuccessResponse(c, http.StatusOK, data)
 	return
 }
 
@@ -190,5 +189,43 @@ func (h *WarehouseHandler) UploadPhotoWarehouse(c echo.Context) (err error) {
 		return err
 	}
 
+	return response.NewSuccessResponse(c, http.StatusOK, data)
+}
+
+
+func (h *WarehouseHandler) MywarehouseSubmitted(c echo.Context) (err error){
+	ctx := c.Request().Context()
+	clamsData := utils.GetClamsJwt(c)
+	param, _ := paginate.GetParams(c)
+	data, count, err := h.warehouseusecase.GetMywarehouse(ctx, clamsData.UserId, model.StatusSubmitted, param)
+	if err != nil {
+		return
+	}
+
+	resp := response.NewResponseSuccessPagination(float64(count), param, data)
+	return c.JSON(http.StatusOK, resp)
+}
+
+func (h *WarehouseHandler) MywarehouseRented(c echo.Context) (err error){
+	ctx := c.Request().Context()
+	clamsData := utils.GetClamsJwt(c)
+	param, _ := paginate.GetParams(c)
+	data, count, err := h.warehouseusecase.GetMywarehouse(ctx, clamsData.UserId, model.StatusRented, param)
+	if err != nil {
+		return
+	}
+
+	resp := response.NewResponseSuccessPagination(float64(count), param, data)
+	return c.JSON(http.StatusOK, resp)
+}
+
+func (h *WarehouseHandler) GetWarehouseInfo(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	id := c.Param("warehouseId")
+
+	data, err := h.warehouseusecase.GetWarehouseInfo(ctx, id)
+	if err != nil {
+		return
+	}
 	return response.NewSuccessResponse(c, http.StatusOK, data)
 }

@@ -21,4 +21,5 @@ type UserRepository interface {
 	GetUserDetailByUserId(ctx context.Context, userId int) (resp *entity.UserDetail, err error)
 	GetAllAvatar(ctx context.Context) (resp []entity.Avatar, err error)
 	GetUserList(ctx context.Context, param paginate.Pagination) (resp []entity.User, count int64, err error)
+	GetUserInfoById(ctx context.Context, id int) (resp *entity.User, err error) 
 }

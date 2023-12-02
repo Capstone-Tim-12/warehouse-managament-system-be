@@ -371,3 +371,13 @@ func (h *UserHandler) GetUserById(c echo.Context) (err error) {
 	return response.NewSuccessResponse(c, http.StatusOK, data)
 }
 
+func (h *UserHandler) GetUserInfo(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	clamsData := utils.GetClamsJwt(c)
+	data, err := h.userUsecase.GetUserInfo(ctx, clamsData.UserId)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, http.StatusOK, data)
+}
+

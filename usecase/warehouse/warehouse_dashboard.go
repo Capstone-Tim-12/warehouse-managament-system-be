@@ -75,26 +75,27 @@ func (s *defaultWarehouse) GetWarehouse(ctx context.Context, id string) (resp *m
 	}
 
 	resp = &model.WarehouseDataResponse{
-		Name:         warehouseData.Name,
-		Description:  warehouseData.Description,
-		ProvinceID:   warehouseData.District.Regency.ProvinceID,
-		ProvinceName: warehouseData.District.Regency.Province.Name,
-		RegencyID:    warehouseData.District.RegencyID,
-		RegencyName:  warehouseData.District.Regency.Name,
-		DistrictID:   warehouseData.DistrictID,
-		DistrictName: warehouseData.District.Name,
-		Address:      warehouseData.Address,
-		SurfaceArea:  warehouseData.SurfaceArea,
-		BuildingArea: warehouseData.BuildingArea,
-		Owner:        warehouseData.Owner,
-		PhoneNumber:  warehouseData.PhoneNumber,
-		Longitude:    warehouseData.Longitude,
-		Latitude:     warehouseData.Latitude,
-		Status:       string(warehouseData.Status),
-		WeeklyPrice:  math.Ceil(warehouseData.Price / 52),
-		MonthlyPrice: math.Ceil(warehouseData.Price / 12),
-		AnnualPrice:  warehouseData.Price,
-		Image:        images,
+		Name:          warehouseData.Name,
+		Description:   warehouseData.Description,
+		ProvinceID:    warehouseData.District.Regency.ProvinceID,
+		ProvinceName:  warehouseData.District.Regency.Province.Name,
+		RegencyID:     warehouseData.District.RegencyID,
+		RegencyName:   warehouseData.District.Regency.Name,
+		DistrictID:    warehouseData.DistrictID,
+		DistrictName:  warehouseData.District.Name,
+		Address:       warehouseData.Address,
+		SurfaceArea:   warehouseData.SurfaceArea,
+		BuildingArea:  warehouseData.BuildingArea,
+		Owner:         warehouseData.Owner,
+		PhoneNumber:   warehouseData.PhoneNumber,
+		Longitude:     warehouseData.Longitude,
+		Latitude:      warehouseData.Latitude,
+		Status:        string(warehouseData.Status),
+		WeeklyPrice:   math.Ceil(warehouseData.Price / 52),
+		MonthlyPrice:  math.Ceil(warehouseData.Price / 12),
+		AnnualPrice:   warehouseData.Price,
+		WarehouseType: warehouseData.WarehouseType.Name,
+		Image:         images,
 	}
 
 	return
@@ -197,8 +198,8 @@ func (s *defaultWarehouse) GetListWarehouseType(ctx context.Context) (resp []mod
 			Name: warehouseData[i].Name,
 		})
 	}
-	
-	return 
+
+	return
 }
 
 func (s *defaultWarehouse) UploadPhotoWarehouse(ctx context.Context, photo []*multipart.FileHeader) (resp model.UploadPhotoResponse, err error) {

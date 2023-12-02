@@ -61,6 +61,24 @@ func (s *defaultRepo) GetTransactionByUserId(ctx context.Context, userId int) (r
 	return
 }
 
+func (s *defaultRepo) GetListTransactionByUserIdAndStatus(ctx context.Context, userId int, status entity.TranscationStatus, param paginate.Pagination) (resp []entity.Transaction, count int64, err error) {
+	query := func (db *gorm.DB) *gorm.DB  {
+		return db.Where("user_id = ? AND status = ?", userId, status)
+	}
+
+	err = s.db.WithContext(ctx).Model(&entity.Transaction{}).Scopes(query).Count(&count).Error
+	if err != nil {
+		return
+	}
+
+	err = s.db.WithContext(ctx).Scopes(paginate.Paginate(param.Page, param.Limit)).
+		Preload("Warehouse.District.Regency").
+		Preload("Warehouse.WarehouseImg").
+		Scopes(query).
+		Find(&resp).Error
+	return
+}
+
 func (s *defaultRepo) GetListTransactionData(ctx context.Context, param paginate.PaginationTrx) (resp []entity.Transaction, count int64, err error) {
 	query := func(db *gorm.DB) *gorm.DB {
 		if param.ProvinceId != 0 || param.Search != "" {
@@ -98,7 +116,7 @@ func (s *defaultRepo) GetListTransactionData(ctx context.Context, param paginate
 }
 
 func (s *defaultRepo) GetTransactionById(ctx context.Context, transactionId string) (resp *entity.Transaction, err error) {
-	err = s.db.WithContext(ctx).Preload("PaymentScheme").Preload("Warehouse").Take(&resp, "id = ?", transactionId).Error
+	err = s.db.WithContext(ctx).Preload("PaymentScheme").Preload("User").Preload("Warehouse").Take(&resp, "id = ?", transactionId).Error
 	return
 }
 
@@ -123,4 +141,19 @@ func (s *defaultRepo) CreateInstalment(ctx context.Context, tx *gorm.DB, req *en
 func (s *defaultRepo) UpdateTransaction(ctx context.Context, tx *gorm.DB, req *entity.Transaction) (err error) {
 	err = tx.WithContext(ctx).Save(req).Error
 	return
+}
+
+func (s *defaultRepo) GetListInstalmentByTransactionId(ctx context.Context, transactionId string, param paginate.Pagination) (resp []entity.Instalment, count int64, err error) {
+	query := func (db *gorm.DB) *gorm.DB {
+		return db.Where("transaction_id = ?", transactionId)
+	}
+
+	err = s.db.WithContext(ctx).Model(&entity.Instalment{}).Scopes(query).Count(&count).Error
+	if err != nil {
+		return
+	}
+
+	err = s.db.WithContext(ctx).Scopes(paginate.Paginate(param.Page, param.Limit)).Scopes(query).Find(&resp).Error
+	return
+
 }

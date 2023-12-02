@@ -27,4 +27,5 @@ type UserUsecase interface {
 	DeleteUser(ctx context.Context, id int) (err error)
 	GetUserList(ctx context.Context, param paginate.Pagination) (resp []model.UserListResponse, count int64, err error)
 	GetUserById(ctx context.Context, userId int) (resp model.UserListResponse, err error) 
+	GetUserInfo(ctx context.Context, userId int) (resp model.UserInfoResponse, err error) 
 }
