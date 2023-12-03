@@ -126,11 +126,8 @@ func (s *defaultRepo) FindFavoritByWarehouseIdAndUserId(ctx context.Context, wae
 	return
 }
 
-func (s *defaultRepo) DeleteFavorite(ctx context.Context, id int) (err error) {
-	favorite := entity.Favorit{
-		ID: id,
-	}
-	err = s.db.WithContext(ctx).Delete(&favorite).Error
+func (s *defaultRepo) DeleteFavorite(ctx context.Context, userId, warehouseId int) (err error) {
+	err = s.db.WithContext(ctx).Delete(&entity.Favorit{}, "user_id = ? AND warehouse_id = ?", userId, warehouseId).Error
 	return
 }
 

@@ -40,15 +40,15 @@ func (s *defaultWarehouse) AddFavorite(ctx context.Context, userId int, req mode
 	return
 }
 
-func (s *defaultWarehouse) DeleteFavorit(ctx context.Context, favoritId int) (err error) {
-	data, err := s.warehouseRepo.FindFavoritById(ctx, favoritId)
+func (s *defaultWarehouse) DeleteFavorit(ctx context.Context, userId, warehouseId int) (err error) {
+	_, err = s.warehouseRepo.FindFavoritByWarehouseIdAndUserId(ctx, warehouseId, userId)
 	if err != nil {
 		fmt.Println("failed to find favorites: ", err.Error())
 		err = errors.New(http.StatusNotFound, http.StatusText(http.StatusNotFound))
 		return
 	}
 
-	err = s.warehouseRepo.DeleteFavorite(ctx, data.ID)
+	err = s.warehouseRepo.DeleteFavorite(ctx, userId, warehouseId)
 	if err != nil {
 		fmt.Println("failed to delete favorites: ", err.Error())
 		err = errors.New(http.StatusInternalServerError, "failed to delete favorites")
@@ -75,7 +75,6 @@ func (s *defaultWarehouse) GetListFavorite(ctx context.Context, userId int, para
 		distance := calculate.Haversine(data[i].User.Latitude, data[i].User.Longitude, data[i].Warehouse.Latitude, data[i].Warehouse.Longitude)
 		resp = append(resp, model.WarehouseListResponse{
 			Id:                data[i].WarehouseID,
-			FavoritId:         data[i].ID,
 			Name:              data[i].Warehouse.Name,
 			DistrictName:      data[i].Warehouse.District.Name,
 			RegencyName:       data[i].Warehouse.District.Regency.Name,

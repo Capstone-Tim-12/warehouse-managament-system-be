@@ -258,9 +258,10 @@ func (h *WarehouseHandler) AddFavorit(c echo.Context) (err error) {
 
 func (h *WarehouseHandler) DeleteFavorit(c echo.Context) (err error) {
 	ctx := c.Request().Context()
-	id := c.Param("favoritId")
+	warehouseId := c.Param("warehouseId")
+	clamsData := utils.GetClamsJwt(c)
 
-	err = h.warehouseusecase.DeleteFavorit(ctx, cast.ToInt(id))
+	err = h.warehouseusecase.DeleteFavorit(ctx, clamsData.UserId, cast.ToInt(warehouseId))
 	if err != nil {
 		return
 	}
