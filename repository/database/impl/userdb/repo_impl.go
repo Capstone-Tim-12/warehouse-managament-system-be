@@ -92,6 +92,6 @@ func (r *defaultRepo) GetUserList(ctx context.Context, param paginate.Pagination
 		return
 	}
 
-	err = r.db.WithContext(ctx).Scopes(paginate.Paginate(param.Page, param.Limit)).Scopes(query).Find(&resp).Error
+	err = r.db.WithContext(ctx).Scopes(paginate.Paginate(param.Page, param.Limit)).Scopes(query).Order("created_at desc").Find(&resp).Error
 	return
 }

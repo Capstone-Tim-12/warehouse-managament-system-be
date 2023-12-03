@@ -42,17 +42,28 @@ func (s *defaultRepo) GetListTransactionDasboar(ctx context.Context, param pagin
 }
 
 func (s *defaultRepo) GetInstalmentUser(ctx context.Context, param paginate.Pagination) (resp []entity.Instalment, count int64, err error) {
-	query := func(condition *gorm.DB) *gorm.DB {
-		condition.Where("status = ? or status = ? ", entity.Paid, entity.Failed)
-		return condition
+	query := func(db *gorm.DB) *gorm.DB {
+		db.Where("instalments.status = ?", entity.Paid)
+
+		if param.PaymentSchemeId != 0 {
+			db.Joins("JOIN transactions ON transactions.id = instalments.transaction_id").
+			Joins("JOIN payment_schemes ON transactions.payment_scheme_id = payment_schemes.id").
+			Where("payment_schemes.id = ?", param.PaymentSchemeId)
+		}
+		return db
 	}
 
 	err = s.db.WithContext(ctx).Model(&entity.Instalment{}).Scopes(query).Count(&count).Error
 	if err != nil {
 		return
 	}
-	err = s.db.WithContext(ctx).Scopes(paginate.Paginate(param.Page, param.Limit)).
-		Scopes(query).Preload("Transaction").Preload("Transaction.User").Find(&resp).Error
+	err = s.db.WithContext(ctx).
+		Scopes(paginate.Paginate(param.Page, param.Limit)).
+		Scopes(query).
+		Preload("Transaction.PaymentScheme").
+		Preload("Transaction.User").
+		Preload("OngoingInstalment").
+		Find(&resp).Error
 	return
 }
 

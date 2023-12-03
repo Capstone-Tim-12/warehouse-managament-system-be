@@ -19,6 +19,6 @@ type WarehouseUsecase interface {
 	GetMywarehouse(ctx context.Context, userId int, status model.TrxStatus, param paginate.Pagination) (resp []model.MyWarehoyseResponse, count int64, err error)
 	GetWarehouseInfo(ctx context.Context, warehouseId string) (resp model.WarehouseInfoResponse, err error)
 	AddFavorite(ctx context.Context, userId int, req model.AddFavoritRequest) (err error)
-	DeleteFavorit(ctx context.Context, favoritId int) (err error)
+	DeleteFavorit(ctx context.Context, userId, warehouseId int) (err error)
 	GetListFavorite(ctx context.Context, userId int, param paginate.Pagination) (resp []model.WarehouseListResponse, count int64, err error)
 }

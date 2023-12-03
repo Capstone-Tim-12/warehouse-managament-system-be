@@ -17,6 +17,9 @@ type Pagination struct {
 	LowerPrice    bool
 	HigestPrice   bool
 	Recomendation bool
+
+	// Opsional
+	PaymentSchemeId int
 }
 
 type PaginationTrx struct {
@@ -54,16 +57,17 @@ func Paginate(page, length int) func(db *gorm.DB) *gorm.DB {
 
 func GetParams(c echo.Context) (Pagination, error) {
 	params := Pagination{
-		Page:          cast.ToInt(c.QueryParam("page")),
-		Limit:         cast.ToInt(c.QueryParam("limit")),
-		Search:        c.QueryParam("search"),
-		MinSize:       cast.ToInt(c.QueryParam("minSize")),
-		MaxSize:       cast.ToInt(c.QueryParam("maxSize")),
-		MinPrice:      cast.ToInt(c.QueryParam("minPrice")),
-		MaxPrice:      cast.ToInt(c.QueryParam("maxPrice")),
-		LowerPrice:    cast.ToBool(c.QueryParam("lowerPrice")),
-		HigestPrice:   cast.ToBool(c.QueryParam("highestPrice")),
-		Recomendation: cast.ToBool(c.QueryParam("recomendation")),
+		Page:            cast.ToInt(c.QueryParam("page")),
+		Limit:           cast.ToInt(c.QueryParam("limit")),
+		Search:          c.QueryParam("search"),
+		MinSize:         cast.ToInt(c.QueryParam("minSize")),
+		MaxSize:         cast.ToInt(c.QueryParam("maxSize")),
+		MinPrice:        cast.ToInt(c.QueryParam("minPrice")),
+		MaxPrice:        cast.ToInt(c.QueryParam("maxPrice")),
+		LowerPrice:      cast.ToBool(c.QueryParam("lowerPrice")),
+		HigestPrice:     cast.ToBool(c.QueryParam("highestPrice")),
+		Recomendation:   cast.ToBool(c.QueryParam("recomendation")),
+		PaymentSchemeId: cast.ToInt(c.QueryParam("paymentSchemeId")),
 	}
 
 	counter := 0

@@ -61,18 +61,18 @@ func (h *PaymentHandler) GetScheme(c echo.Context) (err error) {
 func (h *PaymentHandler) GetHistoryInstalmentUser(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	param, _ := paginate.GetParams(c)
-	data, count, err := h.paymentUsecase.GetHistoryInstalmentUser(ctx, param)
-	if err != nil {
-		return
-	}
-
+	
 	clamsData := utils.GetClamsJwt(c)
 	if clamsData.UserRole != "admin" {
 		fmt.Println("role is not admin")
 		err = errors.New(http.StatusUnauthorized, "role is not admin")
 		return
 	}
-
+	
+	data, count, err := h.paymentUsecase.GetHistoryInstalmentUser(ctx, param)
+	if err != nil {
+		return
+	}
 	resp := response.NewResponseSuccessPagination(float64(count), param, data)
 	err = c.JSON(http.StatusOK, resp)
 	return
