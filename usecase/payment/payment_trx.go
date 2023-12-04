@@ -83,9 +83,7 @@ func (s *defaultPayment) PaymentCheckout(ctx context.Context, req model.PaymentR
 
 		ongoingReq := entity.OngoingInstalment{
 			InstalmentID:    req.InstalmentId,
-			Instalment:      entity.Instalment{},
 			PaymentMethodID: req.PaymentMethodId,
-			PaymentMethod:   entity.PaymentMethod{},
 			XPayment:        vaResp.Data.ExternalID,
 			AccountNumber:   vaResp.Data.AccountNumber,
 			TotalPayment:    float64(vaResp.Data.ExpectedAmount),
@@ -124,24 +122,25 @@ func (s *defaultPayment) PaymentCheckout(ctx context.Context, req model.PaymentR
 }
 
 func (s *defaultPayment) VaCallback(ctx context.Context, req model.VaCallbackRequest) (err error) {
-	ongoingData, err := s.paymentRepo.FindOngoingInstalmentByXpayment(ctx, req.ExternalID)
-	if err != nil {
-		fmt.Println("error getting ongoing data: ", err.Error())
-		err = errors.New(http.StatusNotFound, http.StatusText(http.StatusNotFound))
-		return
-	}
-	xenditResp, err := s.coreWrapper.CheckPayment(ctx, req.ExternalID)
+	paymentData, err := s.coreWrapper.CheckPayment(ctx, req.PaymentID)
 	if err != nil {
 		fmt.Println("error check payment", err.Error())
 		err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
 
+	ongoingData, err := s.paymentRepo.FindOngoingInstalmentByXpayment(ctx, paymentData.Data.ExternalID)
+	if err != nil {
+		fmt.Println("error getting ongoing data: ", err.Error())
+		err = errors.New(http.StatusNotFound, http.StatusText(http.StatusNotFound))
+		return
+	}
+
 	var instalmentStatus entity.InstalmentStatus
 	var paymentTime time.Time
-	if xenditResp.Data.CallbackVirtualAccountID != "" {
+	if paymentData.Data.CallbackVirtualAccountID != "" {
 		instalmentStatus = entity.Paid
-		paymentTime = xenditResp.Data.TransactionTimestamp
+		paymentTime = paymentData.Data.TransactionTimestamp
 	} else {
 		instalmentStatus = entity.Failed
 	}
