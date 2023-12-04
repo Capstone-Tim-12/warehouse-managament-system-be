@@ -31,13 +31,7 @@ func (s *defaultPayment) PaymentCheckout(ctx context.Context, req model.PaymentR
 		return
 	}
 
-	if instalmentData.OngoingInstalment != nil {
-		fmt.Println("Ongoing instalment is not empty")
-		err = errors.New(http.StatusBadRequest, "If you have made a payment request, please contact admin")
-		return
-	}
-
-	if instalmentData.Status != entity.Unpaid {
+	if instalmentData.Status == entity.Paid || instalmentData.Status == entity.Waiting {
 		fmt.Println("payment for this transaction is not permitted")
 		err = errors.New(http.StatusBadRequest, "Payment for this transaction is not permitted")
 		return
@@ -90,9 +84,20 @@ func (s *defaultPayment) PaymentCheckout(ctx context.Context, req model.PaymentR
 			BankCode:        vaResp.Data.BankCode,
 			Expired:         vaResp.Data.ExpirationDate,
 		}
-		err = s.paymentRepo.CreateOngoingInstalment(ctx, &ongoingReq)
+		tx := s.paymentRepo.BeginTrans(ctx)
+		err = s.paymentRepo.CreateOngoingInstalment(ctx, tx, &ongoingReq)
 		if err != nil {
+			tx.Rollback()
 			fmt.Println("error create ongoing instalment: ", err.Error())
+			err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			return
+		}
+
+		instalmentData.Status = entity.Waiting
+		err = s.paymentRepo.UpdateInstalment(ctx, tx, instalmentData)
+		if err != nil {
+			tx.Rollback()
+			fmt.Println("error update instalment: ", err.Error())
 			err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
@@ -108,6 +113,7 @@ func (s *defaultPayment) PaymentCheckout(ctx context.Context, req model.PaymentR
 
 		respData, _ := json.Marshal(vaResponse)
 		resp.PaymentInfo = string(respData)
+		tx.Commit()
 
 	case constrans.PaymentDebitCredit:
 		err = errors.New(http.StatusForbidden, "credit card not available")

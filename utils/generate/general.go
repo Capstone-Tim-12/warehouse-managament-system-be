@@ -8,5 +8,5 @@ func GenerateExternalId(length int) string {
 	for i := range result {
 		result[i] = charset[rand.Intn(len(charset))]
 	}
-	return "DP-" + string(result)
+	return "DH-" + string(result)
 }

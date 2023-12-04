@@ -188,8 +188,8 @@ func (s *defaultRepo) UpdateInstalment(ctx context.Context, tx *gorm.DB, req *en
 	return
 }
 
-func (s *defaultRepo) CreateOngoingInstalment(ctx context.Context, req *entity.OngoingInstalment) (err error) {
-	err = s.db.WithContext(ctx).Create(req).Error
+func (s *defaultRepo) CreateOngoingInstalment(ctx context.Context,  tx *gorm.DB, req *entity.OngoingInstalment) (err error) {
+	err = tx.WithContext(ctx).Create(req).Error
 	return
 }
 
