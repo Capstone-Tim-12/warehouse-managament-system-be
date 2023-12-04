@@ -17,6 +17,7 @@ type Pagination struct {
 	LowerPrice    bool
 	HigestPrice   bool
 	Recomendation bool
+	Status        string
 
 	// Opsional
 	PaymentSchemeId int
@@ -68,6 +69,7 @@ func GetParams(c echo.Context) (Pagination, error) {
 		HigestPrice:     cast.ToBool(c.QueryParam("highestPrice")),
 		Recomendation:   cast.ToBool(c.QueryParam("recomendation")),
 		PaymentSchemeId: cast.ToInt(c.QueryParam("paymentSchemeId")),
+		Status:          c.QueryParam("status"),
 	}
 
 	counter := 0

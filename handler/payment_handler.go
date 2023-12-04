@@ -224,6 +224,7 @@ func (h *PaymentHandler) GetBankVa(c echo.Context) (err error) {
 func (h *PaymentHandler) PaymentCheckout(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	var req model.PaymentRequest
+	clamsData := utils.GetClamsJwt(c)
 	err = c.Bind(&req)
 	if err != nil {
 		err = errors.New(http.StatusBadRequest, "invalid request")
@@ -238,7 +239,7 @@ func (h *PaymentHandler) PaymentCheckout(c echo.Context) (err error) {
 		return
 	}
 
-	data, err := h.paymentUsecase.PaymentCheckout(ctx, req)
+	data, err := h.paymentUsecase.PaymentCheckout(ctx, clamsData.UserId, req)
 	if err != nil {
 		return
 	}

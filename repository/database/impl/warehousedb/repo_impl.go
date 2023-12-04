@@ -59,6 +59,10 @@ func (r *defaultRepo) FindWarehouseList(ctx context.Context, param paginate.Pagi
 			condision.Where("price >= ? AND price <= ?", param.MinPrice, param.HigestPrice)
 		}
 
+		if param.Status != "" {
+			condision.Where("status = ?", param.Status)
+		}
+
 		switch true {
 		case param.HigestPrice:
 			condision.Order("price desc")

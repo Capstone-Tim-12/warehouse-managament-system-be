@@ -14,10 +14,24 @@ import (
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/constrans"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/errors"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/generate"
+	"github.com/spf13/cast"
 )
 
-func (s *defaultPayment) PaymentCheckout(ctx context.Context, req model.PaymentRequest) (resp model.PaymentResponse, err error) {
-	_, err = s.paymentRepo.GetPaymentMethodById(ctx, req.PaymentMethodId)
+func (s *defaultPayment) PaymentCheckout(ctx context.Context, userId int, req model.PaymentRequest) (resp model.PaymentResponse, err error) {
+	userData, err := s.userRepo.GetUserById(ctx, userId)
+	if err != nil {
+		fmt.Println("error getting user: ", err.Error())
+		err = errors.New(http.StatusNotFound, "user not found")
+		return
+	}
+
+	if !userData.IsVerifyAccount {
+		fmt.Println("email user not verifield")
+		err = errors.New(http.StatusBadRequest, "user not verify email account")
+		return
+	}
+
+	paymentMethodData, err := s.paymentRepo.GetPaymentMethodById(ctx, req.PaymentMethodId)
 	if err != nil {
 		fmt.Println("error getting payment method: ", err.Error())
 		err = errors.New(http.StatusNotFound, "payment method not found")
@@ -102,6 +116,53 @@ func (s *defaultPayment) PaymentCheckout(ctx context.Context, req model.PaymentR
 			return
 		}
 
+		reqNotif := model.NotifPayment{
+			Username:      userData.Username,
+			Xpayment:      vaResp.Data.ExternalID,
+			VaNumber:      vaResp.Data.AccountNumber,
+			PaymentMethod: paymentMethodData.Name,
+			VaName:        vaResp.Data.Name,
+			BankCode:      vaResp.Data.BankCode,
+			Nominal:       vaResp.Data.ExpectedAmount,
+			Expired:       vaResp.Data.ExpirationDate,
+		}
+
+		emailBody, errRes := s.generateBodyEmailPaymentNotif(ctx, reqNotif)
+		if errRes != nil {
+			tx.Rollback()
+			fmt.Println("failed generate email body: ", errRes.Error())
+			err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			return
+		}
+
+		reqEmail := core.SendEmailRequest{
+			To:       userData.Email,
+			FromName: "Digihouse Indonesia",
+			Title:    "Notifikasi Pembayaran",
+			Message:  emailBody,
+		}
+
+		_, errRes = s.coreWrapper.SendEmail(ctx, reqEmail)
+		if errRes != nil {
+			tx.Rollback()
+			fmt.Println("failed send email: ", errRes.Error())
+			err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			return
+		}
+
+		reqUlti := core.SetUtilityRequest{
+			Key:      vaResp.Data.ExternalID,
+			Value:    cast.ToString(userId),
+			Duration: 60 * 60 * 25,
+		}
+		_, err = s.coreWrapper.SetUtility(ctx, reqUlti)
+		if err != nil {
+			tx.Rollback()
+			fmt.Println("set utility data: ", errRes.Error())
+			err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			return
+		}
+
 		vaResponse := model.VaDataResponse{
 			XpaymentId:           vaResp.Data.ExternalID,
 			VirtualAccountName:   vaResp.Data.Name,
@@ -158,6 +219,44 @@ func (s *defaultPayment) VaCallback(ctx context.Context, req model.VaCallbackReq
 		if err != nil {
 			tx.Rollback()
 			fmt.Println("error update payment", err.Error())
+			err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			return
+		}
+
+		ultiData, errRes := s.coreWrapper.GetUtilityData(ctx, paymentData.Data.ExternalID)
+		if errRes != nil {
+			tx.Rollback()
+			fmt.Println("error get utility data: ", errRes.Error())
+			err = errors.New(http.StatusNotFound, http.StatusText(http.StatusNotFound))
+			return
+		}
+
+		userData, errRes := s.userRepo.GetUserById(ctx, cast.ToInt(ultiData.Data.Value))
+		if errRes != nil {
+			tx.Rollback()
+			fmt.Println("error getting user: ", errRes.Error())
+			err = errors.New(http.StatusNotFound, "user not found")
+			return
+		}
+
+		emailBody, errRes := s.generatePaymentSuccessBody(paymentData.Data, ongoingData.CreatedAt)
+		if errRes != nil {
+			tx.Rollback()
+			fmt.Println("error generatePaymentSuccessBody", err.Error())
+			err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			return
+		}
+		reqEmail := core.SendEmailRequest{
+			To:       userData.Email,
+			FromName: "Digihouse Indonesia",
+			Title:    "Notifikasi Pembayaran Sukses",
+			Message:  emailBody,
+		}
+
+		_, errRes = s.coreWrapper.SendEmail(ctx, reqEmail)
+		if errRes != nil {
+			tx.Rollback()
+			fmt.Println("failed send email: ", errRes.Error())
 			err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
