@@ -11,20 +11,20 @@ import (
 type defaultPayment struct {
 	regionRepo    regiondb.RegionRepository
 	userRepo      userdb.UserRepository
-	coreRepo      core.CoreWrapper
+	coreWrapper   core.CoreWrapper
 	warehouseRepo warehousedb.WarehouseRepository
 	paymentRepo   paymentdb.PaymentRepository
 }
 
 func NewPaymentUsecase(regionRepo regiondb.RegionRepository,
 	userRepo userdb.UserRepository,
-	coreRepo core.CoreWrapper,
+	coreWrapper core.CoreWrapper,
 	warehouseRepo warehousedb.WarehouseRepository,
 	paymentRepo paymentdb.PaymentRepository) PaymentUsecase {
 	return &defaultPayment{
 		regionRepo:    regionRepo,
 		userRepo:      userRepo,
-		coreRepo:      coreRepo,
+		coreWrapper:   coreWrapper,
 		warehouseRepo: warehouseRepo,
 		paymentRepo:   paymentRepo,
 	}

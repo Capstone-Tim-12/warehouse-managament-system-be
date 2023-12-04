@@ -23,4 +23,11 @@ type PaymentRepository interface {
 	GetTransactionDetailById(ctx context.Context, transactionId string) (resp *entity.Transaction, err error)
 	GetListTransactionByUserIdAndStatus(ctx context.Context, userId int, status entity.TranscationStatus, param paginate.Pagination) (resp []entity.Transaction, count int64, err error)
 	GetListInstalmentByTransactionId(ctx context.Context, transactionId string, param paginate.Pagination) (resp []entity.Instalment, count int64, err error)
+	GetListPaymentMethod(ctx context.Context) (resp []entity.PaymentMethod, err error)
+	GetPaymentMethodById(ctx context.Context, id int) (resp *entity.PaymentMethod, err error)
+	GetInstalmentById(ctx context.Context, id int) (resp *entity.Instalment, err error) 
+	UpdateInstalment(ctx context.Context, tx *gorm.DB, req *entity.Instalment) (err error) 
+	CreateOngoingInstalment(ctx context.Context, req *entity.OngoingInstalment) (err error)
+	UpdateOngoingInstalment(ctx context.Context, tx *gorm.DB, req *entity.OngoingInstalment) (err error)
+	FindOngoingInstalmentByXpayment(ctx context.Context, xpaymentId string) (resp *entity.OngoingInstalment, err error) 
 }

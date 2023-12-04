@@ -44,6 +44,7 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	e.POST("/user/login", r.UserHandler.LoginUser)
 	e.POST("/user/otp-verify", r.UserHandler.VerificationOtpUser)
 	e.POST("/user/reset-password", r.UserHandler.ResetPassword)
+	e.POST("/payment/va/callback", r.PaymentHandler.VaCallback)
 
 	sc := e.Group("")
 	sc.Use(middleware.JwtMiddleware())
@@ -78,6 +79,9 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	sc.GET("/payment/scheme", r.PaymentHandler.GetScheme)
 	sc.GET("/payment/instalment/:transactionId", r.PaymentHandler.GetListInstalment)
 	sc.GET("/payment/transaction/:transactionId", r.PaymentHandler.GetTransactionInfo)
+	sc.GET("/payment/method", r.PaymentHandler.GetListPaymentMethod)
+	sc.GET("/payment/va/bank", r.PaymentHandler.GetBankVa)
+	sc.POST("/payment/checkout", r.PaymentHandler.PaymentCheckout)
 
 	sc.GET("/dasboard/home/trx-history", r.PaymentHandler.GetHistoryInstalmentUser)
 	sc.GET("/dasboard/list/trx-history", r.PaymentHandler.GetAllTransaction)

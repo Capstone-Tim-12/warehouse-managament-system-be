@@ -19,10 +19,11 @@ func (s *defaultPayment) GetHistoryInstalmentUser(ctx context.Context, param pag
 	}
 
 	for i := 0; i < len(list); i++ {
+		paymentTime := list[i].OngoingInstalment.PaymentTime
 		resp = append(resp, model.TransactionHistoryResponse{
 			TransactionID:     list[i].TransactionID,
 			InstalmentId:      list[i].ID,
-			TransactionDate:   list[i].OngoingInstalment.PaymentTime,
+			TransactionDate:   *paymentTime,
 			PaymentSchemeId:   list[i].Transaction.PaymentScheme.ID,
 			PaymentSchemeName: list[i].Transaction.PaymentScheme.Scheme,
 			UserID:            list[i].Transaction.User.ID,

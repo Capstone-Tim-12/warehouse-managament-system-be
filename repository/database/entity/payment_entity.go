@@ -74,7 +74,7 @@ type OngoingInstalment struct {
 	AdminFee        float64
 	TotalPayment    float64
 	BankCode        string
-	PaymentTime     time.Time
+	PaymentTime     *time.Time
 	Expired         time.Time
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
