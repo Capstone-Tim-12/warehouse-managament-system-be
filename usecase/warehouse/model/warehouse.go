@@ -15,7 +15,7 @@ type WarehouseDataRequest struct {
 	Longitude       float64  `json:"longitude" validate:"longitude"`
 	Latitude        float64  `json:"latitude" validate:"latitude"`
 	Status          string   `json:"status"`
-	Price           float64  `json:"price"`
+	Price           float64  `json:"price" validate:"required"`
 	Image           []string `json:"image"`
 }
 

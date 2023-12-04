@@ -15,10 +15,16 @@ import (
 )
 
 func (s *defaultPayment) SubmissionWarehouse(ctx context.Context, userId int, req model.SubmissionRequest) (err error) {
-	_, err = s.warehouseRepo.FindWarehouseByIdOnly(ctx, cast.ToString(req.WarehouseId))
+	warehouseData, err := s.warehouseRepo.FindWarehouseByIdOnly(ctx, cast.ToString(req.WarehouseId))
 	if err != nil {
 		fmt.Println("error finding warehouse: ", err.Error())
 		err = errors.New(http.StatusNotFound, "warehouse not found")
+		return
+	}
+
+	if warehouseData.Status == entity.NotAvailable {
+		fmt.Println("warehouse not available")
+		err = errors.New(http.StatusBadRequest, "warehouse not available")
 		return
 	}
 
@@ -57,15 +63,24 @@ func (s *defaultPayment) SubmissionWarehouse(ctx context.Context, userId int, re
 		Status:          entity.Submission,
 		WarehouseID:     req.WarehouseId,
 	}
-	err = s.paymentRepo.CreateTransaction(ctx, &reqTransaction)
+	tx := s.paymentRepo.BeginTrans(ctx)
+	err = s.paymentRepo.CreateTransaction(ctx, tx, &reqTransaction)
 	if err != nil {
-		fmt.Println("create transaction failed")
+		tx.Rollback()
+		fmt.Println("create transaction failed: ", err.Error())
 		err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
-	return
-}
 
-func (s *defaultPayment) GetTransactionListDasboard(ctx context.Context) (resp []model.TransactionListDasboard, err error) {
+	warehouseData.Status = entity.NotAvailable
+	err = s.warehouseRepo.UpdateWarehouse(ctx, tx, warehouseData)
+	if err != nil {
+		tx.Rollback()
+		fmt.Println("failed update warehouse: ", err.Error())
+		err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		return
+	}
+
+	tx.Commit()
 	return
 }

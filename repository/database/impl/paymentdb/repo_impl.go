@@ -21,8 +21,8 @@ func (s *defaultRepo) FindPaymentSchemeById(ctx context.Context, id int) (resp *
 	return
 }
 
-func (s *defaultRepo) CreateTransaction(ctx context.Context, req *entity.Transaction) (err error) {
-	err = s.db.WithContext(ctx).Create(req).Error
+func (s *defaultRepo) CreateTransaction(ctx context.Context, tx *gorm.DB, req *entity.Transaction) (err error) {
+	err = tx.WithContext(ctx).Create(req).Error
 	return
 }
 
