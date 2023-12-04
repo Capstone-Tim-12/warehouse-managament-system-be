@@ -179,7 +179,7 @@ func (s *defaultRepo) GetPaymentMethodById(ctx context.Context, id int) (resp *e
 }
 
 func (s *defaultRepo) GetInstalmentById(ctx context.Context, id int) (resp *entity.Instalment, err error) {
-	err = s.db.WithContext(ctx).Take(&resp, "id = ?", id).Error
+	err = s.db.WithContext(ctx).Preload("OngoingInstalment").Take(&resp, "id = ?", id).Error
 	return
 } 
 
