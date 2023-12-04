@@ -18,4 +18,8 @@ type PaymentUsecase interface {
 	GetTransactionListDetail(ctx context.Context, transactionId string) (resp model.TrxListDetail, err error) 
 	GetListInstalmentByTrxId(ctx context.Context, transactionId string, param paginate.Pagination) (resp []model.ListInstalmentResponse, count int64, err error)
 	GetTransactionInfo(ctx context.Context, transactionId string) (resp model.TransactionInfoResponse, err error)
+	GetListPaymentMethod(ctx context.Context) (resp []model.PaymentMethodResponse, err error)
+	GetBankVa(ctx context.Context) (resp []model.VaBankResponse, err error) 
+	PaymentCheckout(ctx context.Context, req model.PaymentRequest) (resp model.PaymentResponse, err error)
+	VaCallback(ctx context.Context, req model.VaCallbackRequest) (err error)
 }

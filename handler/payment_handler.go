@@ -200,3 +200,73 @@ func (h *PaymentHandler) GetTransactionInfo(c echo.Context) (err error) {
 	}
 	return response.NewSuccessResponse(c, http.StatusOK, data)
 }
+
+func (h *PaymentHandler) GetListPaymentMethod(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+
+	data, err := h.paymentUsecase.GetListPaymentMethod(ctx)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, http.StatusOK, data)
+}
+
+func (h *PaymentHandler) GetBankVa(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+
+	data, err := h.paymentUsecase.GetBankVa(ctx)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, http.StatusOK, data)
+}
+
+func (h *PaymentHandler) PaymentCheckout(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	var req model.PaymentRequest
+	err = c.Bind(&req)
+	if err != nil {
+		err = errors.New(http.StatusBadRequest, "invalid request")
+		fmt.Println("error bind register user data: ", err.Error())
+		return
+	}
+
+	err = c.Validate(req)
+	if err != nil {
+		fmt.Println("error validate data: ", err.Error())
+		err = errors.New(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	data, err := h.paymentUsecase.PaymentCheckout(ctx, req)
+	if err != nil {
+		return
+	}
+
+	return response.NewSuccessResponse(c, http.StatusOK, data)
+}
+
+func (h *PaymentHandler) VaCallback(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	var req model.VaCallbackRequest
+	err = c.Bind(&req)
+	if err != nil {
+		err = errors.New(http.StatusBadRequest, "invalid request")
+		fmt.Println("error bind register user data: ", err.Error())
+		return
+	}
+
+	err = c.Validate(req)
+	if err != nil {
+		fmt.Println("error validate data: ", err.Error())
+		err = errors.New(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = h.paymentUsecase.VaCallback(ctx, req)
+	if err != nil {
+		return
+	}
+
+	return response.NewSuccessResponse(c, http.StatusOK, nil)
+}

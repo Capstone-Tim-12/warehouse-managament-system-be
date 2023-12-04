@@ -166,5 +166,39 @@ func (s *defaultRepo) GetListInstalmentByTransactionId(ctx context.Context, tran
 
 	err = s.db.WithContext(ctx).Scopes(paginate.Paginate(param.Page, param.Limit)).Scopes(query).Find(&resp).Error
 	return
+}
 
+func (s *defaultRepo) GetListPaymentMethod(ctx context.Context) (resp []entity.PaymentMethod, err error) {
+	err = s.db.WithContext(ctx).Find(&resp).Error
+	return
+}
+
+func (s *defaultRepo) GetPaymentMethodById(ctx context.Context, id int) (resp *entity.PaymentMethod, err error) {
+	err = s.db.WithContext(ctx).Take(&resp, "id = ?", id).Error
+	return
+}
+
+func (s *defaultRepo) GetInstalmentById(ctx context.Context, id int) (resp *entity.Instalment, err error) {
+	err = s.db.WithContext(ctx).Take(&resp, "id = ?", id).Error
+	return
+} 
+
+func (s *defaultRepo) UpdateInstalment(ctx context.Context, tx *gorm.DB, req *entity.Instalment) (err error) {
+	err = tx.WithContext(ctx).Save(req).Error
+	return
+}
+
+func (s *defaultRepo) CreateOngoingInstalment(ctx context.Context, req *entity.OngoingInstalment) (err error) {
+	err = s.db.WithContext(ctx).Create(req).Error
+	return
+}
+
+func (s *defaultRepo) UpdateOngoingInstalment(ctx context.Context, tx *gorm.DB, req *entity.OngoingInstalment) (err error) {
+	err = tx.WithContext(ctx).Save(req).Error
+	return
+}
+
+func (s *defaultRepo) FindOngoingInstalmentByXpayment(ctx context.Context, xpaymentId string) (resp *entity.OngoingInstalment, err error) {
+	err = s.db.WithContext(ctx).Take(&resp, "x_payment = ?", xpaymentId).Error
+	return
 }
