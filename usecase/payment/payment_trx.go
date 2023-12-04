@@ -31,6 +31,12 @@ func (s *defaultPayment) PaymentCheckout(ctx context.Context, req model.PaymentR
 		return
 	}
 
+	if instalmentData.OngoingInstalment.ID != 0 {
+		fmt.Println("Ongoing instalment is not empty")
+		err = errors.New(http.StatusBadRequest, "If you have made a payment request, please contact admin")
+		return
+	}
+
 	if instalmentData.Status != entity.Unpaid {
 		fmt.Println("payment for this transaction is not permitted")
 		err = errors.New(http.StatusBadRequest, "Payment for this transaction is not permitted")
