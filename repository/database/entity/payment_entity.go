@@ -17,9 +17,10 @@ const (
 )
 
 const (
-	Paid   InstalmentStatus = "dibayar"
-	Unpaid InstalmentStatus = "belum dibayar"
-	Failed InstalmentStatus = "gagal bayar"
+	Paid    InstalmentStatus = "dibayar"
+	Unpaid  InstalmentStatus = "belum dibayar"
+	Waiting InstalmentStatus = "menunggu pembayaran"
+	Failed  InstalmentStatus = "gagal bayar"
 )
 
 type PaymentScheme struct {

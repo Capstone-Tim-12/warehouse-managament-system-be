@@ -1,6 +1,8 @@
 package model
 
-import "time"
+import (
+	"time"
+)
 
 type PaymentRequest struct {
 	PaymentMethodId int    `json:"paymentMethodId"`
@@ -45,4 +47,3 @@ type PaymentDetail struct {
 	Reference string `json:"reference"`
 	Remark    string `json:"remark"`
 }
-
