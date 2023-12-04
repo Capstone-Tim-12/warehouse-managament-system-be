@@ -31,7 +31,7 @@ func (s *defaultPayment) PaymentCheckout(ctx context.Context, req model.PaymentR
 		return
 	}
 
-	if instalmentData.OngoingInstalment.ID != 0 {
+	if instalmentData.OngoingInstalment != nil {
 		fmt.Println("Ongoing instalment is not empty")
 		err = errors.New(http.StatusBadRequest, "If you have made a payment request, please contact admin")
 		return
