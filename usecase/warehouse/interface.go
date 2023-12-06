@@ -21,4 +21,5 @@ type WarehouseUsecase interface {
 	AddFavorite(ctx context.Context, userId int, req model.AddFavoritRequest) (err error)
 	DeleteFavorit(ctx context.Context, userId, warehouseId int) (err error)
 	GetListFavorite(ctx context.Context, userId int, param paginate.Pagination) (resp []model.WarehouseListResponse, count int64, err error)
+	ImportCsvFileWarehouse(ctx context.Context, file *multipart.FileHeader) (err error)
 }

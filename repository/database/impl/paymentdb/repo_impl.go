@@ -202,3 +202,7 @@ func (s *defaultRepo) FindOngoingInstalmentByXpayment(ctx context.Context, xpaym
 	err = s.db.WithContext(ctx).Take(&resp, "x_payment = ?", xpaymentId).Error
 	return
 }
+
+// func (s *defaultRepo) UpdateOngoingIstalmentScheduller(ctx context.Context) (err error) {
+// 	err = s.db.WithContext(ctx).Model(&entity.OngoingInstalment{}).Where("expired <= ?", time.Now()).Update()
+// }
