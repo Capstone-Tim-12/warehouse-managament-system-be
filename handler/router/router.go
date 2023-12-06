@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/handler"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/handler/middleware"
+	// "github.com/go-co-op/gocron"
 	"github.com/labstack/echo/v4"
 )
 
@@ -31,6 +32,11 @@ func (r *Router) Validate() {
 	}
 }
 
+// func (r *Router) SetupScheduler(sch *gocron.Scheduler) {
+// 	sch.Every(1).Hour().SingletonMode().Do(h.cashOutHandler.DisbursementProcess)
+// 	sch.Every(1).Day().At("06:00").Do(h.cashinHandler.BatchingCashInToCashOut)
+// }
+
 func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	middleware.SetupMiddleware(e)
 	e.GET("/ping", r.PingHandler.PingTestConnection)
@@ -55,6 +61,7 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	sc.GET("/user/avatar", r.UserHandler.GetAvatarList)
 	sc.PUT("/user/profile/email", r.UserHandler.UpdateEmail)
 	sc.GET("/user/info", r.UserHandler.GetUserInfo)
+	sc.POST("/user/chatbot", r.UserHandler.ChatBot)
 	
 	sc.GET("/dasboard/user/list", r.UserHandler.GetUserList)
 	sc.GET("/dasboard/warehouse/type", r.WarehouseHandler.GetListWarehouseType)
@@ -74,6 +81,7 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	sc.POST("/warehouse/favorit", r.WarehouseHandler.AddFavorit)
 	sc.DELETE("/warehouse/favorit/:warehouseId", r.WarehouseHandler.DeleteFavorit)
 	sc.GET("/warehouse/favorit", r.WarehouseHandler.GetListFavorit)
+	sc.POST("warehouse/import-data", r.WarehouseHandler.ImportDataWarehouse)
 
 	sc.POST("/payment/user/submission", r.PaymentHandler.SubmissionWarehouse)
 	sc.GET("/payment/scheme", r.PaymentHandler.GetScheme)

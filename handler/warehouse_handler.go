@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/warehouse"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/warehouse/model"
@@ -280,4 +281,32 @@ func (h *WarehouseHandler) GetListFavorit(c echo.Context) (err error) {
 	resp := response.NewResponseSuccessPagination(float64(count), param, data)
 	err = c.JSON(http.StatusOK, resp)
 	return
+}
+
+func (h *WarehouseHandler) ImportDataWarehouse(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+
+	clamsData := utils.GetClamsJwt(c)
+	if clamsData.UserRole != "admin" {
+		fmt.Println("role is not admin")
+		err = errors.New(http.StatusUnauthorized, "role is not admin")
+		return
+	}
+	
+	file, err := c.FormFile("file")
+	if err != nil {
+		err = errors.New(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if !strings.HasSuffix(strings.ToLower(file.Filename), ".csv") {
+		err = errors.New(http.StatusBadRequest, "invalid CSV file")
+		return
+	}
+
+	err = h.warehouseusecase.ImportCsvFileWarehouse(ctx, file)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, http.StatusOK, nil)
 }

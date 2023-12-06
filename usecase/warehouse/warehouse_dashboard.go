@@ -2,6 +2,7 @@ package warehouse
 
 import (
 	"context"
+	"encoding/csv"
 	"fmt"
 	"math"
 	"mime/multipart"
@@ -10,6 +11,7 @@ import (
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/entity"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/warehouse/model"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/errors"
+	"github.com/spf13/cast"
 )
 
 func (s *defaultWarehouse) CreateWarehouse(ctx context.Context, req model.WarehouseDataRequest) (err error) {
@@ -214,5 +216,52 @@ func (s *defaultWarehouse) UploadPhotoWarehouse(ctx context.Context, photo []*mu
 			resp.Images = append(resp.Images, data.Data.Images...)
 		}
 	}
+	return
+}
+
+// name,description,districId,address,surfaceArea,buildingArea,owner,phoneNumber,longitude,latitude,price,warehouseTypeId,status
+func (s *defaultWarehouse) ImportCsvFileWarehouse(ctx context.Context, file *multipart.FileHeader) (err error) {
+	src, err := file.Open()
+	if err != nil {
+		fmt.Println("error opening file: ", err.Error())
+		err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		return
+	}
+	defer src.Close()
+	csvRead := csv.NewReader(src)
+
+	rows, err := csvRead.ReadAll()
+	if err != nil {
+		fmt.Println("Error reading CSV: ", err.Error())
+		err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		return
+	}
+	tx := s.warehouseRepo.BeginTrans(ctx)
+	for _, row := range rows {
+		data := entity.Warehouse{
+			Name:            row[0],
+			Longitude:       cast.ToFloat64(row[8]),
+			Latitude:        cast.ToFloat64(row[9]),
+			DistrictID:      row[2],
+			Address:         row[3],
+			BuildingArea:    cast.ToFloat64(row[5]),
+			SurfaceArea:     cast.ToFloat64(row[4]),
+			Owner:           row[6],
+			PhoneNumber:     row[7],
+			Price:           cast.ToFloat64(row[10]),
+			Description:     row[1],
+			WarehouseTypeID: cast.ToInt(row[11]),
+			Status:          entity.WarehouseStatus(row[12]),
+		}
+		err = s.warehouseRepo.CreateDetail(ctx, tx, &data)
+		if err != nil {
+			tx.Rollback()
+			fmt.Println("Error creating warehouse: ", err.Error())
+			err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			return
+		}
+	}
+
+	tx.Commit()
 	return
 }
