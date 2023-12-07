@@ -40,16 +40,6 @@ type ItemPages struct {
 
 func Paginate(page, length int) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
-		if page == 0 {
-			page = 1
-		}
-
-		switch {
-		case length > 30:
-			length = 30
-		case length <= 0:
-			length = 10
-		}
 
 		offset := (page - 1) * length
 		return db.Offset(offset).Limit(length)
@@ -70,6 +60,18 @@ func GetParams(c echo.Context) (Pagination, error) {
 		Recomendation:   cast.ToBool(c.QueryParam("recomendation")),
 		PaymentSchemeId: cast.ToInt(c.QueryParam("paymentSchemeId")),
 		Status:          c.QueryParam("status"),
+	}
+
+	if params.Page == 0 {
+		params.Page = 1
+	}
+
+	if params.Limit == 0 {
+		params.Limit = 10
+	}
+
+	if params.Limit > 30 {
+		params.Limit = 30
 	}
 
 	counter := 0

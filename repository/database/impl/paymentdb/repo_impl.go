@@ -43,12 +43,15 @@ func (s *defaultRepo) GetListTransactionDasboar(ctx context.Context, param pagin
 
 func (s *defaultRepo) GetInstalmentUser(ctx context.Context, param paginate.Pagination) (resp []entity.Instalment, count int64, err error) {
 	query := func(db *gorm.DB) *gorm.DB {
-		db.Where("instalments.status = ?", entity.Paid)
+
+		db.Joins("JOIN ongoing_instalments ON instalments.id = ongoing_instalments.instalment_id").
+			Where("ongoing_instalments.payment_time IS NOT NULL").
+			Where("instalments.status = ?", entity.Paid)
 
 		if param.PaymentSchemeId != 0 {
 			db.Joins("JOIN transactions ON transactions.id = instalments.transaction_id").
-			Joins("JOIN payment_schemes ON transactions.payment_scheme_id = payment_schemes.id").
-			Where("payment_schemes.id = ?", param.PaymentSchemeId)
+				Joins("JOIN payment_schemes ON transactions.payment_scheme_id = payment_schemes.id").
+				Where("payment_schemes.id = ?", param.PaymentSchemeId)
 		}
 		return db
 	}
@@ -73,7 +76,7 @@ func (s *defaultRepo) GetTransactionByUserId(ctx context.Context, userId int) (r
 }
 
 func (s *defaultRepo) GetListTransactionByUserIdAndStatus(ctx context.Context, userId int, status entity.TranscationStatus, param paginate.Pagination) (resp []entity.Transaction, count int64, err error) {
-	query := func (db *gorm.DB) *gorm.DB  {
+	query := func(db *gorm.DB) *gorm.DB {
 		return db.Where("user_id = ? AND status = ?", userId, status)
 	}
 
@@ -155,7 +158,7 @@ func (s *defaultRepo) UpdateTransaction(ctx context.Context, tx *gorm.DB, req *e
 }
 
 func (s *defaultRepo) GetListInstalmentByTransactionId(ctx context.Context, transactionId string, param paginate.Pagination) (resp []entity.Instalment, count int64, err error) {
-	query := func (db *gorm.DB) *gorm.DB {
+	query := func(db *gorm.DB) *gorm.DB {
 		return db.Where("transaction_id = ?", transactionId)
 	}
 
@@ -181,14 +184,14 @@ func (s *defaultRepo) GetPaymentMethodById(ctx context.Context, id int) (resp *e
 func (s *defaultRepo) GetInstalmentById(ctx context.Context, id int) (resp *entity.Instalment, err error) {
 	err = s.db.WithContext(ctx).Preload("OngoingInstalment").Take(&resp, "id = ?", id).Error
 	return
-} 
+}
 
 func (s *defaultRepo) UpdateInstalment(ctx context.Context, tx *gorm.DB, req *entity.Instalment) (err error) {
 	err = tx.WithContext(ctx).Save(req).Error
 	return
 }
 
-func (s *defaultRepo) CreateOngoingInstalment(ctx context.Context,  tx *gorm.DB, req *entity.OngoingInstalment) (err error) {
+func (s *defaultRepo) CreateOngoingInstalment(ctx context.Context, tx *gorm.DB, req *entity.OngoingInstalment) (err error) {
 	err = tx.WithContext(ctx).Create(req).Error
 	return
 }
