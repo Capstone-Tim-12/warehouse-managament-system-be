@@ -27,18 +27,33 @@ func (s *defaultPayment) TransactionApproved(ctx context.Context, transactionId 
 		return
 	}
 
+	if trxData.DateEntry.Before(time.Now()) {
+		trxData.DateEntry = time.Now()
+		if strings.EqualFold(trxData.PaymentScheme.Scheme, constrans.PaymentSchemeAnnualy) {
+			trxData.DateOut = time.Now().AddDate(trxData.Duration, 0, 0)
+		} else if strings.EqualFold(trxData.PaymentScheme.Scheme, constrans.PaymentSchemeMonthly) {
+			trxData.DateOut = time.Now().AddDate(0, trxData.Duration, 0)
+		} else if strings.EqualFold(trxData.PaymentScheme.Scheme, constrans.PaymentSchemeWeekly) {
+			trxData.DateOut = time.Now().AddDate(0, 0, trxData.Duration*7)
+		} else {
+			fmt.Println("data payment scheme not supported")
+			err = errors.New(http.StatusForbidden, "data payment scheme not supported")
+			return
+		}
+	}
+
 	tx := s.paymentRepo.BeginTrans(ctx)
 	var dueDate time.Time
 	var nominal float64
 	for i := 0; i < trxData.Duration; i++ {
 		if strings.EqualFold(trxData.PaymentScheme.Scheme, constrans.PaymentSchemeAnnualy) {
-			dueDate = trxData.DateEntry.AddDate(i, 0, 0)
+			dueDate = trxData.DateEntry.AddDate(i, 0, 1)
 			nominal = trxData.Warehouse.Price
 		} else if strings.EqualFold(trxData.PaymentScheme.Scheme, constrans.PaymentSchemeMonthly) {
-			dueDate = time.Now().AddDate(0, i, 0)
+			dueDate = trxData.DateEntry.AddDate(0, i, 1)
 			nominal = math.Ceil(trxData.Warehouse.Price / 12)
 		} else if strings.EqualFold(trxData.PaymentScheme.Scheme, constrans.PaymentSchemeWeekly) {
-			dueDate = time.Now().AddDate(0, 0, i*7)
+			dueDate = trxData.DateEntry.AddDate(0, 0, i*7+1)
 			nominal = math.Ceil(trxData.Warehouse.Price / 52)
 		} else {
 			fmt.Println("data payment scheme not supported")
