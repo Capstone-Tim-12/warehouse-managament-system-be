@@ -34,6 +34,8 @@ type Warehouse struct {
 	UpdatedAt       time.Time
 	DeletedAt       gorm.DeletedAt `gorm:"index"`
 	WarehouseImg    []WarehouseImg
+	Transaction     []Transaction
+	Favorit         []Favorit
 }
 
 type WarehouseImg struct {
@@ -53,3 +55,4 @@ type WarehouseType struct {
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 	Warehouse []Warehouse
 }
+

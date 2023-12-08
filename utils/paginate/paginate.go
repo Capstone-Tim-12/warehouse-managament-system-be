@@ -17,6 +17,18 @@ type Pagination struct {
 	LowerPrice    bool
 	HigestPrice   bool
 	Recomendation bool
+	Status        string
+
+	// Opsional
+	PaymentSchemeId int
+}
+
+type PaginationTrx struct {
+	Page       int
+	Limit      int
+	Search     string
+	ProvinceId int
+	Status     string
 }
 
 type ItemPages struct {
@@ -28,16 +40,6 @@ type ItemPages struct {
 
 func Paginate(page, length int) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
-		if page == 0 {
-			page = 1
-		}
-
-		switch {
-		case length > 30:
-			length = 30
-		case length <= 0:
-			length = 10
-		}
 
 		offset := (page - 1) * length
 		return db.Offset(offset).Limit(length)
@@ -46,16 +48,30 @@ func Paginate(page, length int) func(db *gorm.DB) *gorm.DB {
 
 func GetParams(c echo.Context) (Pagination, error) {
 	params := Pagination{
-		Page:          cast.ToInt(c.QueryParam("page")),
-		Limit:         cast.ToInt(c.QueryParam("limit")),
-		Search:        c.QueryParam("search"),
-		MinSize:       cast.ToInt(c.QueryParam("minSize")),
-		MaxSize:       cast.ToInt(c.QueryParam("maxSize")),
-		MinPrice:      cast.ToInt(c.QueryParam("minPrice")),
-		MaxPrice:      cast.ToInt(c.QueryParam("maxPrice")),
-		LowerPrice:    cast.ToBool(c.QueryParam("lowerPrice")),
-		HigestPrice:   cast.ToBool(c.QueryParam("highestPrice")),
-		Recomendation: cast.ToBool(c.QueryParam("recomendation")),
+		Page:            cast.ToInt(c.QueryParam("page")),
+		Limit:           cast.ToInt(c.QueryParam("limit")),
+		Search:          c.QueryParam("search"),
+		MinSize:         cast.ToInt(c.QueryParam("minSize")),
+		MaxSize:         cast.ToInt(c.QueryParam("maxSize")),
+		MinPrice:        cast.ToInt(c.QueryParam("minPrice")),
+		MaxPrice:        cast.ToInt(c.QueryParam("maxPrice")),
+		LowerPrice:      cast.ToBool(c.QueryParam("lowerPrice")),
+		HigestPrice:     cast.ToBool(c.QueryParam("highestPrice")),
+		Recomendation:   cast.ToBool(c.QueryParam("recomendation")),
+		PaymentSchemeId: cast.ToInt(c.QueryParam("paymentSchemeId")),
+		Status:          c.QueryParam("status"),
+	}
+
+	if params.Page == 0 {
+		params.Page = 1
+	}
+
+	if params.Limit == 0 {
+		params.Limit = 10
+	}
+
+	if params.Limit > 30 {
+		params.Limit = 30
 	}
 
 	counter := 0

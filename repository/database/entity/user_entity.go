@@ -28,6 +28,7 @@ type User struct {
 	UpdatedAt        time.Time
 	DeletedAt        gorm.DeletedAt `gorm:"index"`
 	UserDetail       UserDetail
+	Favorit          []Favorit
 }
 
 type UserDetail struct {
@@ -55,4 +56,15 @@ type Avatar struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
+}
+
+type Favorit struct {
+	ID          int `gorm:"primarykey"`
+	UserID      int
+	User        User `gorm:"foreignKey:UserID"`
+	WarehouseID int
+	Warehouse   Warehouse `gorm:"foreignKey:WarehouseID"`
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	DeletedAt   gorm.DeletedAt `gorm:"index"`
 }

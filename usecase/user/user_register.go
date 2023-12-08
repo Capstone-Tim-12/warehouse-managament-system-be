@@ -20,19 +20,12 @@ func (s *defaultUser) UserRegister(ctx context.Context, req model.RegisterUserRe
 		return
 	}
 
-	userData2, _ := s.userRepo.GetUserByUsername(ctx, req.Username)
-	if userData2.Username != "" {
-		err = errors.New(http.StatusConflict, "username already exists")
-		fmt.Println("username already exists")
-		return
-	}
-
 	separator := strings.LastIndex(req.Email, "@")
 	host := req.Email[separator+1:]
 	mxRecords, err := net.LookupMX(host)
 	if err != nil {
 		fmt.Println("error Lookup MX: ", err.Error())
-		err = errors.New(http.StatusBadRequest, "bad MX email address")
+		err = errors.New(http.StatusBadRequest, "bad email address")
 		return
 	}
 

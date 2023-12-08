@@ -29,11 +29,15 @@ func (r *defaultRepo) CreateImg(ctx context.Context, tx *gorm.DB, req *entity.Wa
 
 func (r *defaultRepo) FindWarehouseById(ctx context.Context, id string) (resp *entity.Warehouse, err error) {
 	err = r.db.WithContext(ctx).
-		Preload("District").
-		Preload("District.Regency").
 		Preload("District.Regency.Province").
 		Preload("WarehouseImg").
+		Preload("WarehouseType").
 		Take(&resp, "id = ?", id).Error
+	return
+}
+
+func (r *defaultRepo) FindWarehouseByIdOnly(ctx context.Context, id string) (resp *entity.Warehouse, err error) {
+	err = r.db.WithContext(ctx).Take(&resp, "id = ?", id).Error
 	return
 }
 
@@ -55,6 +59,10 @@ func (r *defaultRepo) FindWarehouseList(ctx context.Context, param paginate.Pagi
 			condision.Where("price >= ? AND price <= ?", param.MinPrice, param.HigestPrice)
 		}
 
+		if param.Status != "" {
+			condision.Where("status = ?", param.Status)
+		}
+
 		switch true {
 		case param.HigestPrice:
 			condision.Order("price desc")
@@ -70,8 +78,10 @@ func (r *defaultRepo) FindWarehouseList(ctx context.Context, param paginate.Pagi
 	if err != nil {
 		return
 	}
-	err = r.db.WithContext(ctx).Preload("District").Preload("District.Regency").
-		Preload("District.Regency.Province").Preload("WarehouseImg").
+	err = r.db.WithContext(ctx).
+		Preload("District.Regency.Province").
+		Preload("WarehouseImg").
+		Preload("WarehouseType").
 		Scopes(paginate.Paginate(param.Page, param.Limit)).Scopes(query).Find(&resp).Error
 	return
 }
@@ -99,3 +109,47 @@ func (r *defaultRepo) DeleteWarehouse(ctx context.Context, req *entity.Warehouse
 	err = r.db.WithContext(ctx).Delete(&req).Error
 	return
 }
+
+func (r *defaultRepo) GetListWarehouseType(ctx context.Context) (resp []entity.WarehouseType, err error) {
+	err = r.db.WithContext(ctx).Find(&resp).Error
+	return
+}
+
+func (s *defaultRepo) AddFavorit(ctx context.Context, req *entity.Favorit) (err error) {
+	err = s.db.WithContext(ctx).Create(req).Error
+	return
+}
+
+func (s *defaultRepo) FindFavoritById(ctx context.Context, waehouseId int) (resp *entity.Favorit, err error) {
+	err = s.db.WithContext(ctx).Take(&resp, "id = ?", waehouseId).Error
+	return
+}
+
+func (s *defaultRepo) FindFavoritByWarehouseIdAndUserId(ctx context.Context, waehouseId, userId int) (resp *entity.Favorit, err error) {
+	err = s.db.WithContext(ctx).Take(&resp, "warehouse_id = ? AND user_id = ?", waehouseId, userId).Error
+	return
+}
+
+func (s *defaultRepo) DeleteFavorite(ctx context.Context, userId, warehouseId int) (err error) {
+	err = s.db.WithContext(ctx).Delete(&entity.Favorit{}, "user_id = ? AND warehouse_id = ?", userId, warehouseId).Error
+	return
+}
+
+func (s *defaultRepo) FindListFavoriteByUserId(ctx context.Context, userId int, param paginate.Pagination) (resp []entity.Favorit, count int64, err error) {
+	query := func (db *gorm.DB) *gorm.DB {
+		return db.Where("user_id = ?", userId)
+	}
+
+	err = s.db.WithContext(ctx).Model(&entity.Favorit{}).Scopes(query).Count(&count).Error
+	if err != nil {
+		return
+	}
+
+	err = s.db.WithContext(ctx).Scopes(paginate.Paginate(param.Page, param.Limit)).
+			Preload("Warehouse.District.Regency.Province").
+			Preload("Warehouse.WarehouseType").
+			Preload("Warehouse.WarehouseImg").
+			Preload("User").Scopes(query).Find(&resp).Error
+	return
+}
+

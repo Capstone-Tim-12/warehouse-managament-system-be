@@ -51,3 +51,21 @@ func NewResponseSuccessPagination(totalItems float64, params paginate.Pagination
 	}
 	return resp
 }
+
+func NewResponseSuccessPaginationTrx(totalItems float64, params paginate.PaginationTrx, data interface{}) responsePagination {
+	var totalPage float64 = 1
+	if params.Limit != 0 && params.Page != 0 {
+		res := totalItems / float64(params.Limit)
+		totalPage = math.Ceil(res)
+	}
+
+	resp := responsePagination{
+		BaseResponse: BaseResponse{
+			Status:  true,
+			Message: "Success",
+			Data:    data,
+		},
+		Pagination:   paginate.ItemPages{TotalData: int64(totalItems), TotalPage: int64(totalPage), Page: int64(params.Page), Limit: int64(params.Limit)},
+	}
+	return resp
+}

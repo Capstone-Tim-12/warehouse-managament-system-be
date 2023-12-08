@@ -52,6 +52,7 @@ jobs:
               -e MYSQL_PORT=${{ secrets.MYSQL_PORT }} \
               -e MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }} \
               -e CORE_HOST=${{ secrets.CORE_HOST }} \
+              -e OPEN_AI_TOKEN=${{ secrets.OPEN_AI_TOKEN }} \
               --name warehouse-apps \
               fadilahonespot/warehouse:1.0.0
 

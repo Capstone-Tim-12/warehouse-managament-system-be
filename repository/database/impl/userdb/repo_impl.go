@@ -26,6 +26,11 @@ func (r *defaultRepo) GetUserById(ctx context.Context, id int) (resp *entity.Use
 	return
 }
 
+func (r *defaultRepo) GetUserInfoById(ctx context.Context, id int) (resp *entity.User, err error) {
+	err = r.db.WithContext(ctx).Preload("UserDetail.District.Regency").Take(&resp, "id = ?", id).Error
+	return
+}
+
 func (r *defaultRepo) GetUserByUsername(ctx context.Context, username string) (resp *entity.User, err error) {
 	err = r.db.WithContext(ctx).Take(&resp, "username = ?", username).Error
 	return
@@ -87,6 +92,6 @@ func (r *defaultRepo) GetUserList(ctx context.Context, param paginate.Pagination
 		return
 	}
 
-	err = r.db.WithContext(ctx).Scopes(paginate.Paginate(param.Page, param.Limit)).Scopes(query).Find(&resp).Error
+	err = r.db.WithContext(ctx).Scopes(paginate.Paginate(param.Page, param.Limit)).Scopes(query).Order("created_at desc").Find(&resp).Error
 	return
 }

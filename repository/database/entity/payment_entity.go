@@ -17,9 +17,10 @@ const (
 )
 
 const (
-	Paid   InstalmentStatus = "dibayar"
-	Unpaid InstalmentStatus = "belum dibayar"
-	Failed InstalmentStatus = "gagal bayar"
+	Paid    InstalmentStatus = "dibayar"
+	Unpaid  InstalmentStatus = "belum dibayar"
+	Waiting InstalmentStatus = "menunggu pembayaran"
+	Failed  InstalmentStatus = "gagal bayar"
 )
 
 type PaymentScheme struct {
@@ -38,6 +39,8 @@ type Transaction struct {
 	DateOut         time.Time
 	UserID          int
 	User            User `gorm:"foreignKey:UserID"`
+	WarehouseID     int
+	Warehouse       Warehouse `gorm:"foreignKey:WarehouseID"`
 	PaymentSchemeID int
 	PaymentScheme   PaymentScheme `gorm:"foreignKey:PaymentSchemeID"`
 	Duration        int
@@ -72,7 +75,7 @@ type OngoingInstalment struct {
 	AdminFee        float64
 	TotalPayment    float64
 	BankCode        string
-	PaymentTime     time.Time
+	PaymentTime     *time.Time
 	Expired         time.Time
 	CreatedAt       time.Time
 	UpdatedAt       time.Time

@@ -19,4 +19,11 @@ type WarehouseRepository interface {
 	DeleteWarehouseImgByWarehouseId(ctx context.Context, tx *gorm.DB, warehouseId int) (err error)
 	GetWarehouseTypeById(ctx context.Context, id int) (resp *entity.WarehouseType, err error)
 	DeleteWarehouse(ctx context.Context, req *entity.Warehouse) (err error)
+	GetListWarehouseType(ctx context.Context) (resp []entity.WarehouseType, err error)
+	AddFavorit(ctx context.Context, req *entity.Favorit) (err error)
+	FindFavoritById(ctx context.Context, waehouseId int) (resp *entity.Favorit, err error)
+	DeleteFavorite(ctx context.Context, userId, warehouseId int) (err error) 
+	FindListFavoriteByUserId(ctx context.Context, userId int, param paginate.Pagination) (resp []entity.Favorit, count int64, err error)
+	FindFavoritByWarehouseIdAndUserId(ctx context.Context, waehouseId, userId int) (resp *entity.Favorit, err error)
+	FindWarehouseByIdOnly(ctx context.Context, id string) (resp *entity.Warehouse, err error) 
 }

@@ -9,15 +9,22 @@ import (
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/entity"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/payment/model"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/constrans"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/errors"
 	"github.com/spf13/cast"
 )
 
 func (s *defaultPayment) SubmissionWarehouse(ctx context.Context, userId int, req model.SubmissionRequest) (err error) {
-	_, err = s.warehouseRepo.FindWarehouseById(ctx, cast.ToString(req.WarehouseId))
+	warehouseData, err := s.warehouseRepo.FindWarehouseByIdOnly(ctx, cast.ToString(req.WarehouseId))
 	if err != nil {
 		fmt.Println("error finding warehouse: ", err.Error())
 		err = errors.New(http.StatusNotFound, "warehouse not found")
+		return
+	}
+
+	if warehouseData.Status == entity.NotAvailable {
+		fmt.Println("warehouse not available")
+		err = errors.New(http.StatusBadRequest, "warehouse not available")
 		return
 	}
 
@@ -35,15 +42,15 @@ func (s *defaultPayment) SubmissionWarehouse(ctx context.Context, userId int, re
 	}
 
 	var dateOut time.Time
-	if strings.EqualFold(schemeData.Scheme, "tahunan") {
+	if strings.EqualFold(schemeData.Scheme, constrans.PaymentSchemeAnnualy) {
 		dateOut = time.Now().AddDate(req.Duration, 0, 0)
-	} else if strings.EqualFold(schemeData.Scheme,"bulanan") {
+	} else if strings.EqualFold(schemeData.Scheme, constrans.PaymentSchemeMonthly) {
 		dateOut = time.Now().AddDate(0, req.Duration, 0)
-	} else if strings.EqualFold(schemeData.Scheme, "mingguan") {
+	} else if strings.EqualFold(schemeData.Scheme, constrans.PaymentSchemeWeekly) {
 		dateOut = time.Now().AddDate(0, 0, req.Duration*7)
 	} else {
 		fmt.Println("data payment scheme not supported")
-		err  = errors.New(http.StatusForbidden, "data payment scheme not supported")
+		err = errors.New(http.StatusForbidden, "data payment scheme not supported")
 		return
 	}
 
@@ -54,16 +61,26 @@ func (s *defaultPayment) SubmissionWarehouse(ctx context.Context, userId int, re
 		PaymentSchemeID: req.PaymentSchemeId,
 		Duration:        req.Duration,
 		Status:          entity.Submission,
+		WarehouseID:     req.WarehouseId,
 	}
-	err = s.paymentRepo.CreateTransaction(ctx, &reqTransaction)
+	tx := s.paymentRepo.BeginTrans(ctx)
+	err = s.paymentRepo.CreateTransaction(ctx, tx, &reqTransaction)
 	if err != nil {
-		fmt.Println("create transaction failed")
+		tx.Rollback()
+		fmt.Println("create transaction failed: ", err.Error())
 		err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
-	return
-}
 
-func (s *defaultPayment) GetTransactionListDasboard(ctx context.Context) (resp []model.TransactionListDasboard, err error) {
+	warehouseData.Status = entity.NotAvailable
+	err = s.warehouseRepo.UpdateWarehouse(ctx, tx, warehouseData)
+	if err != nil {
+		tx.Rollback()
+		fmt.Println("failed update warehouse: ", err.Error())
+		err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		return
+	}
+
+	tx.Commit()
 	return
 }

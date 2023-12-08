@@ -61,24 +61,24 @@ func (h *PaymentHandler) GetScheme(c echo.Context) (err error) {
 func (h *PaymentHandler) GetHistoryInstalmentUser(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	param, _ := paginate.GetParams(c)
-	data, count, err := h.paymentUsecase.GetHistoryInstalmentUser(ctx, param)
-	if err != nil {
-		return
-	}
-
+	
 	clamsData := utils.GetClamsJwt(c)
 	if clamsData.UserRole != "admin" {
 		fmt.Println("role is not admin")
 		err = errors.New(http.StatusUnauthorized, "role is not admin")
 		return
 	}
-
+	
+	data, count, err := h.paymentUsecase.GetHistoryInstalmentUser(ctx, param)
+	if err != nil {
+		return
+	}
 	resp := response.NewResponseSuccessPagination(float64(count), param, data)
 	err = c.JSON(http.StatusOK, resp)
 	return
 }
 
-func (h *PaymentHandler) GetListTransactionIdUser(c echo.Context) (err error) {
+func (h *PaymentHandler) GetListTransactionByUserId(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	userId := c.Param("userId")
 
@@ -89,10 +89,185 @@ func (h *PaymentHandler) GetListTransactionIdUser(c echo.Context) (err error) {
 		return
 	}
 
-	data, err := h.paymentUsecase.GetListTransactionIdUser(ctx, cast.ToInt(userId))
+	data, err := h.paymentUsecase.GetListTransactionByUserId(ctx, cast.ToInt(userId))
 	if err != nil {
 		return
 	}
 	return response.NewSuccessResponse(c, http.StatusOK, data)
 }
 
+func (h *PaymentHandler) GetAllTransaction(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	param := paginate.PaginationTrx{
+		Page:       cast.ToInt(c.QueryParam("page")),
+		Limit:      cast.ToInt(c.QueryParam("limit")),
+		Search:     c.QueryParam("search"),
+		ProvinceId: cast.ToInt(c.QueryParam("provinceId")),
+		Status:     c.QueryParam("status"),
+	}
+	data, count, err := h.paymentUsecase.GetAllTransaction(ctx, param)
+	if err != nil {
+		return
+	}
+
+	clamsData := utils.GetClamsJwt(c)
+	if clamsData.UserRole != "admin" {
+		fmt.Println("role is not admin")
+		err = errors.New(http.StatusUnauthorized, "role is not admin")
+		return
+	}
+
+	resp := response.NewResponseSuccessPaginationTrx(float64(count), param, data)
+	err = c.JSON(http.StatusOK, resp)
+	return
+}
+
+func (h *PaymentHandler) TransactionApproved(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	trxId := c.Param("transactionId")
+
+	clamsData := utils.GetClamsJwt(c)
+	if clamsData.UserRole != "admin" {
+		fmt.Println("role is not admin")
+		err = errors.New(http.StatusUnauthorized, "role is not admin")
+		return
+	}
+
+	err = h.paymentUsecase.TransactionApproved(ctx, trxId)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, http.StatusOK, nil)
+}
+
+func (h *PaymentHandler) TransactionRejected(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	trxId := c.Param("transactionId")
+
+	clamsData := utils.GetClamsJwt(c)
+	if clamsData.UserRole != "admin" {
+		fmt.Println("role is not admin")
+		err = errors.New(http.StatusUnauthorized, "role is not admin")
+		return
+	}
+
+	err = h.paymentUsecase.TransactionRejected(ctx, trxId)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, http.StatusOK, nil)
+}
+
+func (h *PaymentHandler) GetTransactionListDetail(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	trxId := c.Param("transactionId")
+
+	clamsData := utils.GetClamsJwt(c)
+	if clamsData.UserRole != "admin" {
+		fmt.Println("role is not admin")
+		err = errors.New(http.StatusUnauthorized, "role is not admin")
+		return
+	}
+
+	data, err := h.paymentUsecase.GetTransactionListDetail(ctx, trxId)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, http.StatusOK, data)
+}
+
+func (h *PaymentHandler) GetListInstalment(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	trxId := c.Param("transactionId")
+
+	param, _ := paginate.GetParams(c)
+	data, count, err :=h.paymentUsecase.GetListInstalmentByTrxId(ctx, trxId, param)
+	if err != nil {
+		return
+	}
+
+	resp := response.NewResponseSuccessPagination(float64(count), param, data)
+	return c.JSON(http.StatusOK, resp)
+}
+
+func (h *PaymentHandler) GetTransactionInfo(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	trxId := c.Param("transactionId")
+
+	data, err := h.paymentUsecase.GetTransactionInfo(ctx, trxId)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, http.StatusOK, data)
+}
+
+func (h *PaymentHandler) GetListPaymentMethod(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+
+	data, err := h.paymentUsecase.GetListPaymentMethod(ctx)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, http.StatusOK, data)
+}
+
+func (h *PaymentHandler) GetBankVa(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+
+	data, err := h.paymentUsecase.GetBankVa(ctx)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, http.StatusOK, data)
+}
+
+func (h *PaymentHandler) PaymentCheckout(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	var req model.PaymentRequest
+	clamsData := utils.GetClamsJwt(c)
+	err = c.Bind(&req)
+	if err != nil {
+		err = errors.New(http.StatusBadRequest, "invalid request")
+		fmt.Println("error bind register user data: ", err.Error())
+		return
+	}
+
+	err = c.Validate(req)
+	if err != nil {
+		fmt.Println("error validate data: ", err.Error())
+		err = errors.New(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	data, err := h.paymentUsecase.PaymentCheckout(ctx, clamsData.UserId, req)
+	if err != nil {
+		return
+	}
+
+	return response.NewSuccessResponse(c, http.StatusOK, data)
+}
+
+func (h *PaymentHandler) VaCallback(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	var req model.VaCallbackRequest
+	err = c.Bind(&req)
+	if err != nil {
+		err = errors.New(http.StatusBadRequest, "invalid request")
+		fmt.Println("error bind register user data: ", err.Error())
+		return
+	}
+
+	err = c.Validate(req)
+	if err != nil {
+		fmt.Println("error validate data: ", err.Error())
+		err = errors.New(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = h.paymentUsecase.VaCallback(ctx, req)
+	if err != nil {
+		return
+	}
+
+	return response.NewSuccessResponse(c, http.StatusOK, nil)
+}

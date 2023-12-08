@@ -371,3 +371,40 @@ func (h *UserHandler) GetUserById(c echo.Context) (err error) {
 	return response.NewSuccessResponse(c, http.StatusOK, data)
 }
 
+func (h *UserHandler) GetUserInfo(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	clamsData := utils.GetClamsJwt(c)
+	data, err := h.userUsecase.GetUserInfo(ctx, clamsData.UserId)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, http.StatusOK, data)
+}
+
+func (h *UserHandler) ChatBot(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	clamsData := utils.GetClamsJwt(c)
+
+	var req model.ChatRequest
+	err = c.Bind(&req)
+	if err != nil {
+		err = errors.New(http.StatusBadRequest, "invaid request")
+		fmt.Println("error bind  data: ", err)
+		return
+	}
+
+	err = c.Validate(req)
+	if err != nil {
+		fmt.Println("error validate data: ", err.Error())
+		err = errors.New(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	data, err := h.userUsecase.ChatBot(ctx, clamsData.UserId, req.Text)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, http.StatusOK, data)
+}
+
+

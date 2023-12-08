@@ -18,7 +18,7 @@ import (
 func SetupMiddleware(server *echo.Echo) {
 	server.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{echo.GET, echo.POST, echo.OPTIONS},
+		AllowMethods:     []string{echo.GET, echo.POST, echo.DELETE, echo.PUT, echo.OPTIONS},
 		AllowHeaders:     []string{"Origin", "Authorization", "Access-Control-Allow-Origin", "token", echo.HeaderContentType, "Accept", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length", "Access-Control-Allow-Origin"},
 		AllowCredentials: true,

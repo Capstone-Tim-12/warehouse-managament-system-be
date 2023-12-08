@@ -2,13 +2,16 @@ package warehouse
 
 import (
 	"context"
+	"encoding/csv"
 	"fmt"
 	"math"
+	"mime/multipart"
 	"net/http"
 
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/entity"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/warehouse/model"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/errors"
+	"github.com/spf13/cast"
 )
 
 func (s *defaultWarehouse) CreateWarehouse(ctx context.Context, req model.WarehouseDataRequest) (err error) {
@@ -74,26 +77,27 @@ func (s *defaultWarehouse) GetWarehouse(ctx context.Context, id string) (resp *m
 	}
 
 	resp = &model.WarehouseDataResponse{
-		Name:         warehouseData.Name,
-		Description:  warehouseData.Description,
-		ProvinceID:   warehouseData.District.Regency.ProvinceID,
-		ProvinceName: warehouseData.District.Regency.Province.Name,
-		RegencyID:    warehouseData.District.RegencyID,
-		RegencyName:  warehouseData.District.Regency.Name,
-		DistrictID:   warehouseData.DistrictID,
-		DistrictName: warehouseData.District.Name,
-		Address:      warehouseData.Address,
-		SurfaceArea:  warehouseData.SurfaceArea,
-		BuildingArea: warehouseData.BuildingArea,
-		Owner:        warehouseData.Owner,
-		PhoneNumber:  warehouseData.PhoneNumber,
-		Longitude:    warehouseData.Longitude,
-		Latitude:     warehouseData.Latitude,
-		Status:       string(warehouseData.Status),
-		WeeklyPrice:  math.Ceil(warehouseData.Price / 52),
-		MonthlyPrice: math.Ceil(warehouseData.Price / 12),
-		AnnualPrice:  warehouseData.Price,
-		Image:        images,
+		Name:          warehouseData.Name,
+		Description:   warehouseData.Description,
+		ProvinceID:    warehouseData.District.Regency.ProvinceID,
+		ProvinceName:  warehouseData.District.Regency.Province.Name,
+		RegencyID:     warehouseData.District.RegencyID,
+		RegencyName:   warehouseData.District.Regency.Name,
+		DistrictID:    warehouseData.DistrictID,
+		DistrictName:  warehouseData.District.Name,
+		Address:       warehouseData.Address,
+		SurfaceArea:   warehouseData.SurfaceArea,
+		BuildingArea:  warehouseData.BuildingArea,
+		Owner:         warehouseData.Owner,
+		PhoneNumber:   warehouseData.PhoneNumber,
+		Longitude:     warehouseData.Longitude,
+		Latitude:      warehouseData.Latitude,
+		Status:        string(warehouseData.Status),
+		WeeklyPrice:   math.Ceil(warehouseData.Price / 52),
+		MonthlyPrice:  math.Ceil(warehouseData.Price / 12),
+		AnnualPrice:   warehouseData.Price,
+		WarehouseType: warehouseData.WarehouseType.Name,
+		Image:         images,
 	}
 
 	return
@@ -166,7 +170,7 @@ func (s *defaultWarehouse) UpdateWarehouseDetails(ctx context.Context, req model
 }
 
 func (s *defaultWarehouse) DeleteWarehouse(ctx context.Context, id string) (err error) {
-	warehouseData, err := s.warehouseRepo.FindWarehouseById(ctx, id)
+	warehouseData, err := s.warehouseRepo.FindWarehouseByIdOnly(ctx, id)
 	if err != nil {
 		fmt.Println("error found warehouse: ", err.Error())
 		err = errors.New(http.StatusNotFound, "warehouse not found")
@@ -179,5 +183,85 @@ func (s *defaultWarehouse) DeleteWarehouse(ctx context.Context, id string) (err 
 		err = errors.New(http.StatusInternalServerError, "failed delete warehouse")
 		return
 	}
+	return
+}
+
+func (s *defaultWarehouse) GetListWarehouseType(ctx context.Context) (resp []model.WarehouseTypeResponse, err error) {
+	warehouseData, err := s.warehouseRepo.GetListWarehouseType(ctx)
+	if err != nil {
+		fmt.Println("failed find warehouse")
+		err = errors.New(http.StatusInternalServerError, "failed find warehouse")
+		return
+	}
+
+	for i := 0; i < len(warehouseData); i++ {
+		resp = append(resp, model.WarehouseTypeResponse{
+			Id:   warehouseData[i].ID,
+			Name: warehouseData[i].Name,
+		})
+	}
+
+	return
+}
+
+func (s *defaultWarehouse) UploadPhotoWarehouse(ctx context.Context, photo []*multipart.FileHeader) (resp model.UploadPhotoResponse, err error) {
+	for i := 0; i < len(photo); i++ {
+		data, errRes := s.coreWrapper.UploadImage(ctx, photo[i])
+		if errRes != nil {
+			fmt.Println("failed upload image: ", errRes.Error())
+			err = errors.New(http.StatusInternalServerError, "failed upload photo")
+			return
+		}
+		if len(data.Data.Images) != 0 {
+			resp.Images = append(resp.Images, data.Data.Images...)
+		}
+	}
+	return
+}
+
+// name,description,districId,address,surfaceArea,buildingArea,owner,phoneNumber,longitude,latitude,price,warehouseTypeId,status
+func (s *defaultWarehouse) ImportCsvFileWarehouse(ctx context.Context, file *multipart.FileHeader) (err error) {
+	src, err := file.Open()
+	if err != nil {
+		fmt.Println("error opening file: ", err.Error())
+		err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		return
+	}
+	defer src.Close()
+	csvRead := csv.NewReader(src)
+
+	rows, err := csvRead.ReadAll()
+	if err != nil {
+		fmt.Println("Error reading CSV: ", err.Error())
+		err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		return
+	}
+	tx := s.warehouseRepo.BeginTrans(ctx)
+	for _, row := range rows {
+		data := entity.Warehouse{
+			Name:            row[0],
+			Longitude:       cast.ToFloat64(row[8]),
+			Latitude:        cast.ToFloat64(row[9]),
+			DistrictID:      row[2],
+			Address:         row[3],
+			BuildingArea:    cast.ToFloat64(row[5]),
+			SurfaceArea:     cast.ToFloat64(row[4]),
+			Owner:           row[6],
+			PhoneNumber:     row[7],
+			Price:           cast.ToFloat64(row[10]),
+			Description:     row[1],
+			WarehouseTypeID: cast.ToInt(row[11]),
+			Status:          entity.WarehouseStatus(row[12]),
+		}
+		err = s.warehouseRepo.CreateDetail(ctx, tx, &data)
+		if err != nil {
+			tx.Rollback()
+			fmt.Println("Error creating warehouse: ", err.Error())
+			err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			return
+		}
+	}
+
+	tx.Commit()
 	return
 }
