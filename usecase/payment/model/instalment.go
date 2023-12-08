@@ -8,3 +8,4 @@ type ListInstalmentResponse struct {
 	Nominal      int       `json:"nominal"`
 	Status       string    `json:"status"`
 }
+

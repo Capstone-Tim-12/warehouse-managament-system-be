@@ -11,7 +11,6 @@ type PaymentUsecase interface {
 	SubmissionWarehouse(ctx context.Context, userId int, req model.SubmissionRequest) (err error)
 	GetPaymentScheme(ctx context.Context) (resp []model.SchemeResponse, err error)
 	GetHistoryInstalmentUser(ctx context.Context, param paginate.Pagination) (resp []model.TransactionHistoryResponse, count int64, err error)
-	GetListTransactionByUserId(ctx context.Context, userId int) (resp []model.ListTrxUser, err error)
 	GetAllTransaction(ctx context.Context, param paginate.PaginationTrx) (resp []model.ListAllTrxResponse, count int64, err error) 
 	TransactionApproved(ctx context.Context, transactionId string) (err error)
 	TransactionRejected(ctx context.Context, transactionId string) (err error)
@@ -22,4 +21,7 @@ type PaymentUsecase interface {
 	GetBankVa(ctx context.Context) (resp []model.VaBankResponse, err error) 
 	PaymentCheckout(ctx context.Context, userId int, req model.PaymentRequest) (resp model.PaymentResponse, err error)
 	VaCallback(ctx context.Context, req model.VaCallbackRequest) (err error)
+	GetListTrxUserDasboar(ctx context.Context, userId int, param paginate.Pagination) (resp []model.ListTrxUserDasboarResponse, count int64, err error)
+	GetTransactionDetailDasboardUser(ctx context.Context, transactionId string) (resp model.TransactionDetailUser, err error)
+	GetListTranscationByWarehouseId(ctx context.Context, warehouseId int, param paginate.Pagination) (resp []model.ListTransactionWarehouseDasboard, count int64, err error)
 }

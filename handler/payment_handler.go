@@ -78,9 +78,10 @@ func (h *PaymentHandler) GetHistoryInstalmentUser(c echo.Context) (err error) {
 	return
 }
 
-func (h *PaymentHandler) GetListTransactionByUserId(c echo.Context) (err error) {
+func (h *PaymentHandler) GetListTrxUserDasboar(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	userId := c.Param("userId")
+	param, _ := paginate.GetParams(c)
 
 	clamsData := utils.GetClamsJwt(c)
 	if clamsData.UserRole != "admin" {
@@ -89,11 +90,14 @@ func (h *PaymentHandler) GetListTransactionByUserId(c echo.Context) (err error) 
 		return
 	}
 
-	data, err := h.paymentUsecase.GetListTransactionByUserId(ctx, cast.ToInt(userId))
+	data, count, err := h.paymentUsecase.GetListTrxUserDasboar(ctx, cast.ToInt(userId), param)
 	if err != nil {
 		return
 	}
-	return response.NewSuccessResponse(c, http.StatusOK, data)
+	
+	resp := response.NewResponseSuccessPagination(float64(count), param, data)
+	err = c.JSON(http.StatusOK, resp)
+	return
 }
 
 func (h *PaymentHandler) GetAllTransaction(c echo.Context) (err error) {
@@ -271,3 +275,44 @@ func (h *PaymentHandler) VaCallback(c echo.Context) (err error) {
 
 	return response.NewSuccessResponse(c, http.StatusOK, nil)
 }
+
+func (h *PaymentHandler) GetTransactionDetailDasboardUser(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	trxId := c.Param("transactionId")
+
+	clamsData := utils.GetClamsJwt(c)
+	if clamsData.UserRole != "admin" {
+		fmt.Println("role is not admin")
+		err = errors.New(http.StatusUnauthorized, "role is not admin")
+		return
+	}
+
+	data, err := h.paymentUsecase.GetTransactionDetailDasboardUser(ctx, trxId)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, http.StatusOK, data)
+}
+
+func (h *PaymentHandler) GetTransactionByWarehouseId(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	warehouseId := c.Param("warehouseId")
+	param, _ := paginate.GetParams(c)
+
+	clamsData := utils.GetClamsJwt(c)
+	if clamsData.UserRole != "admin" {
+		fmt.Println("role is not admin")
+		err = errors.New(http.StatusUnauthorized, "role is not admin")
+		return
+	}
+
+	data, count, err := h.paymentUsecase.GetListTranscationByWarehouseId(ctx, cast.ToInt(warehouseId), param)
+	if err != nil {
+		return
+	}
+
+	resp := response.NewResponseSuccessPagination(float64(count), param, data)
+	err = c.JSON(http.StatusOK, resp)
+	return
+}
+
