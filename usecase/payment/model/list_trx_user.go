@@ -1,9 +1,5 @@
 package model
 
-type ListTrxUser struct {
-	TransactionId string `json:"transactionId"`
-}
-
 type ListAllTrxResponse struct {
 	TransactionId string `json:"transactionId"`
 	UserId        int    `json:"userId"`
@@ -32,4 +28,19 @@ type TrxListDetail struct {
 	IsVerifyIdentity  bool    `json:"isVerifyIdentity"`
 	RentalDuration    int     `json:"rentalDuration"`
 	PaymentScheme     string  `json:"paymentScheme"`
+}
+
+type ListTrxUserDasboarResponse struct {
+	TransactionId  string  `json:"transactionId"`
+	RentalDuration int     `json:"rentalDuration"`
+	PaymentScheme  string  `json:"paymentScheme"`
+	PaymentTotal   float64 `json:"paymentTotal"`
+}
+
+type ListTransactionWarehouseDasboard struct {
+	TransactionId   string  `json:"transactionId"`
+	Username        string  `json:"username"`
+	UserRegencyName string  `json:"userRegencyName"`
+	Nominal         float64 `json:"nominal"`
+	Status          string  `json:"status"`
 }

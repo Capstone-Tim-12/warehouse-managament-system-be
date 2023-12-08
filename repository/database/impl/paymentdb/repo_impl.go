@@ -70,8 +70,20 @@ func (s *defaultRepo) GetInstalmentUser(ctx context.Context, param paginate.Pagi
 	return
 }
 
-func (s *defaultRepo) GetTransactionByUserId(ctx context.Context, userId int) (resp []entity.Transaction, err error) {
-	err = s.db.WithContext(ctx).Find(&resp, "user_id = ?", userId).Error
+func (s *defaultRepo) GetTransactionByUserId(ctx context.Context, userId int, param paginate.Pagination) (resp []entity.Transaction, count int64, err error) {
+	query := func(db *gorm.DB) *gorm.DB {
+		return db.Where("user_id = ?", userId)
+	}
+	err = s.db.WithContext(ctx).Model(&entity.Transaction{}).Scopes(query).Count(&count).Error
+	if err != nil {
+		return
+	}
+	err = s.db.WithContext(ctx).
+		Scopes(paginate.Paginate(param.Page, param.Limit)).
+		Preload("Warehouse").
+		Preload("PaymentScheme").
+		Scopes(query).
+		Find(&resp).Error
 	return
 }
 
@@ -88,6 +100,7 @@ func (s *defaultRepo) GetListTransactionByUserIdAndStatus(ctx context.Context, u
 	err = s.db.WithContext(ctx).Scopes(paginate.Paginate(param.Page, param.Limit)).
 		Preload("Warehouse.District.Regency").
 		Preload("Warehouse.WarehouseImg").
+		Preload("PaymentScheme").
 		Scopes(query).
 		Find(&resp).Error
 	return
@@ -134,12 +147,41 @@ func (s *defaultRepo) GetTransactionById(ctx context.Context, transactionId stri
 	return
 }
 
+func (s *defaultRepo) GetTransactionUserDetailByTransactionId(ctx context.Context, transactionId string) (resp *entity.Transaction, err error) {
+	err = s.db.WithContext(ctx).
+	Preload("PaymentScheme").
+	Preload("User.UserDetail.District.Regency").
+	Preload("Warehouse").
+	Preload("Instalment.OngoingInstalment.PaymentMethod").
+	Take(&resp, "id = ?", transactionId).Error
+	return
+}
+
 func (s *defaultRepo) GetTransactionDetailById(ctx context.Context, transactionId string) (resp *entity.Transaction, err error) {
 	err = s.db.WithContext(ctx).Preload("PaymentScheme").
 		Preload("Warehouse.District.Regency.Province").
 		Preload("Warehouse.WarehouseImg").
 		Preload("User").
 		Take(&resp, "id = ?", transactionId).Error
+	return
+}
+
+func (s *defaultRepo) GetTransactionDetailByWarehouseId(ctx context.Context, warehouseId int, param paginate.Pagination) (resp []entity.Transaction, count int64, err error) {
+	query := func (db *gorm.DB) *gorm.DB  {
+		return db.Where("status = ? AND warehouse_id = ?", entity.Approved, warehouseId)	
+	}
+	
+	err = s.db.WithContext(ctx).Model(&entity.Transaction{}).Scopes(query).Count(&count).Error
+	if err != nil {
+		return
+	}
+
+	err = s.db.WithContext(ctx).Scopes(paginate.Paginate(param.Page, param.Limit)).
+		Preload("PaymentScheme").
+		Preload("User.UserDetail.District.Regency").
+		Preload("Warehouse").
+		Scopes(query).
+		Find(&resp).Error
 	return
 }
 
