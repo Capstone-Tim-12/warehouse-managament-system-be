@@ -3,28 +3,16 @@ package payment
 import (
 	"context"
 	"fmt"
+	"math"
 	"net/http"
+	"strings"
 
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/repository/database/entity"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/usecase/payment/model"
+	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/constrans"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/errors"
 	"github.com/Capstone-Tim-12/warehouse-managament-system-be/utils/paginate"
 )
-
-func (s *defaultPayment) GetListTransactionByUserId(ctx context.Context, userId int) (resp []model.ListTrxUser, err error) {
-	trxData, err := s.paymentRepo.GetTransactionByUserId(ctx, userId)
-	if err != nil {
-		fmt.Println("error getting transaction: ", err.Error())
-		err = errors.New(http.StatusInternalServerError, "error getting transaction")
-		return
-	}
-
-	for i := 0; i < len(trxData); i++ {
-		resp = append(resp, model.ListTrxUser{
-			TransactionId: trxData[i].ID,
-		})
-	}
-	return
-}
 
 func (s *defaultPayment) GetAllTransaction(ctx context.Context, param paginate.PaginationTrx) (resp []model.ListAllTrxResponse, count int64, err error) {
 	trxData, count, err := s.paymentRepo.GetListTransactionData(ctx, param)
@@ -78,5 +66,38 @@ func (s *defaultPayment) GetTransactionListDetail(ctx context.Context, transacti
 		RentalDuration:    trxData.Duration,
 		PaymentScheme:     trxData.PaymentScheme.Scheme,
 	}
+	return
+}
+
+func (s *defaultPayment) GetListTrxUserDasboar(ctx context.Context, userId int, param paginate.Pagination) (resp []model.ListTrxUserDasboarResponse, count int64, err error) {
+	trxData, count, err := s.paymentRepo.GetListTransactionByUserIdAndStatus(ctx, userId, entity.Approved, param)
+	if err != nil {
+		fmt.Println("error getting transaction")
+		err = errors.New(http.StatusNotFound, http.StatusText(http.StatusNotFound))
+		return
+	}
+
+	var price float64 
+	for i := 0; i < len(trxData); i++ {
+		if strings.EqualFold(trxData[i].PaymentScheme.Scheme, constrans.PaymentSchemeAnnualy) {
+			price = trxData[i].Warehouse.Price
+		} else if strings.EqualFold(trxData[i].PaymentScheme.Scheme, constrans.PaymentSchemeMonthly) {
+			price = trxData[i].Warehouse.Price / 12
+		} else if strings.EqualFold(trxData[i].PaymentScheme.Scheme, constrans.PaymentSchemeWeekly) {
+			price = trxData[i].Warehouse.Price / 52
+		} else {
+			fmt.Println("data payment scheme not supported")
+			err = errors.New(http.StatusForbidden, "data payment scheme not supported")
+			return
+		}
+
+		resp = append(resp, model.ListTrxUserDasboarResponse{
+			TransactionId:  trxData[i].ID,
+			RentalDuration: trxData[i].Duration,
+			PaymentScheme:  trxData[i].PaymentScheme.Scheme,
+			PaymentTotal:   math.Ceil(price) * float64(trxData[i].Duration),
+		})
+	}
+
 	return
 }

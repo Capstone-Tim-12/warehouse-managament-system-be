@@ -13,7 +13,7 @@ type PaymentRepository interface {
 	CreateTransaction(ctx context.Context, tx *gorm.DB, req *entity.Transaction) (err error)
 	FindPaymentScheme(ctx context.Context) (resp []entity.PaymentScheme, err error)
 	GetListTransactionDasboar(ctx context.Context, param paginate.Pagination) (resp []entity.Transaction, count int64, err error)
-	GetTransactionByUserId(ctx context.Context, userId int) (resp []entity.Transaction, err error)
+	GetTransactionByUserId(ctx context.Context, userId int, param paginate.Pagination) (resp []entity.Transaction, count int64, err error)
 	GetInstalmentUser(ctx context.Context, param paginate.Pagination) (resp []entity.Instalment, count int64, err error)
 	GetListTransactionData(ctx context.Context, param paginate.PaginationTrx) (resp []entity.Transaction, count int64, err error)
 	GetTransactionById(ctx context.Context, transactionId string) (resp *entity.Transaction, err error)
@@ -30,4 +30,6 @@ type PaymentRepository interface {
 	CreateOngoingInstalment(ctx context.Context,  tx *gorm.DB, req *entity.OngoingInstalment) (err error)
 	UpdateOngoingInstalment(ctx context.Context, tx *gorm.DB, req *entity.OngoingInstalment) (err error)
 	FindOngoingInstalmentByXpayment(ctx context.Context, xpaymentId string) (resp *entity.OngoingInstalment, err error) 
+	GetTransactionUserDetailByTransactionId(ctx context.Context, transactionId string) (resp *entity.Transaction, err error)
+	GetTransactionDetailByWarehouseId(ctx context.Context, warehouseId int, param paginate.Pagination) (resp []entity.Transaction, count int64, err error)
 }
