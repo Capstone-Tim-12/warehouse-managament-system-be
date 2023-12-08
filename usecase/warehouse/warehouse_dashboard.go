@@ -238,11 +238,25 @@ func (s *defaultWarehouse) ImportCsvFileWarehouse(ctx context.Context, file *mul
 	}
 	tx := s.warehouseRepo.BeginTrans(ctx)
 	for _, row := range rows {
+		districtId := row[2]
+		warehouseTypeId := cast.ToInt(row[11])
+		_, err = s.regionRepo.GetDistrictById(ctx, districtId)
+		if err != nil {
+			fmt.Println("Error getting regency id", err.Error())
+			err = errors.New(http.StatusNotFound, "district not found")
+			return
+		}
+		_, err = s.warehouseRepo.GetWarehouseTypeById(ctx, warehouseTypeId)
+		if err != nil {
+			fmt.Println("error getting type id", err.Error())
+			err = errors.New(http.StatusNotFound, "warehouse type not found")
+			return
+		}
 		data := entity.Warehouse{
 			Name:            row[0],
 			Longitude:       cast.ToFloat64(row[8]),
 			Latitude:        cast.ToFloat64(row[9]),
-			DistrictID:      row[2],
+			DistrictID:      districtId,
 			Address:         row[3],
 			BuildingArea:    cast.ToFloat64(row[5]),
 			SurfaceArea:     cast.ToFloat64(row[4]),
@@ -250,7 +264,7 @@ func (s *defaultWarehouse) ImportCsvFileWarehouse(ctx context.Context, file *mul
 			PhoneNumber:     row[7],
 			Price:           cast.ToFloat64(row[10]),
 			Description:     row[1],
-			WarehouseTypeID: cast.ToInt(row[11]),
+			WarehouseTypeID: warehouseTypeId,
 			Status:          entity.WarehouseStatus(row[12]),
 		}
 		err = s.warehouseRepo.CreateDetail(ctx, tx, &data)
