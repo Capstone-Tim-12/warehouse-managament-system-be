@@ -45,9 +45,15 @@ func (s *defaultPayment) PaymentCheckout(ctx context.Context, userId int, req mo
 		return
 	}
 
-	if instalmentData.Status == entity.Paid || instalmentData.Status == entity.Waiting {
-		fmt.Println("payment for this transaction is not permitted")
-		err = errors.New(http.StatusBadRequest, "Payment for this transaction is not permitted")
+	if instalmentData.Status == entity.Waiting {
+		fmt.Println("Please make sure the previous payment has been completed")
+		err = errors.New(http.StatusBadRequest, "Please make sure the previous payment has been completed")
+		return
+	}
+
+	if instalmentData.Status == entity.Paid {
+		fmt.Println("payment request rejected, installments have been paid")
+		err = errors.New(http.StatusBadRequest, "payment request rejected, installments have been paid")
 		return
 	}
 

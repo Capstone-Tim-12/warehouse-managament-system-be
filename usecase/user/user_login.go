@@ -41,6 +41,7 @@ func (s *defaultUser) Login(ctx context.Context, req model.LoginRequest, lat, lo
 	resp = model.LoginResponse{
 		UserId: user.ID,
 		Name:   user.Username,
+		Role:   role,
 		Token:  token,
 	}
 	return
