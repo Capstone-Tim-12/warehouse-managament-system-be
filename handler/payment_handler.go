@@ -316,3 +316,37 @@ func (h *PaymentHandler) GetTransactionByWarehouseId(c echo.Context) (err error)
 	return
 }
 
+func (h *PaymentHandler) GetTotalPaymentDasboard(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+
+	clamsData := utils.GetClamsJwt(c)
+	if clamsData.UserRole != "admin" {
+		fmt.Println("role is not admin")
+		err = errors.New(http.StatusUnauthorized, "role is not admin")
+		return
+	}
+
+	data, err := h.paymentUsecase.GetTotalPaymentDasboard(ctx)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, http.StatusOK, data)
+}
+
+func (h *PaymentHandler) GetStatiscticPaymentDasboard(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+
+	clamsData := utils.GetClamsJwt(c)
+	if clamsData.UserRole != "admin" {
+		fmt.Println("role is not admin")
+		err = errors.New(http.StatusUnauthorized, "role is not admin")
+		return
+	}
+
+	data, err := h.paymentUsecase.GetStatistictPaymentOnYear(ctx)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, http.StatusOK, data)
+}
+
