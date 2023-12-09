@@ -98,6 +98,8 @@ func (r *Router) SetupRouter(e *echo.Echo) *Router {
 	sc.PUT("/dasboard/transaction/rejected/:transactionId", r.PaymentHandler.TransactionRejected)
 	sc.GET("/dasboard/transaction/detail/:transactionId", r.PaymentHandler.GetTransactionListDetail)
 	sc.GET("/dasboard/transaction/warehouse/:warehouseId", r.PaymentHandler.GetTransactionByWarehouseId)
+	sc.GET("/dasboard/payment/total", r.PaymentHandler.GetTotalPaymentDasboard)
+	sc.GET("/dasboard/payment/statistic", r.PaymentHandler.GetStatiscticPaymentDasboard)
 
 	return r
 }

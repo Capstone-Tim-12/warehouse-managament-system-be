@@ -302,10 +302,14 @@ func (s *defaultPayment) GetBankVa(ctx context.Context) (resp []model.VaBankResp
 	}
 
 	for i := 0; i < len(data.Data); i++ {
-		resp = append(resp, model.VaBankResponse{
-			Name: data.Data[i].Name,
-			Code: data.Data[i].Code,
-		})
+		image := constrans.GetBankImage[strings.ToUpper(data.Data[i].Code)]
+		if image != "" {
+			resp = append(resp, model.VaBankResponse{
+				Name:  data.Data[i].Name,
+				Code:  data.Data[i].Code,
+				Image: image,
+			})
+		}
 	}
 	return
 }

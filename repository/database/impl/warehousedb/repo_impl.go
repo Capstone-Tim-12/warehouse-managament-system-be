@@ -153,3 +153,7 @@ func (s *defaultRepo) FindListFavoriteByUserId(ctx context.Context, userId int, 
 	return
 }
 
+func (s *defaultRepo) GetTotalWarehouseByStatus(ctx context.Context, status entity.WarehouseStatus) (total int64, err error) {
+	err = s.db.WithContext(ctx).Model(&entity.Warehouse{}).Where("status = ?", status).Count(&total).Error
+	return
+}
