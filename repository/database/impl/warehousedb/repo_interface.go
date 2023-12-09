@@ -26,4 +26,5 @@ type WarehouseRepository interface {
 	FindListFavoriteByUserId(ctx context.Context, userId int, param paginate.Pagination) (resp []entity.Favorit, count int64, err error)
 	FindFavoritByWarehouseIdAndUserId(ctx context.Context, waehouseId, userId int) (resp *entity.Favorit, err error)
 	FindWarehouseByIdOnly(ctx context.Context, id string) (resp *entity.Warehouse, err error) 
+	GetTotalWarehouseByStatus(ctx context.Context, status entity.WarehouseStatus) (total int64, err error)
 }

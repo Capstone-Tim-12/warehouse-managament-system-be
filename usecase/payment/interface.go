@@ -24,4 +24,6 @@ type PaymentUsecase interface {
 	GetListTrxUserDasboar(ctx context.Context, userId int, param paginate.Pagination) (resp []model.ListTrxUserDasboarResponse, count int64, err error)
 	GetTransactionDetailDasboardUser(ctx context.Context, transactionId string) (resp model.TransactionDetailUser, err error)
 	GetListTranscationByWarehouseId(ctx context.Context, warehouseId int, param paginate.Pagination) (resp []model.ListTransactionWarehouseDasboard, count int64, err error)
+	GetTotalPaymentDasboard(ctx context.Context) (resp model.GetTotalPayment, err error)
+	GetStatistictPaymentOnYear(ctx context.Context) (resp []model.StatiscticPayment, err error)
 }

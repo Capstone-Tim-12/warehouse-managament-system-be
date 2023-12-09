@@ -149,11 +149,11 @@ func (s *defaultRepo) GetTransactionById(ctx context.Context, transactionId stri
 
 func (s *defaultRepo) GetTransactionUserDetailByTransactionId(ctx context.Context, transactionId string) (resp *entity.Transaction, err error) {
 	err = s.db.WithContext(ctx).
-	Preload("PaymentScheme").
-	Preload("User.UserDetail.District.Regency").
-	Preload("Warehouse").
-	Preload("Instalment.OngoingInstalment.PaymentMethod").
-	Take(&resp, "id = ?", transactionId).Error
+		Preload("PaymentScheme").
+		Preload("User.UserDetail.District.Regency").
+		Preload("Warehouse").
+		Preload("Instalment.OngoingInstalment.PaymentMethod").
+		Take(&resp, "id = ?", transactionId).Error
 	return
 }
 
@@ -167,10 +167,10 @@ func (s *defaultRepo) GetTransactionDetailById(ctx context.Context, transactionI
 }
 
 func (s *defaultRepo) GetTransactionDetailByWarehouseId(ctx context.Context, warehouseId int, param paginate.Pagination) (resp []entity.Transaction, count int64, err error) {
-	query := func (db *gorm.DB) *gorm.DB  {
-		return db.Where("status = ? AND warehouse_id = ?", entity.Approved, warehouseId)	
+	query := func(db *gorm.DB) *gorm.DB {
+		return db.Where("status = ? AND warehouse_id = ?", entity.Approved, warehouseId)
 	}
-	
+
 	err = s.db.WithContext(ctx).Model(&entity.Transaction{}).Scopes(query).Count(&count).Error
 	if err != nil {
 		return
@@ -245,6 +245,24 @@ func (s *defaultRepo) UpdateOngoingInstalment(ctx context.Context, tx *gorm.DB, 
 
 func (s *defaultRepo) FindOngoingInstalmentByXpayment(ctx context.Context, xpaymentId string) (resp *entity.OngoingInstalment, err error) {
 	err = s.db.WithContext(ctx).Take(&resp, "x_payment = ?", xpaymentId).Error
+	return
+}
+
+func (s *defaultRepo) GetTotalPayment(ctx context.Context) (totalPayment float64, err error) {
+	err = s.db.Table("ongoing_instalments").
+		Joins("JOIN instalments ON ongoing_instalments.instalment_id = instalments.id").
+		Where("instalments.status = ?", entity.Paid).
+		Select("COALESCE(SUM(ongoing_instalments.total_payment), 0) as total_pembayaran").
+		Scan(&totalPayment).Error
+	return
+}
+
+func (s *defaultRepo) GetTotalPaymentOnYear(ctx context.Context, year int) (totalPayment float64, err error) {
+	err = s.db.Table("ongoing_instalments").
+		Joins("JOIN instalments ON ongoing_instalments.instalment_id = instalments.id").
+		Where("instalments.status = ? AND YEAR(ongoing_instalments.payment_time) = ?", entity.Paid, year).
+		Select("COALESCE(SUM(ongoing_instalments.total_payment), 0) as total_pembayaran").
+		Scan(&totalPayment).Error
 	return
 }
 
