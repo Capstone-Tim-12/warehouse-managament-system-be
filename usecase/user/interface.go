@@ -29,4 +29,5 @@ type UserUsecase interface {
 	GetUserById(ctx context.Context, userId int) (resp model.UserListResponse, err error)
 	GetUserInfo(ctx context.Context, userId int) (resp model.UserInfoResponse, err error)
 	ChatBot(ctx context.Context, userId int, text string) (resp model.ChatResponse, err error)
+	UpdateAdminDasboarUser(ctx context.Context, userId int, req model.UserSettingRequest) (err error)
 }

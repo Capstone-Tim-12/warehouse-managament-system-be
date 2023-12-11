@@ -266,6 +266,11 @@ func (s *defaultRepo) GetTotalPaymentOnYear(ctx context.Context, year int) (tota
 	return
 }
 
+func (s *defaultRepo) GetReason(ctx context.Context) (resp []entity.ReasonTerminateContract, err error) {
+	err = s.db.WithContext(ctx).Find(&resp).Error
+	return
+}
+
 // func (s *defaultRepo) UpdateOngoingIstalmentScheduller(ctx context.Context) (err error) {
 // 	err = s.db.WithContext(ctx).Model(&entity.OngoingInstalment{}).Where("expired <= ?", time.Now()).Update()
 // }

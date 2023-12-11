@@ -45,7 +45,8 @@ func InitDB() *gorm.DB {
 		DB.AutoMigrate(&entity.Instalment{})
 		DB.AutoMigrate(&entity.PaymentMethod{})
 		DB.AutoMigrate(&entity.OngoingInstalment{})
-
+		DB.AutoMigrate(&entity.ReasonTerminateContract{})
+		DB.AutoMigrate(&entity.TerminateContract{})
 	}
 
 	return DB
