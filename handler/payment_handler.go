@@ -350,3 +350,20 @@ func (h *PaymentHandler) GetStatiscticPaymentDasboard(c echo.Context) (err error
 	return response.NewSuccessResponse(c, http.StatusOK, data)
 }
 
+func (h *PaymentHandler) GetReasone(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+
+	clamsData := utils.GetClamsJwt(c)
+	if clamsData.UserRole != "admin" {
+		fmt.Println("role is not admin")
+		err = errors.New(http.StatusUnauthorized, "role is not admin")
+		return
+	}
+
+	data, err := h.paymentUsecase.GetReasoneList(ctx)
+	if err != nil {
+		return
+	}
+	return response.NewSuccessResponse(c, http.StatusOK, data)
+}
+
