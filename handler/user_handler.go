@@ -407,4 +407,38 @@ func (h *UserHandler) ChatBot(c echo.Context) (err error) {
 	return response.NewSuccessResponse(c, http.StatusOK, data)
 }
 
+func (h *UserHandler) UpdateAdminUser(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	var req model.UserSettingRequest
+	clamsData := utils.GetClamsJwt(c)
+	if clamsData.UserRole != "admin" {
+		fmt.Println("role is not admin")
+		err = errors.New(http.StatusUnauthorized, "role is not admin")
+		return
+	}
+
+	err = c.Bind(&req)
+	if err != nil {
+		err = errors.New(http.StatusBadRequest, "invalid request")
+		fmt.Println("error bind register user data: ", err.Error())
+		return
+	}
+
+	err = c.Validate(req)
+	if err != nil {
+		fmt.Println("error validate data: ", err.Error())
+		err = errors.New(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = h.userUsecase.UpdateAdminDasboarUser(ctx, clamsData.UserId, req)
+	if err != nil {
+		return
+	}
+
+	return response.NewSuccessResponse(c, http.StatusOK, nil)
+}
+
+
+
 

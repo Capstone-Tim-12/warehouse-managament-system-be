@@ -62,6 +62,7 @@ type Instalment struct {
 	UpdatedAt         time.Time
 	DeletedAt         gorm.DeletedAt `gorm:"index"`
 	OngoingInstalment *OngoingInstalment
+	TerminateContract *TerminateContract
 }
 
 type OngoingInstalment struct {
@@ -90,6 +91,25 @@ type PaymentMethod struct {
 	UpdatedAt         time.Time
 	DeletedAt         gorm.DeletedAt `gorm:"index"`
 	OngoingInstalment []OngoingInstalment
+}
+
+type TerminateContract struct {
+	ID                        int `gorm:"primarykey"`
+	InstalmentID              int
+	Instalment                Instalment `gorm:"foreignKey:InstalmentID"`
+	ReasonTerminateContractID int
+	ReasonTerminateContract   ReasonTerminateContract `gorm:"foreignKey:ReasonTerminateContractID"`
+	CreatedAt                 time.Time
+	UpdatedAt                 time.Time
+	DeletedAt                 gorm.DeletedAt `gorm:"index"`
+}
+
+type ReasonTerminateContract struct {
+	ID        int `gorm:"primarykey"`
+	Name      string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 func (m *Transaction) BeforeCreate(tx *gorm.DB) (err error) {

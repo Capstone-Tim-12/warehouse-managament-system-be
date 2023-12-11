@@ -34,4 +34,5 @@ type PaymentRepository interface {
 	GetTransactionDetailByWarehouseId(ctx context.Context, warehouseId int, param paginate.Pagination) (resp []entity.Transaction, count int64, err error)
 	GetTotalPayment(ctx context.Context) (totalPayment float64, err error)
 	GetTotalPaymentOnYear(ctx context.Context, year int) (totalPayment float64, err error)
+	GetReason(ctx context.Context) (resp []entity.ReasonTerminateContract, err error)
 }
