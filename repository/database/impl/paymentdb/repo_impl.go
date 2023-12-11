@@ -138,6 +138,7 @@ func (s *defaultRepo) GetListTransactionData(ctx context.Context, param paginate
 		Preload("Warehouse.District.Regency.Province").
 		Preload("PaymentScheme").
 		Scopes(query).
+		Order("updated_at desc").
 		Find(&resp).Error
 	return
 }
