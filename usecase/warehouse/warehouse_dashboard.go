@@ -63,7 +63,7 @@ func (s *defaultWarehouse) CreateWarehouse(ctx context.Context, req model.Wareho
 	return
 }
 
-func (s *defaultWarehouse) GetWarehouse(ctx context.Context, id string) (resp *model.WarehouseDataResponse, err error) {
+func (s *defaultWarehouse) GetWarehouse(ctx context.Context, id int) (resp *model.WarehouseDataResponse, err error) {
 	warehouseData, err := s.warehouseRepo.FindWarehouseById(ctx, id)
 	if err != nil {
 		fmt.Println("failed find warehouse")
@@ -103,7 +103,7 @@ func (s *defaultWarehouse) GetWarehouse(ctx context.Context, id string) (resp *m
 	return
 }
 
-func (s *defaultWarehouse) UpdateWarehouseDetails(ctx context.Context, req model.WarehouseDataRequest, id string) (err error) {
+func (s *defaultWarehouse) UpdateWarehouseDetails(ctx context.Context, req model.WarehouseDataRequest, id int) (err error) {
 	_, err = s.regionRepo.GetDistrictById(ctx, req.DistrictID)
 	if err != nil {
 		fmt.Println("Error getting regency id", err.Error())

@@ -83,7 +83,7 @@ func (s *defaultWarehouse) GetMywarehouse(ctx context.Context, userId int, statu
 	return
 }
 
-func (s *defaultWarehouse) GetWarehouseInfo(ctx context.Context, warehouseId string) (resp model.WarehouseInfoResponse, err error) {
+func (s *defaultWarehouse) GetWarehouseInfo(ctx context.Context, warehouseId int) (resp model.WarehouseInfoResponse, err error) {
 	warehouseData, err := s.warehouseRepo.FindWarehouseById(ctx, warehouseId)
 	if err != nil {
 		fmt.Println("failed find warehouse")
