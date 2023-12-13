@@ -61,8 +61,13 @@ func (h *WarehouseHandler) CreateWarehouseDetail(c echo.Context) (err error) {
 func (h *WarehouseHandler) GetWarehouseById(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	id := c.Param("warehouseId")
+	idInt := cast.ToInt(id)
+	if idInt == 0 {
+		err = errors.New(http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+		return
+	}
 
-	data, err := h.warehouseusecase.GetWarehouse(ctx, id)
+	data, err := h.warehouseusecase.GetWarehouse(ctx, idInt)
 	if err != nil {
 		return
 	}
@@ -88,6 +93,11 @@ func (h *WarehouseHandler) UpdateWarehouseById(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	clamsData := utils.GetClamsJwt(c)
 	id := c.Param("warehouseId")
+	idInt := cast.ToInt(id)
+	if idInt == 0 {
+		err = errors.New(http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+		return
+	}
 
 	if clamsData.UserRole != "admin" {
 		fmt.Println("role is not admin")
@@ -109,7 +119,7 @@ func (h *WarehouseHandler) UpdateWarehouseById(c echo.Context) (err error) {
 		return
 	}
 
-	err = h.warehouseusecase.UpdateWarehouseDetails(ctx, req, id)
+	err = h.warehouseusecase.UpdateWarehouseDetails(ctx, req, idInt)
 	if err != nil {
 		return
 	}
@@ -162,6 +172,12 @@ func (h *WarehouseHandler) UploadPhotoWarehouse(c echo.Context) (err error) {
 	if err != nil {
 		fmt.Println(ctx, "error uploading product images", err.Error())
 		err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		return
+	}
+
+	if file == nil {
+		fmt.Println(ctx, "error uploading product images", err.Error())
+		err = errors.New(http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
 		return
 	}
 
@@ -223,8 +239,13 @@ func (h *WarehouseHandler) MywarehouseRented(c echo.Context) (err error){
 func (h *WarehouseHandler) GetWarehouseInfo(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	id := c.Param("warehouseId")
+	idInt := cast.ToInt(id)
+	if idInt == 0 {
+		err = errors.New(http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+		return
+	}
 
-	data, err := h.warehouseusecase.GetWarehouseInfo(ctx, id)
+	data, err := h.warehouseusecase.GetWarehouseInfo(ctx, idInt)
 	if err != nil {
 		return
 	}
