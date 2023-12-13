@@ -109,15 +109,16 @@ func (h *PaymentHandler) GetAllTransaction(c echo.Context) (err error) {
 		ProvinceId: cast.ToInt(c.QueryParam("provinceId")),
 		Status:     c.QueryParam("status"),
 	}
-	data, count, err := h.paymentUsecase.GetAllTransaction(ctx, param)
-	if err != nil {
-		return
-	}
 
 	clamsData := utils.GetClamsJwt(c)
 	if clamsData.UserRole != "admin" {
 		fmt.Println("role is not admin")
 		err = errors.New(http.StatusUnauthorized, "role is not admin")
+		return
+	}
+	
+	data, count, err := h.paymentUsecase.GetAllTransaction(ctx, param)
+	if err != nil {
 		return
 	}
 

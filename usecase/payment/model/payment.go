@@ -5,9 +5,9 @@ import (
 )
 
 type PaymentRequest struct {
-	PaymentMethodId int    `json:"paymentMethodId"`
-	InstalmentId    int    `json:"instalmentId"`
-	Data            string `json:"data"`
+	PaymentMethodId int    `json:"paymentMethodId" validate:"required"`
+	InstalmentId    int    `json:"instalmentId" validate:"required"`
+	Data            string `json:"data" validate:"required"`
 }
 
 type PaymentResponse struct {
