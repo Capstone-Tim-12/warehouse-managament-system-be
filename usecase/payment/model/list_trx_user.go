@@ -35,6 +35,7 @@ type ListTrxUserDasboarResponse struct {
 	RentalDuration int     `json:"rentalDuration"`
 	PaymentScheme  string  `json:"paymentScheme"`
 	PaymentTotal   float64 `json:"paymentTotal"`
+	WarehouseName  string  `json:"warehouseName"`
 }
 
 type ListTransactionWarehouseDasboard struct {

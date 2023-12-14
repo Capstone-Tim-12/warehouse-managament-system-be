@@ -61,7 +61,32 @@ func (r *defaultRepo) BeginTrans(ctx context.Context) *gorm.DB {
 }
 
 func (r *defaultRepo) DeleteUser(ctx context.Context, req *entity.User) (err error) {
-	err = r.db.WithContext(ctx).Delete(req).Error
+	tx := r.db.Begin()
+	err = tx.WithContext(ctx).Delete(req).Error
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+
+	err = tx.WithContext(ctx).Delete(&entity.UserDetail{}, "user_id = ?", req.ID).Error
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+
+	err = tx.WithContext(ctx).Delete(&entity.Favorit{}, "user_id = ?", req.ID).Error
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+
+	err = tx.WithContext(ctx).Delete(&entity.Transaction{}, "user_id = ?", req.ID).Error
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+
+	tx.Commit()
 	return
 }
 
