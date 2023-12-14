@@ -55,4 +55,3 @@ type WarehouseType struct {
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 	Warehouse []Warehouse
 }
-

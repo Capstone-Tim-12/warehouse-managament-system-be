@@ -106,7 +106,29 @@ func (r *defaultRepo) GetWarehouseTypeById(ctx context.Context, id int) (resp *e
 }
 
 func (r *defaultRepo) DeleteWarehouse(ctx context.Context, req *entity.Warehouse) (err error) {
-	err = r.db.WithContext(ctx).Delete(&req).Error
+	tx := r.db.Begin()
+	err = tx.WithContext(ctx).Delete(&req).Error
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+	err = tx.WithContext(ctx).Delete(&entity.WarehouseImg{}, "warehouse_id = ?", req.ID).Error
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+	err = tx.WithContext(ctx).Delete(&entity.Transaction{}, "warehouse_id = ?", req.ID).Error
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+	err = tx.WithContext(ctx).Delete(&entity.Favorit{}, "warehouse_id = ?", req.ID).Error
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+
+	tx.Commit()
 	return
 }
 
