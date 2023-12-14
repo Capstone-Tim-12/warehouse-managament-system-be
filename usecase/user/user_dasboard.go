@@ -19,10 +19,11 @@ func (s *defaultUser) GetUserList(ctx context.Context, param paginate.Pagination
 	}
 	for i := 0; i < len(userData); i++ {
 		resp = append(resp, model.UserListResponse{
-			UserId:   userData[i].ID,
-			Username: userData[i].Username,
-			Email:    userData[i].Email,
-			Photo:    userData[i].Photo,
+			UserId:           userData[i].ID,
+			Username:         userData[i].Username,
+			Email:            userData[i].Email,
+			Photo:            userData[i].Photo,
+			IsVerifyIdentity: userData[i].IsVerifyIdentity,
 		})
 	}
 	return

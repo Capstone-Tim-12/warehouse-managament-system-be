@@ -96,6 +96,7 @@ func (s *defaultPayment) GetListTrxUserDasboar(ctx context.Context, userId int, 
 			RentalDuration: trxData[i].Duration,
 			PaymentScheme:  trxData[i].PaymentScheme.Scheme,
 			PaymentTotal:   math.Ceil(price) * float64(trxData[i].Duration),
+			WarehouseName:  trxData[i].Warehouse.Name,
 		})
 	}
 

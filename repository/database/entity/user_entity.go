@@ -29,6 +29,7 @@ type User struct {
 	DeletedAt        gorm.DeletedAt `gorm:"index"`
 	UserDetail       UserDetail
 	Favorit          []Favorit
+	Transaction      []Transaction
 }
 
 type UserDetail struct {
