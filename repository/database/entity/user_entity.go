@@ -27,9 +27,9 @@ type User struct {
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 	DeletedAt        gorm.DeletedAt `gorm:"index"`
-	UserDetail       UserDetail
-	Favorit          []Favorit
-	Transaction      []Transaction
+	UserDetail       UserDetail     `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Favorit          []Favorit      `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Transaction      []Transaction  `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type UserDetail struct {
@@ -45,7 +45,7 @@ type UserDetail struct {
 	Citizenship  string
 	UserID       int
 	DistrictID   string
-	District     District `gorm:"foreignKey:DistrictID"`
+	District     District `gorm:"foreignKey:DistrictID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 	DeletedAt    gorm.DeletedAt `gorm:"index"`
@@ -62,9 +62,9 @@ type Avatar struct {
 type Favorit struct {
 	ID          int `gorm:"primarykey"`
 	UserID      int
-	User        User `gorm:"foreignKey:UserID"`
+	User        User `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	WarehouseID int
-	Warehouse   Warehouse `gorm:"foreignKey:WarehouseID"`
+	Warehouse   Warehouse `gorm:"foreignKey:WarehouseID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   gorm.DeletedAt `gorm:"index"`
