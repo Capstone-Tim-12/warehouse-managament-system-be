@@ -9,7 +9,7 @@ type Province struct {
 type Regency struct {
 	ID         string `gorm:"size:12;primarykey"`
 	ProvinceID string
-	Province   Province `gorm:"foreignKey:ProvinceID"`
+	Province   Province `gorm:"foreignKey:ProvinceID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Name       string
 	District   []District
 }
@@ -17,7 +17,7 @@ type Regency struct {
 type District struct {
 	ID         string `gorm:"size:12;primarykey"`
 	RegencyID  string
-	Regency    Regency `gorm:"foreignKey:RegencyID"`
+	Regency    Regency `gorm:"foreignKey:RegencyID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Name       string
 	Village    []Village
 	UserDetail []UserDetail
@@ -26,7 +26,7 @@ type District struct {
 
 type Village struct {
 	ID         string   `gorm:"size:12;primarykey"`
-	District   District `gorm:"foreignKey:DistrictID"`
+	District   District `gorm:"foreignKey:DistrictID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	DistrictID string
 	Name       string
 }
