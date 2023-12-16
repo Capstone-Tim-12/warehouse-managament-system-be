@@ -19,7 +19,7 @@ type Warehouse struct {
 	Longitude       float64
 	Latitude        float64
 	DistrictID      string
-	District        District `gorm:"foreignKey:DistrictID"`
+	District        District `gorm:"foreignKey:DistrictID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Address         string
 	BuildingArea    float64
 	SurfaceArea     float64
@@ -28,20 +28,21 @@ type Warehouse struct {
 	Price           float64
 	Description     string
 	WarehouseTypeID int
-	WarehouseType   WarehouseType `gorm:"foreignKey:WarehouseTypeID"`
+	WarehouseType   WarehouseType `gorm:"foreignKey:WarehouseTypeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Status          WarehouseStatus
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
 	DeletedAt       gorm.DeletedAt `gorm:"index"`
-	WarehouseImg    []WarehouseImg
-	Transaction     []Transaction
-	Favorit         []Favorit
+	WarehouseImg    []WarehouseImg `gorm:"foreignKey:WarehouseID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Transaction     []Transaction  `gorm:"foreignKey:WarehouseID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Favorit         []Favorit      `gorm:"foreignKey:WarehouseID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type WarehouseImg struct {
 	ID          int `gorm:"primarykey"`
 	Image       string
 	WarehouseID int
+	Warehouse   Warehouse `gorm:"foreignKey:WarehouseID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   gorm.DeletedAt `gorm:"index"`

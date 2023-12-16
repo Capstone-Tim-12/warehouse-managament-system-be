@@ -30,7 +30,7 @@ type PaymentScheme struct {
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   gorm.DeletedAt `gorm:"index"`
-	Transaction []Transaction
+	Transaction []Transaction  `gorm:"foreignKey:PaymentSchemeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type Transaction struct {
@@ -38,39 +38,39 @@ type Transaction struct {
 	DateEntry       time.Time
 	DateOut         time.Time
 	UserID          int
-	User            User `gorm:"foreignKey:UserID"`
+	User            User `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	WarehouseID     int
-	Warehouse       Warehouse `gorm:"foreignKey:WarehouseID"`
+	Warehouse       Warehouse `gorm:"foreignKey:WarehouseID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	PaymentSchemeID int
-	PaymentScheme   PaymentScheme `gorm:"foreignKey:PaymentSchemeID"`
+	PaymentScheme   PaymentScheme `gorm:"foreignKey:PaymentSchemeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Duration        int
 	Status          TranscationStatus
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
 	DeletedAt       gorm.DeletedAt `gorm:"index"`
-	Instalment      []Instalment
+	Instalment      []Instalment `gorm:"foreignKey:TransactionID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type Instalment struct {
 	ID                int `gorm:"primarykey"`
 	TransactionID     string
-	Transaction       Transaction `gorm:"foreignKey:TransactionID"`
+	Transaction       Transaction `gorm:"foreignKey:TransactionID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Nominal           float64
 	DueDate           time.Time
 	Status            InstalmentStatus
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
-	DeletedAt         gorm.DeletedAt `gorm:"index"`
-	OngoingInstalment *OngoingInstalment
-	TerminateContract *TerminateContract
+	DeletedAt         gorm.DeletedAt     `gorm:"index"`
+	OngoingInstalment *OngoingInstalment `gorm:"foreignKey:InstalmentID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	TerminateContract *TerminateContract `gorm:"foreignKey:InstalmentID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type OngoingInstalment struct {
 	ID              int `gorm:"primarykey"`
 	InstalmentID    int
-	Instalment      Instalment `gorm:"foreignKey:InstalmentID"`
+	Instalment      Instalment `gorm:"foreignKey:InstalmentID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	PaymentMethodID int
-	PaymentMethod   PaymentMethod `gorm:"foreignKey:PaymentMethodID"`
+	PaymentMethod   PaymentMethod `gorm:"foreignKey:PaymentMethodID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	XPayment        string
 	AccountNumber   string
 	AdminFee        float64
@@ -89,16 +89,16 @@ type PaymentMethod struct {
 	Image             string
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
-	DeletedAt         gorm.DeletedAt `gorm:"index"`
-	OngoingInstalment []OngoingInstalment
+	DeletedAt         gorm.DeletedAt      `gorm:"index"`
+	OngoingInstalment []OngoingInstalment `gorm:"foreignKey:PaymentMethodID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type TerminateContract struct {
 	ID                        int `gorm:"primarykey"`
 	InstalmentID              int
-	Instalment                Instalment `gorm:"foreignKey:InstalmentID"`
+	Instalment                Instalment `gorm:"foreignKey:InstalmentID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	ReasonTerminateContractID int
-	ReasonTerminateContract   ReasonTerminateContract `gorm:"foreignKey:ReasonTerminateContractID"`
+	ReasonTerminateContract   ReasonTerminateContract `gorm:"foreignKey:ReasonTerminateContractID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	CreatedAt                 time.Time
 	UpdatedAt                 time.Time
 	DeletedAt                 gorm.DeletedAt `gorm:"index"`
