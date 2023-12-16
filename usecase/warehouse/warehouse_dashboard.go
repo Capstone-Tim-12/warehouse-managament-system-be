@@ -118,7 +118,7 @@ func (s *defaultWarehouse) UpdateWarehouseDetails(ctx context.Context, req model
 		return
 	}
 
-	warehouseData, err := s.warehouseRepo.FindWarehouseById(ctx, id)
+	warehouseData, err := s.warehouseRepo.FindWarehouseByIdOnly(ctx, cast.ToString(id))
 	if err != nil {
 		fmt.Println("failed to get data warehouse")
 		err = errors.New(http.StatusNotFound, "failed to get data warehouse")
@@ -127,6 +127,22 @@ func (s *defaultWarehouse) UpdateWarehouseDetails(ctx context.Context, req model
 
 	if req.Status == string(entity.NotAvailable) {
 		req.Status = string(entity.Available)
+	}
+
+	tx := s.warehouseRepo.BeginTrans(ctx)
+	err = s.warehouseRepo.DeleteWarehouseImgByWarehouseId(ctx, tx, warehouseData.ID)
+	if err != nil {
+		tx.Rollback()
+		fmt.Println("error delete data: ", err.Error())
+		err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		return
+	}
+	
+	for _, img := range req.Image {
+		warehouseData.WarehouseImg = append(warehouseData.WarehouseImg, entity.WarehouseImg{
+			Image:       img,
+			WarehouseID: warehouseData.ID,
+		})
 	}
 
 	warehouseData.Name = req.Name
@@ -142,21 +158,6 @@ func (s *defaultWarehouse) UpdateWarehouseDetails(ctx context.Context, req model
 	warehouseData.Status = entity.WarehouseStatus(req.Status)
 	warehouseData.WarehouseTypeID = req.WarehouseTypeId
 
-	for _, img := range req.Image {
-		warehouseData.WarehouseImg = append(warehouseData.WarehouseImg, entity.WarehouseImg{
-			Image:       img,
-			WarehouseID: warehouseData.ID,
-		})
-	}
-
-	tx := s.warehouseRepo.BeginTrans(ctx)
-	err = s.warehouseRepo.DeleteWarehouseImgByWarehouseId(ctx, tx, warehouseData.ID)
-	if err != nil {
-		tx.Rollback()
-		fmt.Println("error delete data: ", err.Error())
-		err = errors.New(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
-		return
-	}
 	err = s.warehouseRepo.UpdateWarehouse(ctx, tx, warehouseData)
 	if err != nil {
 		tx.Rollback()
