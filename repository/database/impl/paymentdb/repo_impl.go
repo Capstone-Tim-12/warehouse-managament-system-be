@@ -45,12 +45,13 @@ func (s *defaultRepo) GetInstalmentUser(ctx context.Context, param paginate.Pagi
 	query := func(db *gorm.DB) *gorm.DB {
 
 		db.Joins("JOIN ongoing_instalments ON instalments.id = ongoing_instalments.instalment_id").
+			Joins("JOIN transactions ON transactions.id = instalments.transaction_id").
+			Where("transactions.deleted_at IS NULL").
 			Where("ongoing_instalments.payment_time IS NOT NULL").
-			Where("instalments.status = ?", entity.Paid)
+			Where("instalments.status = ? ", entity.Paid)
 
 		if param.PaymentSchemeId != 0 {
-			db.Joins("JOIN transactions ON transactions.id = instalments.transaction_id").
-				Joins("JOIN payment_schemes ON transactions.payment_scheme_id = payment_schemes.id").
+			db.Joins("JOIN payment_schemes ON transactions.payment_scheme_id = payment_schemes.id").
 				Where("payment_schemes.id = ?", param.PaymentSchemeId)
 		}
 		return db
