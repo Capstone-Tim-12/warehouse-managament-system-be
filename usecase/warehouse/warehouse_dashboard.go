@@ -126,10 +126,6 @@ func (s *defaultWarehouse) UpdateWarehouseDetails(ctx context.Context, req model
 		return
 	}
 
-	if req.Status == string(entity.NotAvailable) {
-		req.Status = string(entity.Available)
-	}
-
 	tx := s.warehouseRepo.BeginTrans(ctx)
 	err = s.warehouseRepo.DeleteWarehouseImgByWarehouseId(ctx, tx, warehouseData.ID)
 	if err != nil {
@@ -146,6 +142,11 @@ func (s *defaultWarehouse) UpdateWarehouseDetails(ctx context.Context, req model
 		})
 	}
 
+	warehouseData.Status = entity.NotAvailable
+	if req.IsAvailable {
+		warehouseData.Status = entity.Available
+	}
+
 	warehouseData.Name = req.Name
 	warehouseData.Description = req.Description
 	warehouseData.DistrictID = req.DistrictID
@@ -156,7 +157,6 @@ func (s *defaultWarehouse) UpdateWarehouseDetails(ctx context.Context, req model
 	warehouseData.PhoneNumber = req.PhoneNumber
 	warehouseData.Longitude = req.Longitude
 	warehouseData.Latitude = req.Latitude
-	warehouseData.Status = entity.WarehouseStatus(req.Status)
 	warehouseData.WarehouseTypeID = req.WarehouseTypeId
 
 	err = s.warehouseRepo.UpdateWarehouse(ctx, tx, warehouseData)
