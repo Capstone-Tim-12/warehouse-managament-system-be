@@ -88,12 +88,6 @@ func (s *defaultUser) VerificationUser(ctx context.Context, req model.Verificati
 
 func (s *defaultUser) sendEmailOtp(ctx context.Context, userData entity.User) (err error) {
 	otpMessage := generate.GenerateOTP()
-	if err != nil {
-		fmt.Println("failed to generate otp: ", err.Error())
-		err = errors.New(http.StatusInternalServerError, "failed to generate otp")
-		return
-	}
-
 	utilityData := core.SetUtilityRequest{
 		Key:      userData.Email,
 		Value:    otpMessage,
